@@ -7,68 +7,45 @@ namespace InfraEstrutura.Repositorio
 {
     public class LivroRepositorio : ILivroRepositorio
     {
-        private EmpresaContexto contexto;
+        private readonly EmpresaContexto contexto;
 
         public LivroRepositorio(EmpresaContexto contexto)
         {
             this.contexto = contexto;
         }
 
-        public async Task<Livro> addAsync(Livro livro)
+        public async Task AddAsync(Livro livro)
         {
-            await this.contexto.Livros.AddAsync(livro);
-            await this.contexto.SaveChangesAsync();
-            return livro;
+            await contexto.Livros.AddAsync(livro);
+            await contexto.SaveChangesAsync();
         }
 
-        public Task AddAsync(Livro livro)
+        public async Task<IEnumerable<Livro>> GetAllAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Livro>> getAllAsync(Expression<Func<Livro, bool>> expression)
-        {
-            return await this.contexto.Livros
-                .Where(expression)
+            return await contexto.Livros
                 .OrderBy(p => p.Titulo)
                 .ToListAsync();
         }
 
-        public Task<IEnumerable<Livro>> GetAllAsync()
+        public async Task<Livro?> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            return await contexto.Livros.FindAsync(id);
         }
 
-        public async Task<Livro?> getAsync(int id)
+        public async Task RemoveAsync(int id)
         {
-            return await this.contexto.Livros.FindAsync(id);
+            var livro = await contexto.Livros.FindAsync(id);
+            if (livro != null)
+            {
+                contexto.Livros.Remove(livro);
+                await contexto.SaveChangesAsync();
+            }
         }
 
-        public Task<Livro?> GetAsync(int id)
+        public async Task UpdateAsync(Livro livro)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task removeAsync(Livro livro)
-        {
-            this.contexto.Livros.Remove(livro);
-            await this.contexto.SaveChangesAsync();
-        }
-
-        public Task RemoveAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task updateAsync(Livro livro)
-        {
-            this.contexto.Entry(livro).State = EntityState.Modified;
-            await this.contexto.SaveChangesAsync();
-        }
-
-        public Task UpdateAsync(Livro livro)
-        {
-            throw new NotImplementedException();
+            contexto.Entry(livro).State = EntityState.Modified;
+            await contexto.SaveChangesAsync();
         }
     }
 }
