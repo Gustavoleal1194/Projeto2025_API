@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Dominio.Dtos;
 using Dominio.Entidades;
 namespace Projeto2025_API.Mapping
 {
@@ -7,8 +6,11 @@ namespace Projeto2025_API.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Categoria, CategoriaDTO>().ReverseMap();
-            CreateMap<Produto, ProdutoDTO>().ReverseMap();
+            CreateMap<Livro, LivroDTO>().ReverseMap();
+            CreateMap<Editora, EditoraDTO>().ReverseMap();
+            CreateMap<Usuario, UsuarioDTO>().ReverseMap();
+            CreateMap<Emprestimo, EmprestimoDTO>().ReverseMap();
+            CreateMap<Autor, AutorDTO>().ReverseMap();
 
         }
     }

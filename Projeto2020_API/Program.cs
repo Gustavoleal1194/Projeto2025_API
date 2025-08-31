@@ -1,8 +1,5 @@
-using Dominio.Entidades;
 using InfraEstrutura.Data;
 using InfraEstrutura.Repositorio;
-using Interface.Repositorio;
-using Interface.Service;
 using Microsoft.EntityFrameworkCore;
 using Projeto2025_API.Mapping;
 using Service;
@@ -16,14 +13,30 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //configurar contexto
-builder.Services.AddDbContext<EmpresaContexto>(p => p.UseSqlServer(builder.Configuration.GetConnectionString("default")));
+builder.Services.AddDbContext<EmpresaContexto>(p =>
+    p.UseSqlServer(
+        builder.Configuration.GetConnectionString("default"),
+        b => b.MigrationsAssembly("InfraEstrutura")
+    )
+);
 //configurar o mapping
 builder.Services.AddAutoMapper(p => p.AddProfile<MappingProfile>());
 //configurar injeção de dependencia
 
-builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
+builder.Services.AddScoped<ILivroRepositorio, LivroRepositorio>();
+builder.Services.AddScoped<ILivroService, LivroService>();
 
-builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+builder.Services.AddScoped<IAutorRepositorio, AutorRepositorio>();
+builder.Services.AddScoped<IAutorService, AutorService>();
+
+builder.Services.AddScoped<IEditoraRepositorio, EditoraRepositorio>();
+builder.Services.AddScoped<IEditoraService, EditoraService>();
+
+builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+builder.Services.AddScoped<IEmprestimoRepositorio, EmprestimoRepositorio>();
+builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
 
 
 var app = builder.Build();
@@ -36,9 +49,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

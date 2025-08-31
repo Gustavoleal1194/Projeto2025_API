@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace Dominio.Entidades
 {
-    public class Categoria
+    public class Editora
     {
         public int Id { get; set; }
-        public string Descricao { get; set; } = String.Empty;
-
-        public virtual List<Produto> produtos { get; set; } = new List<Produto>();
-
+        public string Nome { get; set; } = string.Empty;
+        public string Endereco { get; set; } = string.Empty;
+        public virtual List<Livro> Livros { get; set; } = new();
     }
 }
