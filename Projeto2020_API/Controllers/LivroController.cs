@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Projeto2025_API.Validation;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Projeto2025_API.Controllers
 {
@@ -7,17 +10,28 @@ namespace Projeto2025_API.Controllers
     public class LivroController : ControllerBase
     {
         private readonly ILivroService service;
+        private readonly LivroValidation validacao;
 
         public LivroController(ILivroService service)
         {
             this.service = service;
+            this.validacao = new LivroValidation(); // Instancia o validador manualmente
         }
 
         [HttpPost]
         public async Task<ActionResult<LivroDTO>> AddAsync(LivroDTO livroDTO)
         {
-            var dto = await service.AddAsync(livroDTO);
-            return Ok(dto);
+            var result = validacao.Validate(livroDTO);
+
+            if (result.IsValid)
+            {
+                var dto = await service.AddAsync(livroDTO);
+                return Ok(dto);
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
         }
 
         [HttpGet]
@@ -30,22 +44,38 @@ namespace Projeto2025_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LivroDTO>> GetAsync(int id)
         {
+            if (id <= 0)
+                return BadRequest("Id inválido.");
+
             var livro = await service.GetAsync(id);
             if (livro == null)
                 return NotFound();
+
             return Ok(livro);
         }
 
         [HttpPut]
         public async Task<ActionResult> UpdateAsync(LivroDTO livroDTO)
         {
-            await service.UpdateAsync(livroDTO);
-            return NoContent();
+            var result = validacao.Validate(livroDTO);
+
+            if (result.IsValid)
+            {
+                await service.UpdateAsync(livroDTO);
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
+            if (id <= 0)
+                return BadRequest("Id inválido.");
+
             await service.RemoveAsync(id);
             return NoContent();
         }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Projeto2025_API.Validation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,17 +10,28 @@ namespace Projeto2025_API.Controllers
     public class AutorController : ControllerBase
     {
         private readonly IAutorService service;
+        private readonly AutorValidation validacao;
 
         public AutorController(IAutorService service)
         {
             this.service = service;
+            this.validacao = new AutorValidation(); // Inicializa a validação manualmente
         }
 
         [HttpPost]
         public async Task<ActionResult<AutorDTO>> AddAsync(AutorDTO autorDTO)
         {
-            var dto = await service.AddAsync(autorDTO);
-            return Ok(dto);
+            var result = validacao.Validate(autorDTO);
+
+            if (result.IsValid)
+            {
+                var dto = await service.AddAsync(autorDTO);
+                return Ok(dto);
+            }
+            else
+            {
+                return BadRequest(result.Errors); // Retorna os erros de validação
+            }
         }
 
         [HttpGet]
@@ -41,8 +53,17 @@ namespace Projeto2025_API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateAsync(AutorDTO autorDTO)
         {
-            await service.UpdateAsync(autorDTO);
-            return NoContent();
+            var result = validacao.Validate(autorDTO);
+
+            if (result.IsValid)
+            {
+                await service.UpdateAsync(autorDTO);
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
         }
 
         [HttpDelete("{id}")]

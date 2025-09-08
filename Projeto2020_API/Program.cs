@@ -1,7 +1,9 @@
+using FluentValidation;
 using InfraEstrutura.Data;
 using InfraEstrutura.Repositorio;
 using Microsoft.EntityFrameworkCore;
 using Projeto2025_API.Mapping;
+using Projeto2025_API.Validation;
 using Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +39,14 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 builder.Services.AddScoped<IEmprestimoRepositorio, EmprestimoRepositorio>();
 builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
+builder.Services.AddScoped < IValidator < AutorDTO >, AutorValidation > ();
+builder.Services.AddScoped<IValidator<EditoraDTO>, EditoraValidation>();
+builder.Services.AddScoped<IValidator<EmprestimoDTO>, EmprestimoValidation>();
+builder.Services.AddScoped<IValidator<LivroDTO>, LivroValidation>();
+builder.Services.AddScoped<IValidator<UsuarioDTO>, UsuarioValidation>();
+
+
+
 
 
 var app = builder.Build();
