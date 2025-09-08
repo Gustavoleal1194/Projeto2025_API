@@ -154,6 +154,11 @@ namespace InfraEstrutura.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasMaxLength(20)

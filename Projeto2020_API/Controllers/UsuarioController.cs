@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Projeto2025_API.Validation;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Projeto2025_API.Controllers
@@ -11,12 +16,66 @@ namespace Projeto2025_API.Controllers
     {
         private readonly IUsuarioService service;
         private readonly UsuarioValidation validacao;
+        private readonly IConfiguration _config;
 
-        public UsuarioController(IUsuarioService service)
+        public UsuarioController(IUsuarioService service, IConfiguration config)
         {
             this.service = service;
             this.validacao = new UsuarioValidation();
+            _config = config;
         }
+
+        // Endpoint para Login e geração de Token JWT
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] UsuarioDTO loginDetalhes)
+        {
+            if (ValidarUsuario(loginDetalhes))
+            {
+                var tokenString = GerarTokenJWT();
+                return Ok(new
+                {
+                    access_token = tokenString,
+                    token_type = "Bearer",
+                    expires_in = 60 * 60 // 60 minutos
+                });
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
+
+        private string GerarTokenJWT()
+        {
+            var issuer = _config["Jwt:Issuer"];
+            var audience = _config["Jwt:Audience"];
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, "1"),
+                new Claim(JwtRegisteredClaimNames.UniqueName, "ana"),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private bool ValidarUsuario(UsuarioDTO loginDetalhes)
+        {
+            // Aqui você pode melhorar para validar no banco, por ex.
+            return loginDetalhes.Nome == "ana" && loginDetalhes.Senha == "123456";
+        }
+
+        // CRUD Usuário (com validação)
 
         [HttpPost]
         public async Task<ActionResult<UsuarioDTO>> AddAsync(UsuarioDTO usuarioDTO)

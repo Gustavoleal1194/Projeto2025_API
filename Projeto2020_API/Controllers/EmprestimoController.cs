@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projeto2025_API.Validation;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ namespace Projeto2025_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EmprestimoController : ControllerBase
     {
         private readonly IEmprestimoService service;
