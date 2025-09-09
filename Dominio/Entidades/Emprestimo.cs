@@ -12,6 +12,7 @@ public class Emprestimo
     public int IdLivro { get; set; }
     public int IdUsuario { get; set; }
     public DateTime DataEmprestimo { get; set; }
+    //ADICIONAR PREVISAO E ENTREGA
     public DateTime? DataDevolucao { get; set; }
     public virtual Livro? Livro { get; set; }
     public virtual Usuario? Usuario { get; set; }
