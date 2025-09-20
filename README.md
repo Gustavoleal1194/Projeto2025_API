@@ -29,8 +29,9 @@ Sistema completo de gerenciamento de biblioteca desenvolvido em .NET 8 com arqui
 
 - **Gestão Completa de Livros**: Cadastro, edição, busca por gênero, autor, editora
 - **Sistema de Empréstimos**: Controle de empréstimos com status e renovações
-- **Gestão de Usuários**: Cadastro e busca de usuários
-- **Gestão de Funcionários**: Sistema completo de funcionários
+- **Gestão de Usuários**: Cadastro e busca de usuários com autenticação por senha
+- **Gestão de Funcionários**: Sistema completo de funcionários com autenticação por senha
+- **Sistema de Autenticação**: Campos de senha obrigatórios para Usuários e Funcionários
 - **Busca Avançada**: Filtros específicos para cada entidade
 - **Validação de Dados**: Validações robustas em todas as operações
 - **Documentação Automática**: Swagger/OpenAPI integrado
@@ -170,12 +171,14 @@ Projeto2025_API/
 - **Relacionamentos**: Pode ter vários Livros
 
 ### 👥 Usuario
-- **Propriedades**: ID, Nome, Email, Telefone
+- **Propriedades**: ID, Nome, Email, Telefone, Senha
 - **Relacionamentos**: Pode ter vários Empréstimos
+- **Segurança**: Campo senha obrigatório para autenticação
 
 ### 👨‍💼 Funcionario
-- **Propriedades**: ID, Nome, Email, Telefone, Cargo, Salário, Data de Admissão, Data de Demissão, Status Ativo
+- **Propriedades**: ID, Nome, Email, Telefone, Senha, Cargo, Salário, Data de Admissão, Data de Demissão, Status Ativo
 - **Relacionamentos**: Funcionários do sistema
+- **Segurança**: Campo senha obrigatório para autenticação
 
 ### 📚 Emprestimo
 - **Propriedades**: ID, Usuario, Livro, Data de Empréstimo, Data Prevista de Devolução, Data de Devolução, Data de Renovação, Status, Quantidade de Renovações, Máximo de Renovações, Multa, Observações, Data de Criação, Status Ativo
@@ -412,7 +415,8 @@ Content-Type: application/json
 {
   "nome": "João Silva",
   "email": "joao.silva@email.com",
-  "telefone": "(11) 99999-8888"
+  "telefone": "(11) 99999-8888",
+  "senha": "minhasenha123"
 }
 ```
 
@@ -426,6 +430,7 @@ Content-Type: application/json
   "nome": "Maria Santos",
   "email": "maria.santos@biblioteca.com",
   "telefone": "(11) 99999-7777",
+  "senha": "senhafuncionario123",
   "cargo": "Bibliotecária",
   "salario": 3500.00,
   "dataAdmissao": "2024-01-15"
@@ -576,9 +581,32 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ---
 
+## 📝 Changelog
+
+### v1.2.0 - Adição de Campos de Senha (2025-09-20)
+
+#### ✨ Novas Funcionalidades
+- **Sistema de Autenticação**: Adicionados campos de senha obrigatórios para Usuários e Funcionários
+- **Validação de Segurança**: Campos de senha com validação de tamanho máximo (255 caracteres)
+- **Migração de Banco**: Criada migração `AddPasswordFields` para adicionar campos no banco de dados
+- **Atualização de Dados**: Todos os registros existentes foram atualizados com senhas padrão
+
+#### 🔧 Melhorias
+- **DTOs Atualizados**: UsuarioDTO e FuncionarioDTO agora incluem campo senha
+- **Entidades Atualizadas**: Usuario e Funcionario com campo senha obrigatório
+- **Contexto de Banco**: Configurações de validação para campos de senha
+- **Documentação**: README atualizado com exemplos de uso incluindo senhas
+
+#### 🛡️ Segurança
+- **Campos Obrigatórios**: Senha é obrigatória para criação de Usuários e Funcionários
+- **Validação de Tamanho**: Senhas limitadas a 255 caracteres
+- **Índices Únicos**: Mantidos índices únicos em email para Usuários e Funcionários
+
+---
+
 ## 🎯 Próximos Passos
 
-- [ ] Implementar autenticação e autorização
+- [ ] Implementar sistema de login e JWT tokens
 - [ ] Adicionar testes unitários automatizados
 - [ ] Implementar cache com Redis
 - [ ] Adicionar logging estruturado com Serilog
@@ -586,7 +614,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 - [ ] Adicionar documentação de API com XML comments
 - [ ] Implementar rate limiting
 - [ ] Adicionar métricas e monitoramento
+- [ ] Implementar hash de senhas com BCrypt
 
 ---
 
-**Desenvolvido com ❤️ por [Gustavo Leal](https://github.com/Gustavoleal1194)**
+**Desenvolvido por [Gustavo Leal](https://github.com/Gustavoleal1194)**
