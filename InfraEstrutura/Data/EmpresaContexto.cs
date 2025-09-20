@@ -110,6 +110,8 @@ namespace InfraEstrutura.Data
                 builder.Property(u => u.Nome).IsRequired().HasMaxLength(150);
                 builder.Property(u => u.Email).IsRequired().HasMaxLength(100);
                 builder.Property(u => u.Telefone).HasMaxLength(20);
+                builder.Property(u => u.Senha).IsRequired().HasMaxLength(255);
+                builder.HasIndex(u => u.Email).IsUnique();
             });
 
             // Emprestimo
@@ -144,6 +146,7 @@ namespace InfraEstrutura.Data
                 builder.Property(f => f.Nome).IsRequired().HasMaxLength(150);
                 builder.Property(f => f.Email).IsRequired().HasMaxLength(100);
                 builder.Property(f => f.Telefone).HasMaxLength(20);
+                builder.Property(f => f.Senha).IsRequired().HasMaxLength(255);
                 builder.Property(f => f.Cargo).IsRequired().HasMaxLength(100);
                 builder.Property(f => f.Salario).IsRequired().HasColumnType("decimal(18,2)");
                 builder.Property(f => f.DataAdmissao).IsRequired();
