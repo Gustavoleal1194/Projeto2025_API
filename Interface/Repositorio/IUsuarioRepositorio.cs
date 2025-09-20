@@ -8,5 +8,6 @@ namespace Interface.Repositorio
     {
         // Métodos específicos para consultas de Usuario
         Task<IEnumerable<Usuario>> GetByNomeAsync(string nome);
+        Task<Usuario?> GetByCpfAsync(string cpf);
     }
 }

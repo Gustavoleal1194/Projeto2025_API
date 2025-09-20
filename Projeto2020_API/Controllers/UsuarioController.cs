@@ -61,5 +61,14 @@ namespace Projeto2025_API.Controllers
             var usuarios = await service.GetByNomeAsync(nome);
             return Ok(usuarios);
         }
+
+        [HttpGet("por-cpf/{cpf}")]
+        public async Task<ActionResult<UsuarioDTO>> GetByCpfAsync(string cpf)
+        {
+            var usuario = await service.GetByCpfAsync(cpf);
+            if (usuario == null)
+                return NotFound();
+            return Ok(usuario);
+        }
     }
 }

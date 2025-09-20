@@ -22,5 +22,11 @@ namespace InfraEstrutura.Repositorio
                 .OrderBy(u => u.Nome)
                 .ToListAsync();
         }
+
+        public async Task<Usuario?> GetByCpfAsync(string cpf)
+        {
+            return await _contexto.Usuarios
+                .FirstOrDefaultAsync(u => u.CPF == cpf);
+        }
     }
 }

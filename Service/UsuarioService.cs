@@ -55,5 +55,11 @@ namespace Service
             var usuarios = await usuarioRepositorio.GetByNomeAsync(nome);
             return mapper.Map<IEnumerable<UsuarioDTO>>(usuarios);
         }
+
+        public async Task<UsuarioDTO?> GetByCpfAsync(string cpf)
+        {
+            var usuario = await usuarioRepositorio.GetByCpfAsync(cpf);
+            return usuario != null ? mapper.Map<UsuarioDTO>(usuario) : null;
+        }
     }
 }
