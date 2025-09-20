@@ -1,5 +1,8 @@
 using AutoMapper;
+using Dominio.Dtos;
 using Dominio.Entidades;
+using Interface.Repositorio;
+using Interface.Service;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,7 +34,7 @@ namespace Service
 
         public async Task<UsuarioDTO?> GetAsync(int id)
         {
-            var usuario = await usuarioRepositorio.GetAsync(id);
+            var usuario = await usuarioRepositorio.GetByIdAsync(id);
             return usuario != null ? mapper.Map<UsuarioDTO>(usuario) : null;
         }
 
@@ -44,6 +47,13 @@ namespace Service
         {
             var usuario = mapper.Map<Usuario>(usuarioDTO);
             await usuarioRepositorio.UpdateAsync(usuario);
+        }
+
+        // Métodos específicos para consultas
+        public async Task<IEnumerable<UsuarioDTO>> GetByNomeAsync(string nome)
+        {
+            var usuarios = await usuarioRepositorio.GetByNomeAsync(nome);
+            return mapper.Map<IEnumerable<UsuarioDTO>>(usuarios);
         }
     }
 }

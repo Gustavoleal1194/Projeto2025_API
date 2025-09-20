@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 
 namespace Dominio.Entidades
 {
-    public class Usuario
+    public class Funcionario
     {
         public int Id { get; set; }
         public string Nome { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Telefone { get; set; } = string.Empty;
-        public virtual List<Emprestimo> Emprestimos { get; set; } = new();
+        public string Cargo { get; set; } = string.Empty;
+        public decimal Salario { get; set; }
+        public DateTime DataAdmissao { get; set; }
+        public DateTime? DataDemissao { get; set; }
+        public bool Ativo { get; set; } = true;
     }
 }

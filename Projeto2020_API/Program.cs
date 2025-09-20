@@ -3,6 +3,8 @@ using InfraEstrutura.Repositorio;
 using Microsoft.EntityFrameworkCore;
 using Projeto2025_API.Mapping;
 using Service;
+using Interface.Repositorio;
+using Interface.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +23,7 @@ builder.Services.AddDbContext<EmpresaContexto>(p =>
 );
 //configurar o mapping
 builder.Services.AddAutoMapper(p => p.AddProfile<MappingProfile>());
-//configurar injeção de dependencia
+//configurar injeï¿½ï¿½o de dependencia
 
 builder.Services.AddScoped<ILivroRepositorio, LivroRepositorio>();
 builder.Services.AddScoped<ILivroService, LivroService>();
@@ -37,6 +39,9 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 builder.Services.AddScoped<IEmprestimoRepositorio, EmprestimoRepositorio>();
 builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
+
+builder.Services.AddScoped<IFuncionarioRepositorio, FuncionarioRepositorio>();
+builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 
 
 var app = builder.Build();

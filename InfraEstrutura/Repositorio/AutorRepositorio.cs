@@ -1,50 +1,67 @@
 using Dominio.Entidades;
 using InfraEstrutura.Data;
+using Interface.Repositorio;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InfraEstrutura.Repositorio
 {
-    public class AutorRepositorio : IAutorRepositorio
+    public class AutorRepositorio : BaseRepository<Autor>, IAutorRepositorio
     {
-        private readonly EmpresaContexto contexto;
-
-        public AutorRepositorio(EmpresaContexto contexto)
+        public AutorRepositorio(EmpresaContexto contexto) : base(contexto)
         {
-            this.contexto = contexto;
-        }
-
-        public async Task AddAsync(Autor autor)
-        {
-            await contexto.Autores.AddAsync(autor);
-            await contexto.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<Autor>> GetAllAsync()
-        {
-            return await contexto.Autores.ToListAsync();
         }
 
         public async Task<Autor?> GetAsync(int id)
         {
-            return await contexto.Autores.FindAsync(id);
+            return await GetByIdAsync(id);
+        }
+
+        public async Task AddAsync(Autor autor)
+        {
+            await base.AddAsync(autor);
+        }
+
+        public async Task<IEnumerable<Autor>> GetAllAsync()
+        {
+            return await base.GetAllAsync();
         }
 
         public async Task RemoveAsync(int id)
         {
-            var autor = await contexto.Autores.FindAsync(id);
-            if (autor != null)
-            {
-                contexto.Autores.Remove(autor);
-                await contexto.SaveChangesAsync();
-            }
+            await base.RemoveAsync(id);
         }
 
         public async Task UpdateAsync(Autor autor)
         {
-            contexto.Entry(autor).State = EntityState.Modified;
-            await contexto.SaveChangesAsync();
+            await base.UpdateAsync(autor);
+        }
+
+        // Métodos específicos para consultas
+        public async Task<IEnumerable<Autor>> GetByNacionalidadeAsync(string nacionalidade)
+        {
+            return await _contexto.Autores
+                .Where(a => a.Nacionalidade.ToLower().Contains(nacionalidade.ToLower()))
+                .OrderBy(a => a.Nome)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Autor>> BuscarAsync(string termo)
+        {
+            return await _contexto.Autores
+                .Where(a => a.Nome.ToLower().Contains(termo.ToLower()) ||
+                           a.Nacionalidade.ToLower().Contains(termo.ToLower()))
+                .OrderBy(a => a.Nome)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Autor>> GetComLivrosAsync()
+        {
+            return await _contexto.Autores
+                .Where(a => _contexto.Livros.Any(l => l.IdAutor == a.Id && l.Ativo))
+                .OrderBy(a => a.Nome)
+                .ToListAsync();
         }
     }
 }       

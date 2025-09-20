@@ -1,3 +1,5 @@
+using Dominio.Dtos;
+using Interface.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<EmprestimoDTO>> AddAsync(EmprestimoDTO emprestimoDTO)
+        public async Task<ActionResult<EmprestimoDTO>> AddAsync([FromBody] EmprestimoDTO emprestimoDTO)
         {
             var dto = await service.AddAsync(emprestimoDTO);
             return Ok(dto);
@@ -39,7 +41,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateAsync(EmprestimoDTO emprestimoDTO)
+        public async Task<ActionResult> UpdateAsync([FromBody] EmprestimoDTO emprestimoDTO)
         {
             await service.UpdateAsync(emprestimoDTO);
             return NoContent();
@@ -50,6 +52,42 @@ namespace Projeto2025_API.Controllers
         {
             await service.RemoveAsync(id);
             return NoContent();
+        }
+
+        // Endpoints GET específicos para Emprestimo
+        [HttpGet("por-usuario/{idUsuario}")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetByUsuarioAsync(int idUsuario)
+        {
+            var emprestimos = await service.GetByUsuarioAsync(idUsuario);
+            return Ok(emprestimos);
+        }
+
+        [HttpGet("por-livro/{idLivro}")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetByLivroAsync(int idLivro)
+        {
+            var emprestimos = await service.GetByLivroAsync(idLivro);
+            return Ok(emprestimos);
+        }
+
+        [HttpGet("ativos")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetAtivosAsync()
+        {
+            var emprestimos = await service.GetAtivosAsync();
+            return Ok(emprestimos);
+        }
+
+        [HttpGet("vencidos")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetVencidosAsync()
+        {
+            var emprestimos = await service.GetVencidosAsync();
+            return Ok(emprestimos);
+        }
+
+        [HttpGet("por-status/{status}")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetByStatusAsync(string status)
+        {
+            var emprestimos = await service.GetByStatusAsync(status);
+            return Ok(emprestimos);
         }
     }
 }

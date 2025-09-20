@@ -1,3 +1,5 @@
+using Dominio.Dtos;
+using Interface.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<EditoraDTO>> AddAsync(EditoraDTO editoraDTO)
+        public async Task<ActionResult<EditoraDTO>> AddAsync([FromBody] EditoraDTO editoraDTO)
         {
             var dto = await service.AddAsync(editoraDTO);
             return Ok(dto);
@@ -39,7 +41,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateAsync(EditoraDTO editoraDTO)
+        public async Task<ActionResult> UpdateAsync([FromBody] EditoraDTO editoraDTO)
         {
             await service.UpdateAsync(editoraDTO);
             return NoContent();
@@ -50,6 +52,35 @@ namespace Projeto2025_API.Controllers
         {
             await service.RemoveAsync(id);
             return NoContent();
+        }
+
+        // Endpoints GET específicos para Editora
+        [HttpGet("ativas")]
+        public async Task<ActionResult<IEnumerable<EditoraDTO>>> GetAtivasAsync()
+        {
+            var editoras = await service.GetAtivasAsync();
+            return Ok(editoras);
+        }
+
+        [HttpGet("por-cidade/{cidade}")]
+        public async Task<ActionResult<IEnumerable<EditoraDTO>>> GetByCidadeAsync(string cidade)
+        {
+            var editoras = await service.GetByCidadeAsync(cidade);
+            return Ok(editoras);
+        }
+
+        [HttpGet("por-estado/{estado}")]
+        public async Task<ActionResult<IEnumerable<EditoraDTO>>> GetByEstadoAsync(string estado)
+        {
+            var editoras = await service.GetByEstadoAsync(estado);
+            return Ok(editoras);
+        }
+
+        [HttpGet("buscar/{termo}")]
+        public async Task<ActionResult<IEnumerable<EditoraDTO>>> BuscarAsync(string termo)
+        {
+            var editoras = await service.BuscarAsync(termo);
+            return Ok(editoras);
         }
     }
 }

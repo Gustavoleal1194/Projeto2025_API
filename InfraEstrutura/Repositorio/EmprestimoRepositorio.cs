@@ -1,50 +1,58 @@
 using Dominio.Entidades;
 using InfraEstrutura.Data;
+using Interface.Repositorio;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace InfraEstrutura.Repositorio
 {
-    public class EmprestimoRepositorio : IEmprestimoRepositorio
+    public class EmprestimoRepositorio : BaseRepository<Emprestimo>, IEmprestimoRepositorio
     {
-        private readonly EmpresaContexto contexto;
-
-        public EmprestimoRepositorio(EmpresaContexto contexto)
+        public EmprestimoRepositorio(EmpresaContexto contexto) : base(contexto)
         {
-            this.contexto = contexto;
         }
 
-        public async Task AddAsync(Emprestimo emprestimo)
+        // Métodos específicos para consultas
+        public async Task<IEnumerable<Emprestimo>> GetByUsuarioAsync(int idUsuario)
         {
-            await contexto.Emprestimos.AddAsync(emprestimo);
-            await contexto.SaveChangesAsync();
+            return await _contexto.Emprestimos
+                .Where(e => e.IdUsuario == idUsuario && e.Ativo)
+                .OrderByDescending(e => e.DataEmprestimo)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Emprestimo>> GetAllAsync()
+        public async Task<IEnumerable<Emprestimo>> GetByLivroAsync(int idLivro)
         {
-            return await contexto.Emprestimos.ToListAsync();
+            return await _contexto.Emprestimos
+                .Where(e => e.IdLivro == idLivro && e.Ativo)
+                .OrderByDescending(e => e.DataEmprestimo)
+                .ToListAsync();
         }
 
-        public async Task<Emprestimo?> GetAsync(int id)
+        public async Task<IEnumerable<Emprestimo>> GetAtivosAsync()
         {
-            return await contexto.Emprestimos.FindAsync(id);
+            return await _contexto.Emprestimos
+                .Where(e => e.Ativo && e.Status == "Emprestado")
+                .OrderByDescending(e => e.DataEmprestimo)
+                .ToListAsync();
         }
 
-        public async Task RemoveAsync(int id)
+        public async Task<IEnumerable<Emprestimo>> GetVencidosAsync()
         {
-            var emprestimo = await contexto.Emprestimos.FindAsync(id);
-            if (emprestimo != null)
-            {
-                contexto.Emprestimos.Remove(emprestimo);
-                await contexto.SaveChangesAsync();
-            }
+            var hoje = DateTime.Now.Date;
+            return await _contexto.Emprestimos
+                .Where(e => e.Ativo && 
+                           e.Status == "Emprestado" && 
+                           e.DataPrevistaDevolucao < hoje)
+                .OrderBy(e => e.DataPrevistaDevolucao)
+                .ToListAsync();
         }
 
-        public async Task UpdateAsync(Emprestimo emprestimo)
+        public async Task<IEnumerable<Emprestimo>> GetByStatusAsync(string status)
         {
-            contexto.Entry(emprestimo).State = EntityState.Modified;
-            await contexto.SaveChangesAsync();
+            return await _contexto.Emprestimos
+                .Where(e => e.Ativo && e.Status.ToLower() == status.ToLower())
+                .OrderByDescending(e => e.DataEmprestimo)
+                .ToListAsync();
         }
     }
 }

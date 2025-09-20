@@ -2,11 +2,15 @@ using Dominio.Entidades;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public interface IEmprestimoRepositorio
+namespace Interface.Repositorio
 {
-    Task<Emprestimo?> GetAsync(int id);
-    Task<IEnumerable<Emprestimo>> GetAllAsync();
-    Task AddAsync(Emprestimo emprestimo);
-    Task UpdateAsync(Emprestimo emprestimo);
-    Task RemoveAsync(int id);
+    public interface IEmprestimoRepositorio : IBaseRepository<Emprestimo>
+    {
+        // Métodos específicos para consultas de Emprestimo
+        Task<IEnumerable<Emprestimo>> GetByUsuarioAsync(int idUsuario);
+        Task<IEnumerable<Emprestimo>> GetByLivroAsync(int idLivro);
+        Task<IEnumerable<Emprestimo>> GetAtivosAsync();
+        Task<IEnumerable<Emprestimo>> GetVencidosAsync();
+        Task<IEnumerable<Emprestimo>> GetByStatusAsync(string status);
+    }
 }

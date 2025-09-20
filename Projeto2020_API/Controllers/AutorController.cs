@@ -1,3 +1,5 @@
+using Dominio.Dtos;
+using Interface.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AutorDTO>> AddAsync(AutorDTO autorDTO)
+        public async Task<ActionResult<AutorDTO>> AddAsync([FromBody] AutorDTO autorDTO)
         {
             var dto = await service.AddAsync(autorDTO);
             return Ok(dto);
@@ -39,7 +41,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateAsync(AutorDTO autorDTO)
+        public async Task<ActionResult> UpdateAsync([FromBody] AutorDTO autorDTO)
         {
             await service.UpdateAsync(autorDTO);
             return NoContent();
@@ -50,6 +52,28 @@ namespace Projeto2025_API.Controllers
         {
             await service.RemoveAsync(id);
             return NoContent();
+        }
+
+        // Endpoints GET específicos para Autor
+        [HttpGet("por-nacionalidade/{nacionalidade}")]
+        public async Task<ActionResult<IEnumerable<AutorDTO>>> GetByNacionalidadeAsync(string nacionalidade)
+        {
+            var autores = await service.GetByNacionalidadeAsync(nacionalidade);
+            return Ok(autores);
+        }
+
+        [HttpGet("buscar/{termo}")]
+        public async Task<ActionResult<IEnumerable<AutorDTO>>> BuscarAsync(string termo)
+        {
+            var autores = await service.BuscarAsync(termo);
+            return Ok(autores);
+        }
+
+        [HttpGet("com-livros")]
+        public async Task<ActionResult<IEnumerable<AutorDTO>>> GetComLivrosAsync()
+        {
+            var autores = await service.GetComLivrosAsync();
+            return Ok(autores);
         }
     }
 }

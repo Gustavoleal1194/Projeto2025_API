@@ -1,5 +1,8 @@
 using AutoMapper;
+using Dominio.Dtos;
 using Dominio.Entidades;
+using Interface.Repositorio;
+using Interface.Service;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,7 +34,7 @@ namespace Service
 
         public async Task<AutorDTO?> GetAsync(int id)
         {
-            var autor = await autorRepositorio.GetAsync(id);
+            var autor = await autorRepositorio.GetByIdAsync(id);
             return autor != null ? mapper.Map<AutorDTO>(autor) : null;
         }
 
@@ -44,6 +47,25 @@ namespace Service
         {
             var autor = mapper.Map<Autor>(autorDTO);
             await autorRepositorio.UpdateAsync(autor);
+        }
+
+        // Métodos específicos para consultas
+        public async Task<IEnumerable<AutorDTO>> GetByNacionalidadeAsync(string nacionalidade)
+        {
+            var autores = await autorRepositorio.GetByNacionalidadeAsync(nacionalidade);
+            return mapper.Map<IEnumerable<AutorDTO>>(autores);
+        }
+
+        public async Task<IEnumerable<AutorDTO>> BuscarAsync(string termo)
+        {
+            var autores = await autorRepositorio.BuscarAsync(termo);
+            return mapper.Map<IEnumerable<AutorDTO>>(autores);
+        }
+
+        public async Task<IEnumerable<AutorDTO>> GetComLivrosAsync()
+        {
+            var autores = await autorRepositorio.GetComLivrosAsync();
+            return mapper.Map<IEnumerable<AutorDTO>>(autores);
         }
     }
 }

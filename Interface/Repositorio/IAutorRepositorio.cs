@@ -2,11 +2,13 @@ using Dominio.Entidades;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public interface IAutorRepositorio
+namespace Interface.Repositorio
 {
-    Task<Autor?> GetAsync(int id);
-    Task<IEnumerable<Autor>> GetAllAsync();
-    Task AddAsync(Autor autor);
-    Task UpdateAsync(Autor autor);
-    Task RemoveAsync(int id);
+    public interface IAutorRepositorio : IBaseRepository<Autor>
+    {
+        // Métodos específicos para consultas de Autor
+        Task<IEnumerable<Autor>> GetByNacionalidadeAsync(string nacionalidade);
+        Task<IEnumerable<Autor>> BuscarAsync(string termo);
+        Task<IEnumerable<Autor>> GetComLivrosAsync();
+    }
 }

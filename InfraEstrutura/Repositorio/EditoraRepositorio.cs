@@ -1,50 +1,79 @@
 using Dominio.Entidades;
 using InfraEstrutura.Data;
+using Interface.Repositorio;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace InfraEstrutura.Repositorio
 {
-    public class EditoraRepositorio : IEditoraRepositorio
+    public class EditoraRepositorio : BaseRepository<Editora>, IEditoraRepositorio
     {
-        private readonly EmpresaContexto contexto;
-
-        public EditoraRepositorio(EmpresaContexto contexto)
+        public EditoraRepositorio(EmpresaContexto contexto) : base(contexto)
         {
-            this.contexto = contexto;
-        }
-
-        public async Task AddAsync(Editora editora)
-        {
-            await contexto.Editoras.AddAsync(editora);
-            await contexto.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<Editora>> GetAllAsync()
-        {
-            return await contexto.Editoras.ToListAsync();
         }
 
         public async Task<Editora?> GetAsync(int id)
         {
-            return await contexto.Editoras.FindAsync(id);
+            return await GetByIdAsync(id);
+        }
+
+        public async Task AddAsync(Editora editora)
+        {
+            await base.AddAsync(editora);
+        }
+
+        public async Task<IEnumerable<Editora>> GetAllAsync()
+        {
+            return await base.GetAllAsync();
         }
 
         public async Task RemoveAsync(int id)
         {
-            var editora = await contexto.Editoras.FindAsync(id);
-            if (editora != null)
-            {
-                contexto.Editoras.Remove(editora);
-                await contexto.SaveChangesAsync();
-            }
+            await base.RemoveAsync(id);
         }
 
         public async Task UpdateAsync(Editora editora)
         {
-            contexto.Entry(editora).State = EntityState.Modified;
-            await contexto.SaveChangesAsync();
+            await base.UpdateAsync(editora);
+        }
+
+        // Métodos específicos para consultas
+        public async Task<IEnumerable<Editora>> GetAtivasAsync()
+        {
+            return await _contexto.Editoras
+                .Where(e => e.Ativa)
+                .OrderBy(e => e.Nome)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Editora>> GetByCidadeAsync(string cidade)
+        {
+            return await _contexto.Editoras
+                .Where(e => e.Cidade.ToLower().Contains(cidade.ToLower()) && e.Ativa)
+                .OrderBy(e => e.Nome)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Editora>> GetByEstadoAsync(string estado)
+        {
+            return await _contexto.Editoras
+                .Where(e => e.Estado.ToLower().Contains(estado.ToLower()) && e.Ativa)
+                .OrderBy(e => e.Nome)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Editora>> BuscarAsync(string termo)
+        {
+            return await _contexto.Editoras
+                .Where(e => e.Ativa && (
+                    e.Nome.ToLower().Contains(termo.ToLower()) ||
+                    e.Cidade.ToLower().Contains(termo.ToLower()) ||
+                    e.Estado.ToLower().Contains(termo.ToLower()) ||
+                    e.Email.ToLower().Contains(termo.ToLower())
+                ))
+                .OrderBy(e => e.Nome)
+                .ToListAsync();
         }
     }
 }

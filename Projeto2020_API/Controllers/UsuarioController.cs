@@ -1,3 +1,5 @@
+using Dominio.Dtos;
+using Interface.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UsuarioDTO>> AddAsync(UsuarioDTO usuarioDTO)
+        public async Task<ActionResult<UsuarioDTO>> AddAsync([FromBody] UsuarioDTO usuarioDTO)
         {
             var dto = await service.AddAsync(usuarioDTO);
             return Ok(dto);
@@ -39,7 +41,7 @@ namespace Projeto2025_API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateAsync(UsuarioDTO usuarioDTO)
+        public async Task<ActionResult> UpdateAsync([FromBody] UsuarioDTO usuarioDTO)
         {
             await service.UpdateAsync(usuarioDTO);
             return NoContent();
@@ -50,6 +52,14 @@ namespace Projeto2025_API.Controllers
         {
             await service.RemoveAsync(id);
             return NoContent();
+        }
+
+        // Endpoint GET específico para Usuario
+        [HttpGet("por-nome/{nome}")]
+        public async Task<ActionResult<IEnumerable<UsuarioDTO>>> GetByNomeAsync(string nome)
+        {
+            var usuarios = await service.GetByNomeAsync(nome);
+            return Ok(usuarios);
         }
     }
 }

@@ -4,6 +4,7 @@ using InfraEstrutura.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfraEstrutura.Migrations
 {
     [DbContext(typeof(EmpresaContexto))]
-    partial class EmpresaContextoModelSnapshot : ModelSnapshot
+    [Migration("20250920152652_FixLivroAndRemoveDataAtualizacao")]
+    partial class FixLivroAndRemoveDataAtualizacao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -381,8 +384,7 @@ namespace InfraEstrutura.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CodigoBarras")
-                        .IsUnique()
-                        .HasFilter("[CodigoBarras] IS NOT NULL AND [CodigoBarras] != ''");
+                        .IsUnique();
 
                     b.HasIndex("ISBN")
                         .IsUnique();
@@ -392,8 +394,7 @@ namespace InfraEstrutura.Migrations
                     b.HasIndex("IdEditora");
 
                     b.HasIndex("NumeroExemplar")
-                        .IsUnique()
-                        .HasFilter("[NumeroExemplar] IS NOT NULL AND [NumeroExemplar] != ''");
+                        .IsUnique();
 
                     b.ToTable("Livro", (string)null);
                 });

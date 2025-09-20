@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfraEstrutura.Migrations
 {
     [DbContext(typeof(EmpresaContexto))]
-    [Migration("20250831170827_init")]
-    partial class init
+    [Migration("20250920150656_AddFuncionario")]
+    partial class AddFuncionario
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,6 +74,85 @@ namespace InfraEstrutura.Migrations
                     b.ToTable("Editora", (string)null);
                 });
 
+            modelBuilder.Entity("Dominio.Entidades.Emprestimo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("DataDevolucao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataEmprestimo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdLivro")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdLivro");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Emprestimo", (string)null);
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.Funcionario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Cargo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("DataAdmissao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataDemissao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("Salario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Funcionario", (string)null);
+                });
+
             modelBuilder.Entity("Dominio.Entidades.Livro", b =>
                 {
                     b.Property<int>("Id")
@@ -110,36 +189,7 @@ namespace InfraEstrutura.Migrations
                     b.ToTable("Livro", (string)null);
                 });
 
-            modelBuilder.Entity("Emprestimo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("DataDevolucao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DataEmprestimo")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IdLivro")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdUsuario")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdLivro");
-
-                    b.HasIndex("IdUsuario");
-
-                    b.ToTable("Emprestimo", (string)null);
-                });
-
-            modelBuilder.Entity("Usuario", b =>
+            modelBuilder.Entity("Dominio.Entidades.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -167,6 +217,25 @@ namespace InfraEstrutura.Migrations
                     b.ToTable("Usuario", (string)null);
                 });
 
+            modelBuilder.Entity("Dominio.Entidades.Emprestimo", b =>
+                {
+                    b.HasOne("Dominio.Entidades.Livro", "Livro")
+                        .WithMany("Emprestimos")
+                        .HasForeignKey("IdLivro")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Dominio.Entidades.Usuario", "Usuario")
+                        .WithMany("Emprestimos")
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Livro");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Dominio.Entidades.Livro", b =>
                 {
                     b.HasOne("Dominio.Entidades.Autor", "Autor")
@@ -186,25 +255,6 @@ namespace InfraEstrutura.Migrations
                     b.Navigation("Editora");
                 });
 
-            modelBuilder.Entity("Emprestimo", b =>
-                {
-                    b.HasOne("Dominio.Entidades.Livro", "Livro")
-                        .WithMany("Emprestimos")
-                        .HasForeignKey("IdLivro")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Usuario", "Usuario")
-                        .WithMany("Emprestimos")
-                        .HasForeignKey("IdUsuario")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Livro");
-
-                    b.Navigation("Usuario");
-                });
-
             modelBuilder.Entity("Dominio.Entidades.Autor", b =>
                 {
                     b.Navigation("Livros");
@@ -220,7 +270,7 @@ namespace InfraEstrutura.Migrations
                     b.Navigation("Emprestimos");
                 });
 
-            modelBuilder.Entity("Usuario", b =>
+            modelBuilder.Entity("Dominio.Entidades.Usuario", b =>
                 {
                     b.Navigation("Emprestimos");
                 });

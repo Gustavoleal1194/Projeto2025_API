@@ -2,11 +2,11 @@ using Dominio.Entidades;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public interface IUsuarioRepositorio
+namespace Interface.Repositorio
 {
-    Task<Usuario?> GetAsync(int id);
-    Task<IEnumerable<Usuario>> GetAllAsync();
-    Task AddAsync(Usuario usuario);
-    Task UpdateAsync(Usuario usuario);
-    Task RemoveAsync(int id);
+    public interface IUsuarioRepositorio : IBaseRepository<Usuario>
+    {
+        // Métodos específicos para consultas de Usuario
+        Task<IEnumerable<Usuario>> GetByNomeAsync(string nome);
+    }
 }

@@ -1,51 +1,68 @@
 ﻿using Dominio.Entidades;
 using InfraEstrutura.Data;
+using Interface.Repositorio;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace InfraEstrutura.Repositorio
 {
-    public class LivroRepositorio : ILivroRepositorio
+    public class LivroRepositorio : BaseRepository<Livro>, ILivroRepositorio
     {
-        private readonly EmpresaContexto contexto;
-
-        public LivroRepositorio(EmpresaContexto contexto)
+        public LivroRepositorio(EmpresaContexto contexto) : base(contexto)
         {
-            this.contexto = contexto;
         }
 
-        public async Task AddAsync(Livro livro)
+        public async Task<IEnumerable<Livro>> GetDisponiveisAsync()
         {
-            await contexto.Livros.AddAsync(livro);
-            await contexto.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<Livro>> GetAllAsync()
-        {
-            return await contexto.Livros
-                .OrderBy(p => p.Titulo)
+            return await _contexto.Livros
+                .Where(l => l.Disponivel && l.Ativo && l.QuantidadeDisponivel > 0)
+                .OrderBy(l => l.Titulo)
                 .ToListAsync();
         }
 
-        public async Task<Livro?> GetAsync(int id)
+        public async Task<IEnumerable<Livro>> GetByGeneroAsync(string genero)
         {
-            return await contexto.Livros.FindAsync(id);
+            return await _contexto.Livros
+                .Where(l => l.Genero.ToLower().Contains(genero.ToLower()) && l.Ativo)
+                .OrderBy(l => l.Titulo)
+                .ToListAsync();
         }
 
-        public async Task RemoveAsync(int id)
+        public async Task<IEnumerable<Livro>> GetByAutorAsync(int idAutor)
         {
-            var livro = await contexto.Livros.FindAsync(id);
-            if (livro != null)
-            {
-                contexto.Livros.Remove(livro);
-                await contexto.SaveChangesAsync();
-            }
+            return await _contexto.Livros
+                .Where(l => l.IdAutor == idAutor && l.Ativo)
+                .OrderBy(l => l.Titulo)
+                .ToListAsync();
         }
 
-        public async Task UpdateAsync(Livro livro)
+        public async Task<IEnumerable<Livro>> GetByEditoraAsync(int idEditora)
         {
-            contexto.Entry(livro).State = EntityState.Modified;
-            await contexto.SaveChangesAsync();
+            return await _contexto.Livros
+                .Where(l => l.IdEditora == idEditora && l.Ativo)
+                .OrderBy(l => l.Titulo)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Livro>> BuscarAsync(string termo)
+        {
+            return await _contexto.Livros
+                .Where(l => l.Ativo && (
+                    l.Titulo.ToLower().Contains(termo.ToLower()) ||
+                    l.Subtitulo.ToLower().Contains(termo.ToLower()) ||
+                    l.ISBN.Contains(termo) ||
+                    l.Sinopse.ToLower().Contains(termo.ToLower())
+                ))
+                .OrderBy(l => l.Titulo)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Livro>> GetEmEstoqueAsync()
+        {
+            return await _contexto.Livros
+                .Where(l => l.Ativo && l.QuantidadeEstoque > 0)
+                .OrderBy(l => l.Titulo)
+                .ToListAsync();
         }
     }
 }

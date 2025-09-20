@@ -1,5 +1,8 @@
 using AutoMapper;
+using Dominio.Dtos;
 using Dominio.Entidades;
+using Interface.Repositorio;
+using Interface.Service;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,7 +34,7 @@ namespace Service
 
         public async Task<EditoraDTO?> GetAsync(int id)
         {
-            var editora = await editoraRepositorio.GetAsync(id);
+            var editora = await editoraRepositorio.GetByIdAsync(id);
             return editora != null ? mapper.Map<EditoraDTO>(editora) : null;
         }
 
@@ -44,6 +47,31 @@ namespace Service
         {
             var editora = mapper.Map<Editora>(editoraDTO);
             await editoraRepositorio.UpdateAsync(editora);
+        }
+
+        // Métodos específicos para consultas
+        public async Task<IEnumerable<EditoraDTO>> GetAtivasAsync()
+        {
+            var editoras = await editoraRepositorio.GetAtivasAsync();
+            return mapper.Map<IEnumerable<EditoraDTO>>(editoras);
+        }
+
+        public async Task<IEnumerable<EditoraDTO>> GetByCidadeAsync(string cidade)
+        {
+            var editoras = await editoraRepositorio.GetByCidadeAsync(cidade);
+            return mapper.Map<IEnumerable<EditoraDTO>>(editoras);
+        }
+
+        public async Task<IEnumerable<EditoraDTO>> GetByEstadoAsync(string estado)
+        {
+            var editoras = await editoraRepositorio.GetByEstadoAsync(estado);
+            return mapper.Map<IEnumerable<EditoraDTO>>(editoras);
+        }
+
+        public async Task<IEnumerable<EditoraDTO>> BuscarAsync(string termo)
+        {
+            var editoras = await editoraRepositorio.BuscarAsync(termo);
+            return mapper.Map<IEnumerable<EditoraDTO>>(editoras);
         }
     }
 }
