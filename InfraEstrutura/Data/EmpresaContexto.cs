@@ -76,8 +76,22 @@ namespace InfraEstrutura.Data
                 builder.ToTable("Autor");
                 builder.HasKey(a => a.Id);
                 builder.Property(a => a.Nome).IsRequired().HasMaxLength(150);
+                builder.Property(a => a.NomeCompleto).HasMaxLength(200);
+                builder.Property(a => a.NomeArtistico).HasMaxLength(150);
                 builder.Property(a => a.Nacionalidade).HasMaxLength(100);
+                builder.Property(a => a.PaisOrigem).HasMaxLength(100);
                 builder.Property(a => a.DataNascimento).IsRequired();
+                builder.Property(a => a.Website).HasMaxLength(200);
+                builder.Property(a => a.Email).HasMaxLength(100);
+                builder.Property(a => a.Telefone).HasMaxLength(20);
+                builder.Property(a => a.Endereco).HasMaxLength(300);
+                builder.Property(a => a.Cidade).HasMaxLength(100);
+                builder.Property(a => a.Estado).HasMaxLength(50);
+                builder.Property(a => a.CEP).HasMaxLength(10);
+                builder.Property(a => a.Pais).HasMaxLength(50);
+                builder.Property(a => a.Ativo).IsRequired().HasDefaultValue(true);
+                builder.Property(a => a.DataCriacao).IsRequired().HasDefaultValueSql("GETDATE()");
+                builder.HasIndex(a => a.Email).IsUnique().HasFilter("[Email] IS NOT NULL AND [Email] != ''");
             });
 
             // Editora
@@ -111,7 +125,10 @@ namespace InfraEstrutura.Data
                 builder.Property(u => u.Email).IsRequired().HasMaxLength(100);
                 builder.Property(u => u.Telefone).HasMaxLength(20);
                 builder.Property(u => u.Senha).IsRequired().HasMaxLength(255);
+                builder.Property(u => u.CPF).HasMaxLength(14);
+                builder.Property(u => u.DataNascimento).IsRequired();
                 builder.HasIndex(u => u.Email).IsUnique();
+                builder.HasIndex(u => u.CPF).IsUnique().HasFilter("[CPF] IS NOT NULL AND [CPF] != ''");
             });
 
             // Emprestimo

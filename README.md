@@ -163,7 +163,7 @@ Projeto2025_API/
 - **Relacionamentos**: Pertence a um Autor e uma Editora
 
 ### 👤 Autor
-- **Propriedades**: ID, Nome, Nacionalidade, Data de Nascimento
+- **Propriedades**: ID, Nome, Nome Completo, Nome Artístico, Nacionalidade, País de Origem, Data de Nascimento, Website, Email, Telefone, Endereço, Cidade, Estado, CEP, País, Status Ativo, Data de Criação
 - **Relacionamentos**: Pode ter vários Livros
 
 ### 🏢 Editora
@@ -171,7 +171,7 @@ Projeto2025_API/
 - **Relacionamentos**: Pode ter vários Livros
 
 ### 👥 Usuario
-- **Propriedades**: ID, Nome, Email, Telefone, Senha
+- **Propriedades**: ID, Nome, Email, Telefone, Senha, CPF, Data de Nascimento
 - **Relacionamentos**: Pode ter vários Empréstimos
 - **Segurança**: Campo senha obrigatório para autenticação
 
@@ -356,8 +356,20 @@ Content-Type: application/json
 
 {
   "nome": "Machado de Assis",
+  "nomeCompleto": "Joaquim Maria Machado de Assis",
+  "nomeArtistico": "Machado de Assis",
   "nacionalidade": "Brasileira",
-  "dataNascimento": "1839-06-21"
+  "paisOrigem": "Brasil",
+  "dataNascimento": "1839-06-21",
+  "website": "https://machadodeassis.com.br",
+  "email": "contato@machadodeassis.com.br",
+  "telefone": "(21) 99999-7777",
+  "endereco": "Rua Cosme Velho, 18",
+  "cidade": "Rio de Janeiro",
+  "estado": "Rio de Janeiro",
+  "cep": "22241-090",
+  "pais": "Brasil",
+  "ativo": true
 }
 ```
 
@@ -416,7 +428,9 @@ Content-Type: application/json
   "nome": "João Silva",
   "email": "joao.silva@email.com",
   "telefone": "(11) 99999-8888",
-  "senha": "minhasenha123"
+  "senha": "minhasenha123",
+  "cpf": "12345678901",
+  "dataNascimento": "1990-05-15"
 }
 ```
 
@@ -582,6 +596,25 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ---
 
 ## 📝 Changelog
+
+### v1.3.0 - Enriquecimento de Entidades e Otimização (2025-09-20)
+
+#### ✨ Novas Funcionalidades
+- **Autor Enriquecido**: Adicionadas propriedades essenciais para Autor (Nome Completo, Nome Artístico, País de Origem, Website, Email, Telefone, Endereço completo)
+- **Usuario Aprimorado**: Adicionados CPF e Data de Nascimento para identificação única
+- **Estrutura Otimizada**: Removidas propriedades desnecessárias do Autor (DataFalecimento, Biografia, GeneroLiterario, FormacaoAcademica, Premios)
+
+#### 🔧 Melhorias
+- **Entidade Autor**: Agora com 16 propriedades essenciais para sistema de biblioteca
+- **Entidade Usuario**: CPF com validação única e Data de Nascimento obrigatória
+- **Migrações Aplicadas**: `EnrichAutorAndUsuarioFinal` e `RemoveUnnecessaryAutorProperties`
+- **Validações Robustas**: Índices únicos com filtros para CPF e Email
+- **Documentação Atualizada**: README com exemplos completos das novas estruturas
+
+#### 🗄️ Banco de Dados
+- **Migração EnrichAutorAndUsuarioFinal**: Adicionadas novas colunas para Autor e Usuario
+- **Migração RemoveUnnecessaryAutorProperties**: Removidas colunas desnecessárias do Autor
+- **Índices Otimizados**: CPF com filtro para valores vazios, mantendo unicidade
 
 ### v1.2.0 - Adição de Campos de Senha (2025-09-20)
 
