@@ -243,6 +243,7 @@ Projeto2025_API/
 
 #### Endpoints Específicos
 - `GET /api/Usuario/por-nome/{nome}` - Usuários por nome
+- `GET /api/Usuario/por-cpf/{cpf}` - Usuário por CPF
 
 ### 👨‍💼 Funcionario Endpoints
 
@@ -434,6 +435,25 @@ Content-Type: application/json
 }
 ```
 
+### Buscar Usuário por CPF
+
+```http
+GET /api/Usuario/por-cpf/12345678901
+```
+
+**Resposta:**
+```json
+{
+  "id": 1,
+  "nome": "João Silva",
+  "email": "joao.silva@email.com",
+  "telefone": "(11) 99999-8888",
+  "senha": "minhasenha123",
+  "cpf": "12345678901",
+  "dataNascimento": "1990-05-15T00:00:00"
+}
+```
+
 ### Criar um Funcionário
 
 ```http
@@ -596,6 +616,26 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ---
 
 ## 📝 Changelog
+
+### v1.4.0 - Novo Endpoint GET por CPF para Usuario (2025-09-20)
+
+#### ✨ Novas Funcionalidades
+- **Endpoint GET por CPF**: Adicionado `GET /api/Usuario/por-cpf/{cpf}` para busca de usuário por CPF
+- **Busca Eficiente**: Implementação otimizada com `FirstOrDefaultAsync` para busca única
+- **Validação Robusta**: Retorna 404 Not Found para CPF inexistente
+
+#### 🔧 Melhorias
+- **Interface IUsuarioRepositorio**: Adicionado método `GetByCpfAsync(string cpf)`
+- **UsuarioRepositorio**: Implementação do método de busca por CPF
+- **IUsuarioService**: Adicionado método `GetByCpfAsync(string cpf)`
+- **UsuarioService**: Implementação com mapeamento AutoMapper
+- **UsuarioController**: Novo endpoint com validação de retorno
+- **Documentação Atualizada**: README com exemplo de uso do novo endpoint
+
+#### 🧪 Testes
+- **CPF Existente**: Testado com CPF válido - retorna dados do usuário
+- **CPF Inexistente**: Testado com CPF inválido - retorna 404 Not Found
+- **Compatibilidade**: Endpoints existentes continuam funcionando normalmente
 
 ### v1.3.0 - Enriquecimento de Entidades e Otimização (2025-09-20)
 
