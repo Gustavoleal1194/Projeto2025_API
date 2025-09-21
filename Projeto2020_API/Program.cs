@@ -5,6 +5,9 @@ using Projeto2025_API.Mapping;
 using Service;
 using Interface.Repositorio;
 using Interface.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +46,32 @@ builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
 builder.Services.AddScoped<IFuncionarioRepositorio, FuncionarioRepositorio>();
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 
+// Configurar autenticação JWT
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Configurar JWT
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "MinhaChaveSecretaSuperSeguraParaJWT2025!@#";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "Projeto2025API";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "Projeto2025API";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)),
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 
@@ -54,6 +83,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.Run();

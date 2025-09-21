@@ -1,5 +1,6 @@
 using Dominio.Dtos;
 using Interface.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace Projeto2025_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Funcionario")]
     public class FuncionarioController : ControllerBase
     {
         private readonly IFuncionarioService _service;

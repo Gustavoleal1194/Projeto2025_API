@@ -3,7 +3,8 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
 [![Entity Framework Core](https://img.shields.io/badge/Entity%20Framework%20Core-8.0-green.svg)](https://docs.microsoft.com/en-us/ef/core/)
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-2019+-red.svg)](https://www.microsoft.com/en-us/sql-server)
-[![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-orange.svg)](https://swagger.io/)
+[![JWT](https://img.shields.io/badge/JWT-Authentication-orange.svg)](https://jwt.io/)
+[![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-purple.svg)](https://swagger.io/)
 
 ## 📋 Índice
 
@@ -12,29 +13,32 @@
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [Entidades do Sistema](#entidades-do-sistema)
+- [Sistema de Autenticação](#sistema-de-autenticação)
 - [Endpoints da API](#endpoints-da-api)
 - [Instalação e Configuração](#instalação-e-configuração)
 - [Como Executar](#como-executar)
 - [Documentação da API](#documentação-da-api)
 - [Exemplos de Uso](#exemplos-de-uso)
+- [Segurança](#segurança)
 - [Testes](#testes)
 - [Contribuição](#contribuição)
 - [Licença](#licença)
 
 ## 🎯 Sobre o Projeto
 
-Sistema completo de gerenciamento de biblioteca desenvolvido em .NET 8 com arquitetura em camadas (Clean Architecture). O projeto oferece uma API REST robusta para gerenciar livros, autores, editoras, usuários, funcionários e empréstimos, com funcionalidades avançadas de busca e filtros.
+Sistema completo de gerenciamento de biblioteca desenvolvido em .NET 8 com arquitetura em camadas (Clean Architecture). O projeto oferece uma API REST robusta e segura para gerenciar livros, autores, editoras, usuários, funcionários e empréstimos, com sistema de autenticação JWT e funcionalidades avançadas de busca e filtros.
 
 ### ✨ Principais Funcionalidades
 
-- **Gestão Completa de Livros**: Cadastro, edição, busca por gênero, autor, editora
-- **Sistema de Empréstimos**: Controle de empréstimos com status e renovações
-- **Gestão de Usuários**: Cadastro e busca de usuários com autenticação por senha
-- **Gestão de Funcionários**: Sistema completo de funcionários com autenticação por senha
-- **Sistema de Autenticação**: Campos de senha obrigatórios para Usuários e Funcionários
-- **Busca Avançada**: Filtros específicos para cada entidade
-- **Validação de Dados**: Validações robustas em todas as operações
-- **Documentação Automática**: Swagger/OpenAPI integrado
+- **🔐 Sistema de Autenticação JWT**: Login seguro para usuários e funcionários
+- **📖 Gestão Completa de Livros**: Cadastro, edição, busca por gênero, autor, editora
+- **👤 Gestão de Usuários**: Cadastro e busca de usuários com autenticação
+- **👨‍💼 Gestão de Funcionários**: Sistema completo de funcionários com controle de acesso
+- **📚 Sistema de Empréstimos**: Controle completo de empréstimos com status e renovações
+- **🔍 Busca Avançada**: Filtros específicos para cada entidade
+- **🛡️ Segurança Robusta**: Hash de senhas, validação de tokens, controle de acesso por roles
+- **📊 Validação de Dados**: Validações robustas em todas as operações
+- **📖 Documentação Automática**: Swagger/OpenAPI integrado
 
 ## 🏗️ Arquitetura
 
@@ -43,10 +47,21 @@ O projeto segue os princípios da **Clean Architecture** com separação clara d
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer (Controllers)                  │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐ │
+│  │   AuthController│  │  Business       │  │   Swagger   │ │
+│  │                 │  │  Controllers    │  │   UI        │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────┘ │
 ├─────────────────────────────────────────────────────────────┤
 │                    Service Layer                            │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐ │
+│  │   AuthService   │  │  Business       │  │  Password   │ │
+│  │                 │  │  Services       │  │  Hash       │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────┘ │
 ├─────────────────────────────────────────────────────────────┤
 │                    Interface Layer                          │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐ │
+│  │   IAuthService  │  │  IRepositories  │  │  IServices  │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────┘ │
 ├─────────────────────────────────────────────────────────────┤
 │                 Infrastructure Layer                        │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐ │
@@ -76,6 +91,7 @@ O projeto segue os princípios da **Clean Architecture** com separação clara d
 - **ASP.NET Core Web API** - Criação da API REST
 - **Entity Framework Core 8.0** - ORM para acesso a dados
 - **SQL Server** - Banco de dados relacional
+- **JWT Bearer Authentication** - Autenticação e autorização
 - **AutoMapper** - Mapeamento entre entidades e DTOs
 - **Swagger/OpenAPI** - Documentação automática da API
 
@@ -85,6 +101,7 @@ O projeto segue os princípios da **Clean Architecture** com separação clara d
 - **Dependency Injection** - Injeção de dependência
 - **DTO Pattern** - Data Transfer Objects
 - **Async/Await** - Programação assíncrona
+- **JWT Authentication** - Autenticação baseada em tokens
 
 ## 📁 Estrutura do Projeto
 
@@ -104,7 +121,9 @@ Projeto2025_API/
 │       ├── EmprestimoDTO.cs
 │       ├── FuncionarioDTO.cs
 │       ├── LivroDTO.cs
-│       └── UsuarioDTO.cs
+│       ├── UsuarioDTO.cs
+│       ├── LoginDTO.cs
+│       └── TokenDTO.cs
 ├── 📁 Interface/                        # Camada de Interface
 │   ├── 📁 Repositorio/                  # Interfaces dos repositórios
 │   │   ├── IBaseRepository.cs
@@ -115,6 +134,7 @@ Projeto2025_API/
 │   │   ├── ILivroRepositorio.cs
 │   │   └── IUsuarioRepositorio.cs
 │   └── 📁 Service/                      # Interfaces dos serviços
+│       ├── IAuthService.cs
 │       ├── IAutorService.cs
 │       ├── IEditoraService.cs
 │       ├── IEmprestimoService.cs
@@ -122,6 +142,8 @@ Projeto2025_API/
 │       ├── ILivroService.cs
 │       └── IUsuarioService.cs
 ├── 📁 Service/                          # Camada de Serviço
+│   ├── AuthService.cs
+│   ├── PasswordHashService.cs
 │   ├── AutorService.cs
 │   ├── EditoraService.cs
 │   ├── EmprestimoService.cs
@@ -143,6 +165,7 @@ Projeto2025_API/
 │   └── 📁 Migrations/                   # Migrações do banco de dados
 ├── 📁 Projeto2020_API/                  # Camada da API
 │   ├── 📁 Controllers/                  # Controllers da API
+│   │   ├── AuthController.cs
 │   │   ├── AutorController.cs
 │   │   ├── EditoraController.cs
 │   │   ├── EmprestimoController.cs
@@ -152,39 +175,131 @@ Projeto2025_API/
 │   ├── 📁 Mapping/                      # Configuração do AutoMapper
 │   │   └── MappingProfile.cs
 │   ├── Program.cs                       # Configuração da aplicação
-│   └── appsettings.json                 # Configurações da aplicação
+│   ├── appsettings.json                 # Configurações da aplicação
+│   └── appsettings.Development.json     # Configurações de desenvolvimento
 └── Projeto2025_API.sln                 # Solution file
 ```
 
 ## 📊 Entidades do Sistema
 
 ### 📖 Livro
-- **Propriedades**: ID, Título, Subtítulo, ISBN, Autor, Editora, Gênero, Ano, Páginas, Sinopse, Preço, Quantidade em Estoque, Quantidade Disponível, Código de Barras, Número do Exemplar, Condição, Localização, Observações do Exemplar, Data de Aquisição, Valor de Aquisição, Fornecedor, Edição, Idioma, Capa URL
+**Propriedades Principais:**
+- **Identificação**: ID, Título, Subtítulo, ISBN, Código de Barras
+- **Informações**: Ano, Edição, Número de Páginas, Idioma, Gênero, Sinopse
+- **Comercial**: Preço, Quantidade em Estoque, Quantidade Disponível
+- **Exemplar**: Número do Exemplar, Localização, Condição, Observações
+- **Aquisição**: Data de Aquisição, Valor de Aquisição, Fornecedor
+- **Controle**: Disponível, Ativo, Data de Criação
 - **Relacionamentos**: Pertence a um Autor e uma Editora
 
 ### 👤 Autor
-- **Propriedades**: ID, Nome, Nome Completo, Nome Artístico, Nacionalidade, País de Origem, Data de Nascimento, Website, Email, Telefone, Endereço, Cidade, Estado, CEP, País, Status Ativo, Data de Criação
+**Propriedades Principais:**
+- **Identificação**: ID, Nome, Nome Completo, Nome Artístico
+- **Localização**: Nacionalidade, País de Origem, Endereço, Cidade, Estado, CEP, País
+- **Contato**: Website, Email, Telefone
+- **Pessoal**: Data de Nascimento
+- **Controle**: Ativo, Data de Criação
 - **Relacionamentos**: Pode ter vários Livros
 
 ### 🏢 Editora
-- **Propriedades**: ID, Nome, CNPJ, Email, Telefone, Endereço, Cidade, Estado, CEP, País, Site, Data de Fundação, Data de Criação, Status Ativo
+**Propriedades Principais:**
+- **Identificação**: ID, Nome, CNPJ
+- **Localização**: Endereço, Cidade, Estado, CEP, País
+- **Contato**: Email, Telefone, Site
+- **Institucional**: Data de Fundação
+- **Controle**: Ativa, Data de Criação
 - **Relacionamentos**: Pode ter vários Livros
 
 ### 👥 Usuario
-- **Propriedades**: ID, Nome, Email, Telefone, Senha, CPF, Data de Nascimento
+**Propriedades Principais:**
+- **Identificação**: ID, Nome, Email, CPF
+- **Contato**: Telefone
+- **Pessoal**: Data de Nascimento
+- **Segurança**: Senha (hasheada)
 - **Relacionamentos**: Pode ter vários Empréstimos
-- **Segurança**: Campo senha obrigatório para autenticação
 
 ### 👨‍💼 Funcionario
-- **Propriedades**: ID, Nome, Email, Telefone, Senha, Cargo, Salário, Data de Admissão, Data de Demissão, Status Ativo
+**Propriedades Principais:**
+- **Identificação**: ID, Nome, Email
+- **Contato**: Telefone
+- **Profissional**: Cargo, Salário, Data de Admissão, Data de Demissão
+- **Segurança**: Senha (hasheada)
+- **Controle**: Ativo
 - **Relacionamentos**: Funcionários do sistema
-- **Segurança**: Campo senha obrigatório para autenticação
 
 ### 📚 Emprestimo
-- **Propriedades**: ID, Usuario, Livro, Data de Empréstimo, Data Prevista de Devolução, Data de Devolução, Data de Renovação, Status, Quantidade de Renovações, Máximo de Renovações, Multa, Observações, Data de Criação, Status Ativo
+**Propriedades Principais:**
+- **Identificação**: ID
+- **Datas**: Data de Empréstimo, Data Prevista de Devolução, Data de Devolução, Data de Renovação
+- **Controle**: Status, Quantidade de Renovações, Máximo de Renovações, Multa
+- **Observações**: Observações, Data de Criação, Status Ativo
 - **Relacionamentos**: Pertence a um Usuario e um Livro
 
+## 🔐 Sistema de Autenticação
+
+### Tipos de Usuários
+- **👥 Usuários**: Acesso limitado aos endpoints de usuário
+- **👨‍💼 Funcionários**: Acesso completo a todos os endpoints
+
+### Funcionalidades de Segurança
+- **JWT Tokens**: Autenticação baseada em tokens com expiração de 8 horas
+- **Hash de Senhas**: Senhas protegidas com SHA256 + Salt
+- **Controle de Acesso**: Autorização baseada em roles
+- **Validação de Tokens**: Verificação automática de assinatura e expiração
+
+### Endpoints de Autenticação
+- `POST /api/auth/login` - Login de usuários e funcionários
+- `POST /api/auth/registrar` - Registro de usuários
+- `POST /api/auth/registrar-funcionario` - Registro de funcionários (apenas funcionários)
+- `POST /api/auth/validar-token` - Validação de token
+- `GET /api/auth/me` - Informações do usuário atual
+
 ## 🚀 Endpoints da API
+
+### 🔐 Autenticação
+
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@email.com",
+  "senha": "123456"
+}
+```
+
+#### Registrar Usuário
+```http
+POST /api/auth/registrar
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "senha": "123456",
+  "telefone": "11999999999",
+  "cpf": "12345678901",
+  "dataNascimento": "1990-01-01T00:00:00Z"
+}
+```
+
+#### Registrar Funcionário (Apenas Funcionários)
+```http
+POST /api/auth/registrar-funcionario
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "nome": "Maria Santos",
+  "email": "maria@biblioteca.com",
+  "senha": "123456",
+  "telefone": "11999999999",
+  "cargo": "Bibliotecária",
+  "salario": 3500.00,
+  "dataAdmissao": "2025-01-01T00:00:00Z"
+}
+```
 
 ### 📖 Livro Endpoints
 
@@ -245,7 +360,7 @@ Projeto2025_API/
 - `GET /api/Usuario/por-nome/{nome}` - Usuários por nome
 - `GET /api/Usuario/por-cpf/{cpf}` - Usuário por CPF
 
-### 👨‍💼 Funcionario Endpoints
+### 👨‍💼 Funcionario Endpoints (Apenas Funcionários)
 
 #### Endpoints Básicos
 - `GET /api/Funcionario` - Lista todos os funcionários
@@ -300,7 +415,12 @@ cd Projeto2025_API
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=dbBiblioteca;Trusted_Connection=true;TrustServerCertificate=true;"
+    "Default": "Server=localhost;Database=dbBiblioteca;Trusted_Connection=true;TrustServerCertificate=true;"
+  },
+  "Jwt": {
+    "Key": "MinhaChaveSecretaSuperSeguraParaJWT2025!@#",
+    "Issuer": "Projeto2025API",
+    "Audience": "Projeto2025API"
   }
 }
 ```
@@ -349,10 +469,44 @@ A documentação completa da API está disponível através do Swagger UI:
 
 ## 💡 Exemplos de Uso
 
-### Criar um Autor
+### 1. Fluxo Completo de Autenticação
 
+#### Registrar um Usuário
+```bash
+curl -X POST "http://localhost:5072/api/auth/registrar" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "João Silva",
+    "email": "joao@email.com",
+    "senha": "123456",
+    "telefone": "11999999999",
+    "cpf": "12345678901",
+    "dataNascimento": "1990-01-01T00:00:00Z"
+  }'
+```
+
+#### Fazer Login
+```bash
+curl -X POST "http://localhost:5072/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "joao@email.com",
+    "senha": "123456"
+  }'
+```
+
+#### Usar o Token para Acessar Endpoints
+```bash
+curl -X GET "http://localhost:5072/api/livro" \
+  -H "Authorization: Bearer <seu_token_aqui>"
+```
+
+### 2. Gestão de Livros
+
+#### Criar um Autor
 ```http
 POST /api/Autor
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
@@ -369,15 +523,14 @@ Content-Type: application/json
   "cidade": "Rio de Janeiro",
   "estado": "Rio de Janeiro",
   "cep": "22241-090",
-  "pais": "Brasil",
-  "ativo": true
+  "pais": "Brasil"
 }
 ```
 
-### Criar uma Editora
-
+#### Criar uma Editora
 ```http
 POST /api/Editora
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
@@ -395,10 +548,10 @@ Content-Type: application/json
 }
 ```
 
-### Criar um Livro
-
+#### Criar um Livro
 ```http
 POST /api/Livro
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
@@ -415,66 +568,16 @@ Content-Type: application/json
   "quantidadeEstoque": 10,
   "quantidadeDisponivel": 10,
   "idioma": "Português",
-  "edicao": "1ª Edição"
+  "edicao": 1
 }
 ```
 
-### Criar um Usuário
+### 3. Gestão de Empréstimos
 
-```http
-POST /api/Usuario
-Content-Type: application/json
-
-{
-  "nome": "João Silva",
-  "email": "joao.silva@email.com",
-  "telefone": "(11) 99999-8888",
-  "senha": "minhasenha123",
-  "cpf": "12345678901",
-  "dataNascimento": "1990-05-15"
-}
-```
-
-### Buscar Usuário por CPF
-
-```http
-GET /api/Usuario/por-cpf/12345678901
-```
-
-**Resposta:**
-```json
-{
-  "id": 1,
-  "nome": "João Silva",
-  "email": "joao.silva@email.com",
-  "telefone": "(11) 99999-8888",
-  "senha": "minhasenha123",
-  "cpf": "12345678901",
-  "dataNascimento": "1990-05-15T00:00:00"
-}
-```
-
-### Criar um Funcionário
-
-```http
-POST /api/Funcionario
-Content-Type: application/json
-
-{
-  "nome": "Maria Santos",
-  "email": "maria.santos@biblioteca.com",
-  "telefone": "(11) 99999-7777",
-  "senha": "senhafuncionario123",
-  "cargo": "Bibliotecária",
-  "salario": 3500.00,
-  "dataAdmissao": "2024-01-15"
-}
-```
-
-### Criar um Empréstimo
-
+#### Criar um Empréstimo
 ```http
 POST /api/Emprestimo
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
@@ -488,23 +591,49 @@ Content-Type: application/json
 }
 ```
 
-### Buscar Livros por Gênero
+### 4. Buscas Específicas
 
+#### Buscar Livros por Gênero
 ```http
 GET /api/Livro/por-genero/Romance
+Authorization: Bearer <token>
 ```
 
-### Buscar Usuários por Nome
-
+#### Buscar Usuários por Nome
 ```http
 GET /api/Usuario/por-nome/João
+Authorization: Bearer <token>
 ```
 
-### Buscar Empréstimos Ativos
-
+#### Buscar Empréstimos Ativos
 ```http
 GET /api/Emprestimo/ativos
+Authorization: Bearer <token>
 ```
+
+## 🛡️ Segurança
+
+### Autenticação JWT
+- **Tokens**: Válidos por 8 horas
+- **Algoritmo**: HMAC SHA256
+- **Claims**: Nome, Email, Role, JTI
+- **Validação**: Assinatura, emissor, audiência e expiração
+
+### Hash de Senhas
+- **Algoritmo**: SHA256 + Salt
+- **Salt**: "Projeto2025_Salt_Key"
+- **Aplicação**: Automática nos endpoints de registro
+
+### Controle de Acesso
+- **Usuários**: Acesso limitado aos endpoints de usuário
+- **Funcionários**: Acesso completo a todos os endpoints
+- **Proteção**: Todos os endpoints principais requerem autenticação
+
+### Validações
+- **Campos Obrigatórios**: Validação automática de modelos
+- **Tipos de Dados**: Validação de tipos e formatos
+- **Unicidade**: Email único para usuários e funcionários
+- **Integridade**: Relacionamentos entre entidades
 
 ## 🧪 Testes
 
@@ -516,6 +645,19 @@ GET /api/Emprestimo/ativos
 4. Preencha os parâmetros necessários
 5. Execute a requisição
 
+### Testes via cURL
+
+```bash
+# Teste de login
+curl -X POST "http://localhost:5072/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "teste@email.com", "senha": "123456"}'
+
+# Teste de listagem de livros
+curl -X GET "http://localhost:5072/api/livro" \
+  -H "Authorization: Bearer <token>"
+```
+
 ### Testes via PowerShell
 
 ```powershell
@@ -526,29 +668,17 @@ $body = @{
     dataNascimento = "1990-01-01"
 } | ConvertTo-Json
 
-Invoke-RestMethod -Uri "http://localhost:5072/api/Autor" -Method POST -Body $body -ContentType "application/json"
-```
-
-### Testes via cURL
-
-```bash
-# Listar todos os livros
-curl -X GET "http://localhost:5072/api/Livro" -H "accept: application/json"
-
-# Buscar livros disponíveis
-curl -X GET "http://localhost:5072/api/Livro/disponiveis" -H "accept: application/json"
+Invoke-RestMethod -Uri "http://localhost:5072/api/Autor" -Method POST -Body $body -ContentType "application/json" -Headers @{"Authorization" = "Bearer <token>"}
 ```
 
 ## 🔧 Configurações Avançadas
 
 ### Configuração de Logs
-
 Os logs são salvos automaticamente na pasta `logs/` com formato:
 - Nome do arquivo: `api-YYYYMMDD.txt`
 - Rotação diária automática
 
 ### Configuração de CORS
-
 Para permitir requisições de outros domínios, configure no `Program.cs`:
 
 ```csharp
@@ -564,7 +694,6 @@ builder.Services.AddCors(options =>
 ```
 
 ### Configuração de Validação
-
 O sistema utiliza validação automática de modelos com:
 - Validação de campos obrigatórios
 - Validação de tipos de dados
@@ -586,23 +715,6 @@ O sistema utiliza validação automática de modelos com:
 - Mantenha a arquitetura em camadas
 - Escreva testes unitários para novas funcionalidades
 
-## 📝 Changelog
-
-### v1.0.0 (2024-09-20)
-- ✨ Implementação inicial do sistema
-- 📚 Gestão completa de livros, autores, editoras
-- 👥 Sistema de usuários e funcionários
-- 📖 Sistema de empréstimos
-- 🔍 Endpoints de busca avançada
-- 📖 Documentação Swagger completa
-- 🏗️ Arquitetura Clean Architecture
-- 🗄️ Migrações do Entity Framework
-
-## 🐛 Problemas Conhecidos
-
-- **DELETE de Autor com Livros**: Não é possível deletar um autor que possui livros associados (comportamento esperado por integridade referencial)
-- **Caracteres Especiais**: Evite usar acentos em testes via JSON para evitar problemas de codificação
-
 ## 📞 Suporte
 
 Para dúvidas ou problemas:
@@ -612,82 +724,6 @@ Para dúvidas ou problemas:
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 📝 Changelog
-
-### v1.4.0 - Novo Endpoint GET por CPF para Usuario (2025-09-20)
-
-#### ✨ Novas Funcionalidades
-- **Endpoint GET por CPF**: Adicionado `GET /api/Usuario/por-cpf/{cpf}` para busca de usuário por CPF
-- **Busca Eficiente**: Implementação otimizada com `FirstOrDefaultAsync` para busca única
-- **Validação Robusta**: Retorna 404 Not Found para CPF inexistente
-
-#### 🔧 Melhorias
-- **Interface IUsuarioRepositorio**: Adicionado método `GetByCpfAsync(string cpf)`
-- **UsuarioRepositorio**: Implementação do método de busca por CPF
-- **IUsuarioService**: Adicionado método `GetByCpfAsync(string cpf)`
-- **UsuarioService**: Implementação com mapeamento AutoMapper
-- **UsuarioController**: Novo endpoint com validação de retorno
-- **Documentação Atualizada**: README com exemplo de uso do novo endpoint
-
-#### 🧪 Testes
-- **CPF Existente**: Testado com CPF válido - retorna dados do usuário
-- **CPF Inexistente**: Testado com CPF inválido - retorna 404 Not Found
-- **Compatibilidade**: Endpoints existentes continuam funcionando normalmente
-
-### v1.3.0 - Enriquecimento de Entidades e Otimização (2025-09-20)
-
-#### ✨ Novas Funcionalidades
-- **Autor Enriquecido**: Adicionadas propriedades essenciais para Autor (Nome Completo, Nome Artístico, País de Origem, Website, Email, Telefone, Endereço completo)
-- **Usuario Aprimorado**: Adicionados CPF e Data de Nascimento para identificação única
-- **Estrutura Otimizada**: Removidas propriedades desnecessárias do Autor (DataFalecimento, Biografia, GeneroLiterario, FormacaoAcademica, Premios)
-
-#### 🔧 Melhorias
-- **Entidade Autor**: Agora com 16 propriedades essenciais para sistema de biblioteca
-- **Entidade Usuario**: CPF com validação única e Data de Nascimento obrigatória
-- **Migrações Aplicadas**: `EnrichAutorAndUsuarioFinal` e `RemoveUnnecessaryAutorProperties`
-- **Validações Robustas**: Índices únicos com filtros para CPF e Email
-- **Documentação Atualizada**: README com exemplos completos das novas estruturas
-
-#### 🗄️ Banco de Dados
-- **Migração EnrichAutorAndUsuarioFinal**: Adicionadas novas colunas para Autor e Usuario
-- **Migração RemoveUnnecessaryAutorProperties**: Removidas colunas desnecessárias do Autor
-- **Índices Otimizados**: CPF com filtro para valores vazios, mantendo unicidade
-
-### v1.2.0 - Adição de Campos de Senha (2025-09-20)
-
-#### ✨ Novas Funcionalidades
-- **Sistema de Autenticação**: Adicionados campos de senha obrigatórios para Usuários e Funcionários
-- **Validação de Segurança**: Campos de senha com validação de tamanho máximo (255 caracteres)
-- **Migração de Banco**: Criada migração `AddPasswordFields` para adicionar campos no banco de dados
-- **Atualização de Dados**: Todos os registros existentes foram atualizados com senhas padrão
-
-#### 🔧 Melhorias
-- **DTOs Atualizados**: UsuarioDTO e FuncionarioDTO agora incluem campo senha
-- **Entidades Atualizadas**: Usuario e Funcionario com campo senha obrigatório
-- **Contexto de Banco**: Configurações de validação para campos de senha
-- **Documentação**: README atualizado com exemplos de uso incluindo senhas
-
-#### 🛡️ Segurança
-- **Campos Obrigatórios**: Senha é obrigatória para criação de Usuários e Funcionários
-- **Validação de Tamanho**: Senhas limitadas a 255 caracteres
-- **Índices Únicos**: Mantidos índices únicos em email para Usuários e Funcionários
-
----
-
-## 🎯 Próximos Passos
-
-- [ ] Implementar sistema de login e JWT tokens
-- [ ] Adicionar testes unitários automatizados
-- [ ] Implementar cache com Redis
-- [ ] Adicionar logging estruturado com Serilog
-- [ ] Implementar paginação nos endpoints de listagem
-- [ ] Adicionar documentação de API com XML comments
-- [ ] Implementar rate limiting
-- [ ] Adicionar métricas e monitoramento
-- [ ] Implementar hash de senhas com BCrypt
 
 ---
 

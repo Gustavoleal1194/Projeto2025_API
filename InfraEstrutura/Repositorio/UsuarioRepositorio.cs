@@ -28,5 +28,11 @@ namespace InfraEstrutura.Repositorio
             return await _contexto.Usuarios
                 .FirstOrDefaultAsync(u => u.CPF == cpf);
         }
+
+        public async Task<Usuario?> GetByEmailAsync(string email)
+        {
+            return await _contexto.Usuarios
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
     }
 }
