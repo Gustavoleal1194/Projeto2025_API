@@ -144,6 +144,95 @@ public class Emprestimo
 }
 ```
 
+#### 👤 Usuário
+```csharp
+public class Usuario
+{
+    public int Id { get; set; }
+    public string Nome { get; set; }
+    public string Email { get; set; }
+    public string Telefone { get; set; }
+    public string CPF { get; set; }
+    public DateTime DataNascimento { get; set; }
+    public string Senha { get; set; }
+    public bool Ativo { get; set; }
+    public DateTime DataCriacao { get; set; }
+    
+    // Relacionamentos
+    public virtual List<Emprestimo> Emprestimos { get; set; }
+}
+```
+
+#### 👨‍💼 Funcionário
+```csharp
+public class Funcionario
+{
+    public int Id { get; set; }
+    public string Nome { get; set; }
+    public string Email { get; set; }
+    public string Telefone { get; set; }
+    public string Cargo { get; set; }
+    public decimal Salario { get; set; }
+    public DateTime DataAdmissao { get; set; }
+    public DateTime? DataDemissao { get; set; }
+    public string Senha { get; set; }
+    public bool Ativo { get; set; }
+    public DateTime DataCriacao { get; set; }
+}
+```
+
+#### ✍️ Autor
+```csharp
+public class Autor
+{
+    public int Id { get; set; }
+    public string Nome { get; set; }
+    public string NomeCompleto { get; set; }
+    public string NomeArtistico { get; set; }
+    public DateTime DataNascimento { get; set; }
+    public string Nacionalidade { get; set; }
+    public string Pais { get; set; }
+    public string PaisOrigem { get; set; }
+    public string Email { get; set; }
+    public string Telefone { get; set; }
+    public string Website { get; set; }
+    public string Endereco { get; set; }
+    public string Cidade { get; set; }
+    public string Estado { get; set; }
+    public string CEP { get; set; }
+    public string Pais { get; set; }
+    public bool Ativo { get; set; }
+    public DateTime DataCriacao { get; set; }
+    
+    // Relacionamentos
+    public virtual List<Livro> Livros { get; set; }
+}
+```
+
+#### 🏢 Editora
+```csharp
+public class Editora
+{
+    public int Id { get; set; }
+    public string Nome { get; set; }
+    public string CNPJ { get; set; }
+    public string Email { get; set; }
+    public string Telefone { get; set; }
+    public string Endereco { get; set; }
+    public string Cidade { get; set; }
+    public string Estado { get; set; }
+    public string CEP { get; set; }
+    public string Pais { get; set; }
+    public string Site { get; set; }
+    public DateTime DataFundacao { get; set; }
+    public bool Ativa { get; set; }
+    public DateTime DataCriacao { get; set; }
+    
+    // Relacionamentos
+    public virtual List<Livro> Livros { get; set; }
+}
+```
+
 ## 📁 Estrutura do Projeto
 
 ### Organização das Camadas
