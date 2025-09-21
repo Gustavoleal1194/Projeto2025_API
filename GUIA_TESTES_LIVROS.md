@@ -1,213 +1,37 @@
-# 🧪 Guia Completo de Testes da API no Swagger
+# 📖 Guia de Testes - Livros
 
-Este guia documenta **TODOS os 97 endpoints** da API de forma detalhada, incluindo configuração de autenticação JWT e exemplos completos de request/response.
+Este guia documenta todos os **11 endpoints de livros** da API.
 
-## 🚀 Acessando o Swagger UI
+## 📋 Lista de Endpoints
 
-Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072/swagger`
+1. **GET /api/Livro** - Listar todos os livros
+2. **GET /api/Livro/{id}** - Obter livro por ID
+3. **POST /api/Livro** - Criar novo livro
+4. **PUT /api/Livro** - Atualizar livro
+5. **DELETE /api/Livro/{id}** - Excluir livro
+6. **GET /api/Livro/disponiveis** - Listar livros com exemplares disponíveis
+7. **GET /api/Livro/por-genero/{genero}** - Listar livros por gênero
+8. **GET /api/Livro/por-autor/{idAutor}** - Listar livros por autor
+9. **GET /api/Livro/por-editora/{idEditora}** - Listar livros por editora
+10. **GET /api/Livro/buscar/{termo}** - Buscar livros por termo
+11. **GET /api/Livro/em-estoque** - Listar livros em estoque
 
-## 🔑 Configuração de Autenticação
+---
 
-### Passo 1: Obter Token JWT
+## 🔑 Autenticação
 
-1. **Expanda o endpoint `POST /api/Auth/login`**
-2. Clique em "Try it out"
-3. No campo "Request body", insira as credenciais:
+**Todos os endpoints de livros requerem autenticação JWT.**
 
-**Request Body:**
-```json
-{
-  "email": "admin@biblioteca.com",
-  "senha": "123456"
-}
-```
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFkbWluaXN0cmFkb3IiLCJlbWFpbCI6ImFkbWluQGJpYmxpb3RlY2EuY29tIiwicm9sZSI6IkFkbWluIiwianRpIjoiMTIzNDU2Nzg5MCIsIm5iZiI6MTc1ODQ4NTcwNiwiZXhwIjoxNzU4NTE0NTA2LCJpYXQiOjE3NTg0ODU3MDYsImlzcyI6IlByb2pldG8yMDI1QVBJIiwiYXVkIjoiUHJvamV0bzIwMjVBUEkifQ.abc123def456",
-  "expiration": "2025-09-21T18:58:27.774Z",
-  "tipo": "Bearer",
-  "nome": "Administrador Sistema",
-  "email": "admin@biblioteca.com",
-  "role": "Admin"
-}
-```
-
-### Passo 2: Configurar Token no Swagger
-
-1. No topo da página do Swagger UI, clique no botão verde **"Authorize"**
-2. No campo **"Value"**, digite: `Bearer {seu-token-jwt}`
+Configure o token no Swagger:
+1. Clique em **"Authorize"** (botão verde)
+2. Digite: `Bearer {seu-token-jwt}`
 3. Clique em **"Authorize"**
-4. Clique em **"Close"**
 
 ---
 
-## 📚 TODOS OS 97 ENDPOINTS DOCUMENTADOS
+## 📚 Documentação dos Endpoints
 
-### 🔐 Autenticação (7 endpoints)
-
-#### POST /api/Auth/login
-**Descrição**: Fazer login e obter token JWT
-**Autenticação**: Não necessária
-
-**Request Body:**
-```json
-{
-  "email": "admin@biblioteca.com",
-  "senha": "123456"
-}
-```
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expiration": "2025-09-21T18:58:27.774Z",
-  "tipo": "Bearer",
-  "nome": "Administrador Sistema",
-  "email": "admin@biblioteca.com",
-  "role": "Admin"
-}
-```
-
-#### POST /api/Auth/validar-token
-**Descrição**: Validar token JWT
-**Autenticação**: Token JWT necessário
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "message": "Token válido"
-}
-```
-
-#### GET /api/Auth/me
-**Descrição**: Obter informações do usuário atual
-**Autenticação**: Token JWT necessário
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "email": "admin@biblioteca.com",
-  "role": "Admin"
-}
-```
-
-#### POST /api/Auth/registrar
-**Descrição**: Registrar novo usuário
-**Autenticação**: Não necessária
-
-**Request Body:**
-```json
-{
-  "nome": "João Silva",
-  "email": "joao@email.com",
-  "senha": "123456",
-  "telefone": "11987654321",
-  "cpf": "12345678901",
-  "dataNascimento": "1990-05-15T00:00:00Z"
-}
-```
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "id": 1,
-  "nome": "João Silva",
-  "email": "joao@email.com",
-  "telefone": "11987654321",
-  "cpf": "12345678901",
-  "dataNascimento": "1990-05-15T00:00:00Z",
-  "ativo": true,
-  "dataCriacao": "2025-09-21T20:30:00Z"
-}
-```
-
-#### POST /api/Auth/registrar-funcionario
-**Descrição**: Registrar novo funcionário
-**Autenticação**: Token Admin/Funcionario necessário
-
-**Request Body:**
-```json
-{
-  "nome": "Maria Santos",
-  "email": "maria@biblioteca.com",
-  "senha": "123456",
-  "telefone": "11999887766",
-  "cargo": "Bibliotecária",
-  "salario": 3500.00,
-  "dataAdmissao": "2025-01-15T00:00:00Z"
-}
-```
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "id": 1,
-  "nome": "Maria Santos",
-  "email": "maria@biblioteca.com",
-  "telefone": "11999887766",
-  "cargo": "Bibliotecária",
-  "salario": 3500.00,
-  "dataAdmissao": "2025-01-15T00:00:00Z",
-  "dataDemissao": null,
-  "ativo": true,
-  "dataCriacao": "2025-09-21T20:30:00Z"
-}
-```
-
-#### POST /api/Auth/criar-admin
-**Descrição**: Criar administrador inicial (só funciona se não houver funcionários)
-**Autenticação**: Não necessária
-
-**Request Body:**
-```json
-{
-  "nome": "Administrador",
-  "email": "admin@biblioteca.com",
-  "senha": "123456",
-  "telefone": "11999999999"
-}
-```
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "id": 1,
-  "nome": "Administrador",
-  "email": "admin@biblioteca.com",
-  "telefone": "11999999999",
-  "cargo": "Administrador",
-  "salario": 5000.00,
-  "dataAdmissao": "2025-09-21T20:30:00Z",
-  "dataDemissao": null,
-  "ativo": true,
-  "dataCriacao": "2025-09-21T20:30:00Z"
-}
-```
-
-#### GET /api/Auth/teste-token
-**Descrição**: Endpoint de teste de token
-**Autenticação**: Não necessária
-
-**Resposta Esperada (200 OK):**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.teste",
-  "expiration": "2025-09-22T04:00:00Z",
-  "tipo": "Bearer",
-  "nome": "João Teste",
-  "email": "joao@teste.com",
-  "role": "Usuario"
-}
-```
-
----
-
-### 📖 Livros (11 endpoints)
-
-#### GET /api/Livro
+### 1. GET /api/Livro
 **Descrição**: Listar todos os livros
 **Autenticação**: Token JWT necessário
 
@@ -241,9 +65,14 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 ]
 ```
 
-#### GET /api/Livro/{id}
+---
+
+### 2. GET /api/Livro/{id}
 **Descrição**: Obter livro por ID
 **Autenticação**: Token JWT necessário
+
+**Parâmetros:**
+- `id` (int): ID do livro
 
 **Resposta Esperada (200 OK):**
 ```json
@@ -273,7 +102,16 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 }
 ```
 
-#### POST /api/Livro
+**Resposta de Erro (404 Not Found):**
+```json
+{
+  "message": "Livro não encontrado"
+}
+```
+
+---
+
+### 3. POST /api/Livro
 **Descrição**: Criar novo livro
 **Autenticação**: Token JWT necessário
 
@@ -325,7 +163,16 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 }
 ```
 
-#### PUT /api/Livro
+**Resposta de Erro (400 Bad Request):**
+```json
+{
+  "message": "Dados inválidos"
+}
+```
+
+---
+
+### 4. PUT /api/Livro
 **Descrição**: Atualizar livro
 **Autenticação**: Token JWT necessário
 
@@ -355,16 +202,30 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 (Sem conteúdo)
 ```
 
-#### DELETE /api/Livro/{id}
+---
+
+### 5. DELETE /api/Livro/{id}
 **Descrição**: Excluir livro
 **Autenticação**: Token JWT necessário
+
+**Parâmetros:**
+- `id` (int): ID do livro
 
 **Resposta Esperada (204 No Content):**
 ```
 (Sem conteúdo)
 ```
 
-#### GET /api/Livro/disponiveis
+**Resposta de Erro (404 Not Found):**
+```json
+{
+  "message": "Livro não encontrado"
+}
+```
+
+---
+
+### 6. GET /api/Livro/disponiveis
 **Descrição**: Listar livros com exemplares disponíveis
 **Autenticação**: Token JWT necessário
 
@@ -398,9 +259,14 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 ]
 ```
 
-#### GET /api/Livro/por-genero/{genero}
+---
+
+### 7. GET /api/Livro/por-genero/{genero}
 **Descrição**: Listar livros por gênero
 **Autenticação**: Token JWT necessário
+
+**Parâmetros:**
+- `genero` (string): Gênero do livro
 
 **Resposta Esperada (200 OK):**
 ```json
@@ -415,10 +281,15 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 ]
 ```
 
-#### GET /api/Livro/por-autor/{idAutor}
+---
+
+### 8. GET /api/Livro/por-autor/{idAutor}
 **Descrição**: Listar livros por autor
 **Autenticação**: Token JWT necessário
 
+**Parâmetros:**
+- `idAutor` (int): ID do autor
+
 **Resposta Esperada (200 OK):**
 ```json
 [
@@ -431,10 +302,15 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 ]
 ```
 
-#### GET /api/Livro/por-editora/{idEditora}
+---
+
+### 9. GET /api/Livro/por-editora/{idEditora}
 **Descrição**: Listar livros por editora
 **Autenticação**: Token JWT necessário
 
+**Parâmetros:**
+- `idEditora` (int): ID da editora
+
 **Resposta Esperada (200 OK):**
 ```json
 [
@@ -447,10 +323,15 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 ]
 ```
 
-#### GET /api/Livro/buscar/{termo}
+---
+
+### 10. GET /api/Livro/buscar/{termo}
 **Descrição**: Buscar livros por termo
 **Autenticação**: Token JWT necessário
 
+**Parâmetros:**
+- `termo` (string): Termo de busca
+
 **Resposta Esperada (200 OK):**
 ```json
 [
@@ -463,7 +344,9 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 ]
 ```
 
-#### GET /api/Livro/em-estoque
+---
+
+### 11. GET /api/Livro/em-estoque
 **Descrição**: Listar livros em estoque
 **Autenticação**: Token JWT necessário
 
@@ -482,10 +365,6 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 
 ---
 
-*[Continuação do guia com os demais 86 endpoints...]*
-
----
-
 ## 🚨 Troubleshooting
 
 ### Problemas Comuns e Soluções
@@ -494,13 +373,13 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 **Causa**: Token JWT inválido ou expirado
 **Solução**: Faça login novamente para obter um novo token
 
-#### 403 Forbidden
-**Causa**: Token válido mas sem permissão para a operação
-**Solução**: Use um token de usuário com role "Admin" ou "Funcionario"
-
 #### 404 Not Found
-**Causa**: Recurso não encontrado (ID inexistente)
+**Causa**: Livro não encontrado
 **Solução**: Verifique se o ID existe no banco de dados
+
+#### 400 Bad Request
+**Causa**: Dados inválidos
+**Solução**: Verifique se todos os campos obrigatórios estão preenchidos
 
 #### 500 Internal Server Error
 **Causa**: Erro interno do servidor
@@ -510,13 +389,13 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 
 ## 💡 Dicas Importantes
 
-1. **Sempre configure a autenticação** antes de testar endpoints protegidos
-2. **Use IDs existentes** para operações GET, PUT e DELETE
-3. **Verifique os relacionamentos** - para criar um Livro, você precisa de um Autor e Editora existentes
-4. **O token expira em 8 horas** - faça login novamente se necessário
+1. **Para criar um livro**, você precisa de um Autor e Editora existentes
+2. **Campos obrigatórios**: titulo, isbn, ano, idAutor, idEditora
+3. **ISBN deve ser único** no sistema
+4. **Código de barras deve ser único** no sistema
 5. **Para endpoints de busca**, use termos que existem no banco de dados
-6. **Campos obrigatórios** devem sempre ser preenchidos nos requests
+6. **Os campos calculados** (totalExemplares, exemplaresDisponiveis) são preenchidos automaticamente
 
 ---
 
-Este guia documenta todos os 97 endpoints da API! 🚀
+**Total de endpoints documentados: 11/11** ✅
