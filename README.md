@@ -63,13 +63,13 @@ Projeto2025_API/
 ├── Dominio/                    # Camada de Domínio
 │   ├── Entidades/             # Entidades do domínio
 │   └── Dtos/                  # Data Transfer Objects
+├── Interface/                  # Camada de Interface
+│   ├── Repositorio/           # Interfaces dos repositórios
+│   └── Service/               # Interfaces dos serviços
 ├── InfraEstrutura/            # Camada de Infraestrutura
 │   ├── Data/                  # Contexto do banco de dados
 │   ├── Migrations/            # Migrações do EF Core
 │   └── Repositorio/           # Implementações dos repositórios
-├── Interface/                 # Camada de Interface
-│   ├── Repositorio/           # Interfaces dos repositórios
-│   └── Service/               # Interfaces dos serviços
 ├── Service/                   # Camada de Serviços
 │   └── [Serviços de negócio]
 └── Projeto2020_API/           # Camada de Apresentação

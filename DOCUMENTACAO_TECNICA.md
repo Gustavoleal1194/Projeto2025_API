@@ -9,13 +9,16 @@ O sistema foi desenvolvido seguindo os princípios do Domain-Driven Design, orga
 ```
 ┌─────────────────────────────────────────┐
 │           Camada de Apresentação        │
-│         (Controllers, DTOs)             │
+│         (Controllers, Mapping)          │
 ├─────────────────────────────────────────┤
 │           Camada de Aplicação           │
 │            (Services)                   │
 ├─────────────────────────────────────────┤
 │            Camada de Domínio            │
-│        (Entidades, Interfaces)          │
+│        (Entidades, DTOs)                │
+├─────────────────────────────────────────┤
+│            Camada de Interface          │
+│      (Interfaces de Repos e Services)   │
 ├─────────────────────────────────────────┤
 │         Camada de Infraestrutura        │
 │    (Repositórios, Context, Migrations)  │
@@ -110,6 +113,119 @@ public class Emprestimo
     public bool PodeRenovar => Status == "Emprestado" && QuantidadeRenovacoes < MaxRenovacoes;
 }
 ```
+
+## 📁 Estrutura do Projeto
+
+### Organização das Camadas
+
+```
+Projeto2025_API/
+├── Dominio/                    # Camada de Domínio
+│   ├── Entidades/             # Entidades do domínio
+│   │   ├── Autor.cs
+│   │   ├── Editora.cs
+│   │   ├── Emprestimo.cs
+│   │   ├── Exemplar.cs
+│   │   ├── Funcionario.cs
+│   │   ├── Livro.cs
+│   │   └── Usuario.cs
+│   └── Dtos/                  # Data Transfer Objects
+│       ├── AutorDTO.cs
+│       ├── EditoraDTO.cs
+│       ├── EmprestimoDTO.cs
+│       ├── ExemplarDTO.cs
+│       ├── FuncionarioDTO.cs
+│       ├── LivroDTO.cs
+│       ├── LoginDTO.cs
+│       ├── TokenDTO.cs
+│       └── UsuarioDTO.cs
+├── Interface/                  # Camada de Interface
+│   ├── Repositorio/           # Interfaces dos repositórios
+│   │   ├── IBaseRepository.cs
+│   │   ├── IAutorRepositorio.cs
+│   │   ├── IEditoraRepositorio.cs
+│   │   ├── IEmprestimoRepositorio.cs
+│   │   ├── IExemplarRepositorio.cs
+│   │   ├── IFuncionarioRepositorio.cs
+│   │   ├── ILivroRepositorio.cs
+│   │   └── IUsuarioRepositorio.cs
+│   └── Service/               # Interfaces dos serviços
+│       ├── IAuthService.cs
+│       ├── IAutorService.cs
+│       ├── IEditoraService.cs
+│       ├── IEmprestimoService.cs
+│       ├── IExemplarService.cs
+│       ├── IFuncionarioService.cs
+│       ├── ILivroService.cs
+│       └── IUsuarioService.cs
+├── InfraEstrutura/            # Camada de Infraestrutura
+│   ├── Data/                  # Contexto do banco de dados
+│   │   └── EmpresaContexto.cs
+│   ├── Migrations/            # Migrações do EF Core
+│   └── Repositorio/           # Implementações dos repositórios
+│       ├── BaseRepository.cs
+│       ├── AutorRepositorio.cs
+│       ├── EditoraRepositorio.cs
+│       ├── EmprestimoRepositorio.cs
+│       ├── ExemplarRepositorio.cs
+│       ├── FuncionarioRepositorio.cs
+│       ├── LivroRepositorio.cs
+│       └── UsuarioRepositorio.cs
+├── Service/                   # Camada de Serviços
+│   ├── AuthService.cs
+│   ├── AutorService.cs
+│   ├── EditoraService.cs
+│   ├── EmprestimoService.cs
+│   ├── ExemplarService.cs
+│   ├── FuncionarioService.cs
+│   ├── LivroService.cs
+│   ├── UsuarioService.cs
+│   └── PasswordHashService.cs
+└── Projeto2020_API/           # Camada de Apresentação
+    ├── Controllers/           # Controllers da API
+    │   ├── AuthController.cs
+    │   ├── AutorController.cs
+    │   ├── ConfiguracaoController.cs
+    │   ├── DashboardController.cs
+    │   ├── EditoraController.cs
+    │   ├── EmprestimoController.cs
+    │   ├── ExemplarController.cs
+    │   ├── FuncionarioController.cs
+    │   ├── LivroController.cs
+    │   ├── RelatoriosController.cs
+    │   └── UsuarioController.cs
+    ├── Mapping/               # Configuração do AutoMapper
+    │   └── MappingProfile.cs
+    ├── Program.cs             # Configuração da aplicação
+    └── appsettings.json       # Configurações
+```
+
+### Responsabilidades de Cada Camada
+
+#### 🏛️ **Camada de Domínio (Dominio/)**
+- **Entidades**: Representam os objetos de negócio do sistema
+- **DTOs**: Objetos de transferência de dados entre camadas
+- **Regras de negócio**: Validações e lógicas específicas do domínio
+
+#### 🔌 **Camada de Interface (Interface/)**
+- **Interfaces de Repositórios**: Contratos para acesso a dados
+- **Interfaces de Serviços**: Contratos para lógica de negócio
+- **Abstrações**: Permitem desacoplamento entre camadas
+
+#### 🏗️ **Camada de Infraestrutura (InfraEstrutura/)**
+- **Contexto do Banco**: Configuração do Entity Framework
+- **Repositórios**: Implementações concretas de acesso a dados
+- **Migrations**: Evolução do esquema do banco de dados
+
+#### ⚙️ **Camada de Serviços (Service/)**
+- **Lógica de Negócio**: Implementação das regras de negócio
+- **Orquestração**: Coordenação entre repositórios e validações
+- **Transformações**: Conversões entre entidades e DTOs
+
+#### 🎯 **Camada de Apresentação (Projeto2020_API/)**
+- **Controllers**: Endpoints da API REST
+- **Mapeamento**: Configuração do AutoMapper
+- **Configuração**: Setup da aplicação e dependências
 
 ## 🔐 Sistema de Autenticação
 
