@@ -29,6 +29,8 @@
 ### Infraestrutura
 - **CORS 2.3.0** - Cross-Origin Resource Sharing
 - **Health Checks 2.2.0** - Monitoramento de saúde da API
+- **Serilog.AspNetCore 9.0.0** - Sistema de logging estruturado
+- **FluentValidation.AspNetCore 11.3.1** - Validação avançada de dados
 
 ## 🏗️ Arquitetura do Sistema
 
@@ -315,8 +317,16 @@ Projeto2025_API/
     │   └── UsuarioController.cs
     ├── Mapping/               # Configuração do AutoMapper
     │   └── MappingProfile.cs
+    ├── Middleware/            # Middlewares customizados
+    ├── Validators/            # Validadores FluentValidation
+    ├── Properties/            # Configurações de build
+    │   └── launchSettings.json
+    ├── logs/                  # Arquivos de log do Serilog
     ├── Program.cs             # Configuração da aplicação
-    └── appsettings.json       # Configurações
+    ├── appsettings.json       # Configurações de produção
+    ├── appsettings.Development.json # Configurações de desenvolvimento
+    ├── Projeto2025_API.http   # Arquivo de testes HTTP
+    └── Projeto2025_API.csproj # Arquivo de projeto
 ```
 
 ### Responsabilidades de Cada Camada
@@ -345,6 +355,80 @@ Projeto2025_API/
 - **Controllers**: Endpoints da API REST
 - **Mapeamento**: Configuração do AutoMapper
 - **Configuração**: Setup da aplicação e dependências
+
+## 📁 Arquivos Especiais e Configurações
+
+### ContextoEmpresaFactory.cs
+Factory para criação do contexto durante migrations do Entity Framework:
+
+```csharp
+public class ContextoEmpresaFactory : IDesignTimeDbContextFactory<EmpresaContexto>
+{
+    public EmpresaContexto CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<EmpresaContexto>();
+        optionsBuilder.UseSqlServer(@"Server=GUSTAVO\SQLEXPRESS01;DataBase=dbBiblioteca;integrated security=true;TrustServerCertificate=True;");
+        return new EmpresaContexto(optionsBuilder.Options);
+    }
+}
+```
+
+### Projeto2025_API.http
+Arquivo de testes HTTP para desenvolvimento:
+
+```http
+@Projeto2025_API_HostAddress = http://localhost:5072
+
+GET {{Projeto2025_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+```
+
+### launchSettings.json
+Configurações de desenvolvimento e perfis de execução:
+
+```json
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5072",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7265;http://localhost:5072",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+```
+
+### Estrutura de Projetos (.csproj)
+O sistema é composto por 5 projetos:
+
+1. **Projeto2025_API.csproj** - Projeto principal da API
+2. **Dominio.csproj** - Entidades e DTOs
+3. **Interface.csproj** - Interfaces de repositórios e serviços
+4. **InfraEstrutura.csproj** - Implementações e contexto do banco
+5. **Service.csproj** - Lógica de negócio e serviços
+
+### Pasta logs/
+Sistema de logging estruturado com Serilog:
+- **api-20250920.txt** - Logs de execução da API
+- Rotação automática de logs por data
+- Níveis de log configuráveis (Information, Warning, Error)
 
 ## 🔧 Serviços Auxiliares
 
@@ -443,7 +527,12 @@ public class PasswordHashService
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=dbBiblioteca;Trusted_Connection=true;MultipleActiveResultSets=true"
+    "Default": "Server=GUSTAVO\\SQLEXPRESS01;DataBase=dbBiblioteca;integrated security=true;TrustServerCertificate=True;"
+  },
+  "Jwt": {
+    "Key": "MinhaChaveSecretaSuperSeguraParaJWT2025!@#",
+    "Issuer": "Projeto2025API",
+    "Audience": "Projeto2025API"
   }
 }
 ```
@@ -945,6 +1034,30 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 ```
+
+## 🎨 Frontend 3D (Futura Implementação)
+
+### Documentação Completa
+O projeto inclui especificação completa para implementação do frontend 3D interativo:
+
+- **Arquivo**: `FUTURA_IMPLEMENTACAO_FRONTEND.md`
+- **Conceito**: Estante 3D interativa como interface principal
+- **Tecnologias**: React 18 + TypeScript + Vite + Tailwind CSS
+- **Animações**: Framer Motion + React Spring
+- **Estado**: Zustand + React Query
+
+### Características Principais
+- **Navegação 3D**: Livros "saem da estante" no hover
+- **Responsividade**: Mobile, tablet e desktop
+- **Busca Avançada**: Filtros combinados e autocomplete
+- **Sistema de Notificações**: Tempo real com WebSocket
+- **Analytics**: Métricas de uso e performance
+
+### Roadmap de Implementação
+1. **Fase 1 - MVP** (2-3 semanas): Estante 3D básica
+2. **Fase 2 - Core** (3-4 semanas): Funcionalidades completas
+3. **Fase 3 - Avançado** (2-3 semanas): Animações e PWA
+4. **Fase 4 - Polimento** (1-2 semanas): Testes e otimização
 
 ---
 

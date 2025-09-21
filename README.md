@@ -82,15 +82,15 @@ Projeto2025_API/
 
 - **.NET 8.0** - Framework principal
 - **ASP.NET Core Web API** - API REST
-- **Entity Framework Core** - ORM
+- **Entity Framework Core 9.0.8** - ORM
 - **SQL Server** - Banco de dados
-- **JWT Bearer** - Autenticação
-- **AutoMapper** - Mapeamento de objetos
-- **Swagger/OpenAPI** - Documentação da API
-- **FluentValidation** - Validação de dados
-- **Serilog** - Sistema de logging
-- **CORS** - Cross-Origin Resource Sharing
-- **Health Checks** - Monitoramento de saúde da API
+- **JWT Bearer 8.0.1** - Autenticação
+- **AutoMapper 15.0.1** - Mapeamento de objetos
+- **Swagger/OpenAPI 6.4.0** - Documentação da API
+- **Serilog 9.0.0** - Sistema de logging estruturado
+- **FluentValidation 11.3.1** - Validação avançada
+- **CORS 2.3.0** - Cross-Origin Resource Sharing
+- **Health Checks 2.2.0** - Monitoramento de saúde
 
 ## 📋 Pré-requisitos
 
@@ -379,6 +379,21 @@ docker run -p 5000:80 biblioteca-api
 # Deploy via Azure CLI
 az webapp deployment source config-zip --resource-group myResourceGroup --name myAppName --src deploy.zip
 ```
+
+## 🎨 Frontend 3D (Futura Implementação)
+
+O projeto inclui especificação completa para implementação de um frontend 3D interativo:
+
+- **Conceito**: Estante 3D interativa como interface principal
+- **Tecnologias**: React 18 + TypeScript + Vite + Tailwind CSS
+- **Documentação**: [FUTURA_IMPLEMENTACAO_FRONTEND.md](FUTURA_IMPLEMENTACAO_FRONTEND.md)
+- **Características**: Navegação 3D, responsividade, busca avançada, notificações em tempo real
+
+### Roadmap de Implementação
+1. **Fase 1 - MVP** (2-3 semanas): Estante 3D básica
+2. **Fase 2 - Core** (3-4 semanas): Funcionalidades completas
+3. **Fase 3 - Avançado** (2-3 semanas): Animações e PWA
+4. **Fase 4 - Polimento** (1-2 semanas): Testes e otimização
 
 ## 🤝 Contribuição
 
