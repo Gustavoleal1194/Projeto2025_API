@@ -395,6 +395,15 @@ O projeto inclui especificação completa para implementação de um frontend 3D
 3. **Fase 3 - Avançado** (2-3 semanas): Animações e PWA
 4. **Fase 4 - Polimento** (1-2 semanas): Testes e otimização
 
+## 📚 Documentação
+
+- [Documentação Técnica](DOCUMENTACAO_TECNICA.md) - Arquitetura e implementação detalhada
+- [Guia de Testes no Swagger](GUIA_TESTES_SWAGGER.md) - Como testar todos os endpoints
+- [Guia de Contribuição](CONTRIBUTING.md) - Como contribuir com o projeto
+- [Changelog](CHANGELOG.md) - Histórico de versões
+- [Autenticação JWT](AUTENTICACAO_JWT.md) - Guia de autenticação
+- [Frontend 3D](FUTURA_IMPLEMENTACAO_FRONTEND.md) - Especificação do frontend interativo
+
 ## 🤝 Contribuição
 
 1. Fork o projeto

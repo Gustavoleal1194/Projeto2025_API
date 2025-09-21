@@ -142,6 +142,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 #### 📚 Documentação
 - **README.md** completo
 - **Documentação técnica** detalhada
+- **Guia de testes no Swagger** completo
 - **Swagger/OpenAPI** integrado
 - **Exemplos de uso** para todos os endpoints
 
