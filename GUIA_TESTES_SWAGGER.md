@@ -1,64 +1,20 @@
-# 🧪 Guia Completo de Testes no Swagger - Projeto2025 API
+# 🧪 Guia de Testes da API no Swagger
 
-## 📋 Índice
-1. [Configuração Inicial](#configuração-inicial)
-2. [Autenticação JWT](#autenticação-jwt)
-3. [Testando Endpoints por Categoria](#testando-endpoints-por-categoria)
-4. [Exemplos de Dados para Testes](#exemplos-de-dados-para-testes)
-5. [Troubleshooting](#troubleshooting)
+Este guia detalha como utilizar a interface do Swagger UI para testar todos os endpoints da API de forma eficiente, incluindo a configuração de autenticação JWT e exemplos completos de request/response.
 
----
+## 🚀 Acessando o Swagger UI
 
-## 🚀 Configuração Inicial
+Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072/swagger`
 
-### 1. Acessar o Swagger
-- **URL**: `http://localhost:5072/swagger`
-- **Método**: Abrir no navegador após executar `dotnet run --project Projeto2020_API`
+## 🔑 Configuração de Autenticação
 
-### 2. Configurar Autenticação no Swagger
-1. Clique no botão **"Authorize"** (🔒) no canto superior direito
-2. No campo **"Value"**, digite: `Bearer {seu-token-jwt}`
-3. Clique em **"Authorize"**
-4. Clique em **"Close"**
+### Passo 1: Obter Token JWT
 
----
+1. **Expanda o endpoint `POST /api/Auth/login`**
+2. Clique em "Try it out"
+3. No campo "Request body", insira as credenciais:
 
-## 🔐 Autenticação JWT
-
-### Passo 1: Criar Administrador Inicial
-**Endpoint**: `POST /api/auth/criar-admin`
-
-**Body (JSON)**:
-```json
-{
-  "nome": "Administrador Sistema",
-  "email": "admin@biblioteca.com",
-  "senha": "123456",
-  "cargo": "Administrador",
-  "salario": 5000.00,
-  "dataAdmissao": "2024-01-01T00:00:00Z",
-  "telefone": "11999999999"
-}
-```
-
-**Resposta Esperada**:
-```json
-{
-  "id": 1,
-  "nome": "Administrador Sistema",
-  "email": "admin@biblioteca.com",
-  "cargo": "Administrador",
-  "salario": 5000.00,
-  "dataAdmissao": "2024-01-01T00:00:00Z",
-  "telefone": "11999999999",
-  "ativo": true
-}
-```
-
-### Passo 2: Fazer Login
-**Endpoint**: `POST /api/auth/login`
-
-**Body (JSON)**:
+**Request Body:**
 ```json
 {
   "email": "admin@biblioteca.com",
@@ -66,11 +22,11 @@
 }
 ```
 
-**Resposta Esperada**:
+**Resposta Esperada (200 OK):**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expiration": "2025-01-21T18:30:00Z",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFkbWluaXN0cmFkb3IiLCJlbWFpbCI6ImFkbWluQGJpYmxpb3RlY2EuY29tIiwicm9sZSI6IkFkbWluIiwianRpIjoiMTIzNDU2Nzg5MCIsIm5iZiI6MTc1ODQ4NTcwNiwiZXhwIjoxNzU4NTE0NTA2LCJpYXQiOjE3NTg0ODU3MDYsImlzcyI6IlByb2pldG8yMDI1QVBJIiwiYXVkIjoiUHJvamV0bzIwMjVBUEkifQ.abc123def456",
+  "expiration": "2025-09-21T18:58:27.774Z",
   "tipo": "Bearer",
   "nome": "Administrador Sistema",
   "email": "admin@biblioteca.com",
@@ -78,716 +34,706 @@
 }
 ```
 
-### Passo 3: Configurar Token no Swagger
-1. Copie o **token** da resposta do login
-2. Clique em **"Authorize"** (🔒)
-3. Digite: `Bearer {token-copiado}`
-4. Clique em **"Authorize"**
+### Passo 2: Configurar Token no Swagger
+
+1. No topo da página do Swagger UI, clique no botão verde **"Authorize"**
+2. No campo **"Value"**, digite: `Bearer {seu-token-jwt}`
+3. Clique em **"Authorize"**
+4. Clique em **"Close"**
 
 ---
 
 ## 📚 Testando Endpoints por Categoria
 
-### 🔐 **AUTENTICAÇÃO** (6 endpoints)
-
-#### 1. Login
-- **Endpoint**: `POST /api/auth/login`
-- **Autorização**: ❌ Não requerida
-- **Body**: Email e senha
-- **Uso**: Obter token JWT
-
-#### 2. Registrar Usuário
-- **Endpoint**: `POST /api/auth/registrar`
-- **Autorização**: ❌ Não requerida
-- **Body**: Dados completos do usuário
-- **Uso**: Criar conta de usuário comum
-
-#### 3. Criar Administrador
-- **Endpoint**: `POST /api/auth/criar-admin`
-- **Autorização**: ❌ Não requerida (apenas se não existir funcionário)
-- **Body**: Dados do administrador
-- **Uso**: Criar primeiro administrador do sistema
-
-#### 4. Registrar Funcionário
-- **Endpoint**: `POST /api/auth/registrar-funcionario`
-- **Autorização**: ✅ Admin/Funcionario
-- **Body**: Dados do funcionário
-- **Uso**: Criar funcionários (requer token)
-
-#### 5. Validar Token
-- **Endpoint**: `POST /api/auth/validar-token`
-- **Autorização**: ✅ Qualquer token válido
-- **Body**: Vazio
-- **Uso**: Verificar se token está válido
-
-#### 6. Obter Usuário Atual
-- **Endpoint**: `GET /api/auth/me`
-- **Autorização**: ✅ Qualquer token válido
-- **Body**: Vazio
-- **Uso**: Obter dados do usuário logado
-
----
-
-### 📖 **LIVROS** (10 endpoints)
-
-#### 1. Listar Todos os Livros
-- **Endpoint**: `GET /api/Livro`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver todos os livros cadastrados
-
-#### 2. Buscar Livro por ID
-- **Endpoint**: `GET /api/Livro/{id}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: ID do livro
-- **Uso**: Ver detalhes de um livro específico
-
-#### 3. Criar Livro
-- **Endpoint**: `POST /api/Livro`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados completos do livro
-- **Uso**: Adicionar novo livro ao acervo
-
-#### 4. Atualizar Livro
-- **Endpoint**: `PUT /api/Livro`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados atualizados do livro
-- **Uso**: Modificar informações de um livro
-
-#### 5. Excluir Livro
-- **Endpoint**: `DELETE /api/Livro/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do livro
-- **Uso**: Remover livro do acervo
-
-#### 6. Livros Disponíveis
-- **Endpoint**: `GET /api/Livro/disponiveis`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver livros com exemplares disponíveis
-
-#### 7. Livros em Estoque
-- **Endpoint**: `GET /api/Livro/em-estoque`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver livros que possuem exemplares
-
-#### 8. Buscar Livros
-- **Endpoint**: `GET /api/Livro/buscar/{termo}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Termo de busca
-- **Uso**: Buscar livros por título, autor, etc.
-
-#### 9. Livros por Autor
-- **Endpoint**: `GET /api/Livro/por-autor/{idAutor}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: ID do autor
-- **Uso**: Ver livros de um autor específico
-
-#### 10. Livros por Editora
-- **Endpoint**: `GET /api/Livro/por-editora/{idEditora}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: ID da editora
-- **Uso**: Ver livros de uma editora específica
-
----
-
-### 📚 **EXEMPLARES** (8 endpoints)
-
-#### 1. Listar Todos os Exemplares
-- **Endpoint**: `GET /api/Exemplar`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver todos os exemplares físicos
-
-#### 2. Buscar Exemplar por ID
-- **Endpoint**: `GET /api/Exemplar/{id}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: ID do exemplar
-- **Uso**: Ver detalhes de um exemplar específico
-
-#### 3. Criar Exemplar
-- **Endpoint**: `POST /api/Exemplar`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados do exemplar
-- **Uso**: Adicionar nova cópia física de um livro
-
-#### 4. Atualizar Exemplar
-- **Endpoint**: `PUT /api/Exemplar`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados atualizados do exemplar
-- **Uso**: Modificar informações de um exemplar
-
-#### 5. Excluir Exemplar
-- **Endpoint**: `DELETE /api/Exemplar/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do exemplar
-- **Uso**: Remover exemplar do acervo
-
-#### 6. Exemplares Disponíveis
-- **Endpoint**: `GET /api/Exemplar/disponiveis`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver exemplares disponíveis para empréstimo
-
-#### 7. Exemplares por Livro
-- **Endpoint**: `GET /api/Exemplar/por-livro/{idLivro}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: ID do livro
-- **Uso**: Ver todos os exemplares de um livro
-
-#### 8. Exemplares por Localização
-- **Endpoint**: `GET /api/Exemplar/por-localizacao/{localizacao}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Localização
-- **Uso**: Buscar exemplares por localização
-
----
-
-### 👥 **USUÁRIOS** (8 endpoints)
-
-#### 1. Listar Todos os Usuários
-- **Endpoint**: `GET /api/Usuario`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver todos os usuários cadastrados
-
-#### 2. Buscar Usuário por ID
-- **Endpoint**: `GET /api/Usuario/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do usuário
-- **Uso**: Ver detalhes de um usuário específico
-
-#### 3. Criar Usuário
-- **Endpoint**: `POST /api/Usuario`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados do usuário
-- **Uso**: Cadastrar novo usuário
-
-#### 4. Atualizar Usuário
-- **Endpoint**: `PUT /api/Usuario`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados atualizados do usuário
-- **Uso**: Modificar informações de um usuário
-
-#### 5. Excluir Usuário
-- **Endpoint**: `DELETE /api/Usuario/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do usuário
-- **Uso**: Remover usuário do sistema
-
-#### 6. Buscar Usuários por Nome
-- **Endpoint**: `GET /api/Usuario/buscar/{nome}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nome do usuário
-- **Uso**: Buscar usuários por nome
-
-#### 7. Buscar Usuário por CPF
-- **Endpoint**: `GET /api/Usuario/por-cpf/{cpf}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: CPF do usuário
-- **Uso**: Buscar usuário por CPF
-
-#### 8. Buscar Usuário por Email
-- **Endpoint**: `GET /api/Usuario/por-email/{email}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Email do usuário
-- **Uso**: Buscar usuário por email
-
----
-
-### 👨‍💼 **FUNCIONÁRIOS** (8 endpoints)
-
-#### 1. Listar Todos os Funcionários
-- **Endpoint**: `GET /api/Funcionario`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver todos os funcionários cadastrados
-
-#### 2. Buscar Funcionário por ID
-- **Endpoint**: `GET /api/Funcionario/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do funcionário
-- **Uso**: Ver detalhes de um funcionário específico
-
-#### 3. Criar Funcionário
-- **Endpoint**: `POST /api/Funcionario`
-- **Autorização**: ✅ Admin
-- **Body**: Dados do funcionário
-- **Uso**: Cadastrar novo funcionário
-
-#### 4. Atualizar Funcionário
-- **Endpoint**: `PUT /api/Funcionario`
-- **Autorização**: ✅ Admin
-- **Body**: Dados atualizados do funcionário
-- **Uso**: Modificar informações de um funcionário
-
-#### 5. Excluir Funcionário
-- **Endpoint**: `DELETE /api/Funcionario/{id}`
-- **Autorização**: ✅ Admin
-- **Parâmetros**: ID do funcionário
-- **Uso**: Remover funcionário do sistema
-
-#### 6. Buscar Funcionários por Nome
-- **Endpoint**: `GET /api/Funcionario/buscar/{nome}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nome do funcionário
-- **Uso**: Buscar funcionários por nome
-
-#### 7. Buscar Funcionário por Email
-- **Endpoint**: `GET /api/Funcionario/por-email/{email}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Email do funcionário
-- **Uso**: Buscar funcionário por email
-
-#### 8. Funcionários Ativos
-- **Endpoint**: `GET /api/Funcionario/ativos`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver apenas funcionários ativos
-
----
-
-### ✍️ **AUTORES** (8 endpoints)
-
-#### 1. Listar Todos os Autores
-- **Endpoint**: `GET /api/Autor`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver todos os autores cadastrados
-
-#### 2. Buscar Autor por ID
-- **Endpoint**: `GET /api/Autor/{id}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: ID do autor
-- **Uso**: Ver detalhes de um autor específico
-
-#### 3. Criar Autor
-- **Endpoint**: `POST /api/Autor`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados do autor
-- **Uso**: Cadastrar novo autor
-
-#### 4. Atualizar Autor
-- **Endpoint**: `PUT /api/Autor`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados atualizados do autor
-- **Uso**: Modificar informações de um autor
-
-#### 5. Excluir Autor
-- **Endpoint**: `DELETE /api/Autor/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do autor
-- **Uso**: Remover autor do sistema
-
-#### 6. Buscar Autores por Nome
-- **Endpoint**: `GET /api/Autor/buscar/{termo}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Termo de busca
-- **Uso**: Buscar autores por nome
-
-#### 7. Autores por Nacionalidade
-- **Endpoint**: `GET /api/Autor/por-nacionalidade/{nacionalidade}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nacionalidade
-- **Uso**: Ver autores de uma nacionalidade específica
-
-#### 8. Autores com Livros
-- **Endpoint**: `GET /api/Autor/com-livros`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver autores que possuem livros cadastrados
-
----
-
-### 🏢 **EDITORAS** (8 endpoints)
-
-#### 1. Listar Todas as Editoras
-- **Endpoint**: `GET /api/Editora`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver todas as editoras cadastradas
-
-#### 2. Buscar Editora por ID
-- **Endpoint**: `GET /api/Editora/{id}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: ID da editora
-- **Uso**: Ver detalhes de uma editora específica
-
-#### 3. Criar Editora
-- **Endpoint**: `POST /api/Editora`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados da editora
-- **Uso**: Cadastrar nova editora
-
-#### 4. Atualizar Editora
-- **Endpoint**: `PUT /api/Editora`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados atualizados da editora
-- **Uso**: Modificar informações de uma editora
-
-#### 5. Excluir Editora
-- **Endpoint**: `DELETE /api/Editora/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID da editora
-- **Uso**: Remover editora do sistema
-
-#### 6. Buscar Editoras por Nome
-- **Endpoint**: `GET /api/Editora/buscar/{termo}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Termo de busca
-- **Uso**: Buscar editoras por nome
-
-#### 7. Editoras por Cidade
-- **Endpoint**: `GET /api/Editora/por-cidade/{cidade}`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Cidade
-- **Uso**: Ver editoras de uma cidade específica
-
-#### 8. Editoras Ativas
-- **Endpoint**: `GET /api/Editora/ativas`
-- **Autorização**: ✅ Usuario/Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver apenas editoras ativas
-
----
-
-### 📋 **EMPRÉSTIMOS** (10 endpoints)
-
-#### 1. Listar Todos os Empréstimos
-- **Endpoint**: `GET /api/Emprestimo`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver todos os empréstimos
-
-#### 2. Buscar Empréstimo por ID
-- **Endpoint**: `GET /api/Emprestimo/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do empréstimo
-- **Uso**: Ver detalhes de um empréstimo específico
-
-#### 3. Criar Empréstimo
-- **Endpoint**: `POST /api/Emprestimo`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados do empréstimo
-- **Uso**: Realizar novo empréstimo
-
-#### 4. Atualizar Empréstimo
-- **Endpoint**: `PUT /api/Emprestimo`
-- **Autorização**: ✅ Funcionario/Admin
-- **Body**: Dados atualizados do empréstimo
-- **Uso**: Modificar informações de um empréstimo
-
-#### 5. Excluir Empréstimo
-- **Endpoint**: `DELETE /api/Emprestimo/{id}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do empréstimo
-- **Uso**: Cancelar empréstimo
-
-#### 6. Empréstimos por Usuário
-- **Endpoint**: `GET /api/Emprestimo/por-usuario/{idUsuario}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do usuário
-- **Uso**: Ver empréstimos de um usuário específico
-
-#### 7. Empréstimos Ativos
-- **Endpoint**: `GET /api/Emprestimo/emprestados`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver empréstimos em andamento
-
-#### 8. Empréstimos Atrasados
-- **Endpoint**: `GET /api/Emprestimo/atrasados`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver empréstimos em atraso
-
-#### 9. Devolver Empréstimo
-- **Endpoint**: `POST /api/Emprestimo/{id}/devolver`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do empréstimo
-- **Uso**: Registrar devolução de empréstimo
-
-#### 10. Renovar Empréstimo
-- **Endpoint**: `POST /api/Emprestimo/{id}/renovar`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do empréstimo
-- **Uso**: Renovar prazo de empréstimo
-
----
-
-### 📊 **RELATÓRIOS** (6 endpoints)
-
-#### 1. Empréstimos por Período
-- **Endpoint**: `GET /api/Relatorios/emprestimos-por-periodo`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: inicio, fim
-- **Uso**: Relatório de empréstimos em período específico
-
-#### 2. Livros Mais Emprestados
-- **Endpoint**: `GET /api/Relatorios/livros-mais-emprestados`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: topN (opcional)
-- **Uso**: Ranking de livros mais emprestados
-
-#### 3. Usuários com Atrasos
-- **Endpoint**: `GET /api/Relatorios/usuarios-com-atrasos`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Lista de usuários com empréstimos atrasados
-
-#### 4. Exemplares Disponíveis
-- **Endpoint**: `GET /api/Relatorios/exemplares-disponiveis`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Relatório de exemplares disponíveis
-
-#### 5. Histórico de Usuário
-- **Endpoint**: `GET /api/Relatorios/historico-usuario/{idUsuario}`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: ID do usuário
-- **Uso**: Histórico completo de empréstimos de um usuário
-
-#### 6. Faturamento de Multas
-- **Endpoint**: `GET /api/Relatorios/faturamento-multas`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: inicio, fim
-- **Uso**: Relatório de multas por período
-
----
-
-### 🎛️ **DASHBOARD** (5 endpoints)
-
-#### 1. Resumo Geral
-- **Endpoint**: `GET /api/Dashboard/resumo-geral`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Estatísticas gerais do sistema
-
-#### 2. Estatísticas de Empréstimos
-- **Endpoint**: `GET /api/Dashboard/estatisticas-emprestimos`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Métricas de empréstimos
-
-#### 3. Top Livros
-- **Endpoint**: `GET /api/Dashboard/top-livros`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: topN (opcional)
-- **Uso**: Livros mais populares
-
-#### 4. Usuários Ativos
-- **Endpoint**: `GET /api/Dashboard/usuarios-ativos`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Lista de usuários ativos
-
-#### 5. Alertas
-- **Endpoint**: `GET /api/Dashboard/alertas`
-- **Autorização**: ✅ Funcionario/Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Alertas e notificações do sistema
-
----
-
-### ⚙️ **CONFIGURAÇÕES** (6 endpoints)
-
-#### 1. Obter Configurações do Sistema
-- **Endpoint**: `GET /api/Configuracao/sistema`
-- **Autorização**: ✅ Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver configurações gerais
-
-#### 2. Atualizar Configurações do Sistema
-- **Endpoint**: `POST /api/Configuracao/sistema`
-- **Autorização**: ✅ Admin
-- **Body**: Configurações
-- **Uso**: Modificar configurações gerais
-
-#### 3. Obter Configurações de Usuários
-- **Endpoint**: `GET /api/Configuracao/usuarios`
-- **Autorização**: ✅ Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver configurações de usuários
-
-#### 4. Atualizar Configurações de Usuários
-- **Endpoint**: `POST /api/Configuracao/usuarios`
-- **Autorização**: ✅ Admin
-- **Body**: Configurações
-- **Uso**: Modificar configurações de usuários
-
-#### 5. Obter Configurações de Notificações
-- **Endpoint**: `GET /api/Configuracao/notificacoes`
-- **Autorização**: ✅ Admin
-- **Parâmetros**: Nenhum
-- **Uso**: Ver configurações de notificações
-
-#### 6. Atualizar Configurações de Notificações
-- **Endpoint**: `POST /api/Configuracao/notificacoes`
-- **Autorização**: ✅ Admin
-- **Body**: Configurações
-- **Uso**: Modificar configurações de notificações
-
----
-
-## 📝 Exemplos de Dados para Testes
-
-### Dados de Usuário
+### 🔐 Autenticação
+
+#### POST /api/Auth/login
+**Descrição**: Login de usuário ou funcionário
+
+**Request Body:**
+```json
+{
+  "email": "admin@biblioteca.com",
+  "senha": "123456"
+}
+```
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiration": "2025-09-21T18:58:27.774Z",
+  "tipo": "Bearer",
+  "nome": "Administrador Sistema",
+  "email": "admin@biblioteca.com",
+  "role": "Admin"
+}
+```
+
+#### POST /api/Auth/registrar
+**Descrição**: Registro de novo usuário
+
+**Request Body:**
 ```json
 {
   "nome": "João Silva",
   "email": "joao.silva@email.com",
   "senha": "123456",
-  "telefone": "11999999999",
+  "telefone": "11987654321",
   "cpf": "12345678901",
   "dataNascimento": "1990-05-15T00:00:00Z"
 }
 ```
 
-### Dados de Funcionário
+**Resposta Esperada (200 OK):**
 ```json
 {
-  "nome": "Maria Santos",
-  "email": "maria.santos@biblioteca.com",
-  "senha": "123456",
-  "telefone": "11888888888",
-  "cargo": "Bibliotecária",
-  "salario": 3500.00,
-  "dataAdmissao": "2024-01-15T00:00:00Z"
+  "id": 2,
+  "nome": "João Silva",
+  "email": "joao.silva@email.com",
+  "telefone": "11987654321",
+  "cpf": "12345678901",
+  "dataNascimento": "1990-05-15T00:00:00Z",
+  "ativo": true,
+  "dataCriacao": "2025-09-21T20:30:00Z"
 }
 ```
 
-### Dados de Autor
+---
+
+### 📖 Livros
+
+#### GET /api/Livro
+**Descrição**: Listar todos os livros
+
+**Resposta Esperada (200 OK):**
 ```json
-{
-  "nome": "Machado de Assis",
-  "nomeCompleto": "Joaquim Maria Machado de Assis",
-  "nomeArtistico": "Machado de Assis",
-  "dataNascimento": "1839-06-21T00:00:00Z",
-  "nacionalidade": "Brasileira",
-  "pais": "Brasil",
-  "paisOrigem": "Brasil",
-  "email": "machado@classicos.com",
-  "telefone": "11222222222",
-  "website": "https://machado.com",
-  "endereco": "Rua das Flores, 123",
-  "cidade": "Rio de Janeiro",
-  "estado": "RJ",
-  "cep": "20000-000"
-}
+[
+  {
+    "id": 1,
+    "titulo": "Dom Casmurro",
+    "subtitulo": "Romance",
+    "isbn": "978-85-333-0227-3",
+    "ano": 1899,
+    "edicao": 1,
+    "numeroPaginas": 256,
+    "idioma": "Português",
+    "genero": "Romance",
+    "sinopse": "Romance de Machado de Assis...",
+    "preco": 29.90,
+    "capaUrl": "http://example.com/capa_dom_casmurro.jpg",
+    "codigoBarras": "1234567890123",
+    "ativo": true,
+    "dataCriacao": "2025-09-21T20:00:00Z",
+    "idAutor": 1,
+    "idEditora": 1,
+    "totalExemplares": 2,
+    "exemplaresDisponiveis": 1,
+    "temExemplaresDisponiveis": true,
+    "nomeAutor": "Machado de Assis",
+    "nomeEditora": "Editora Globo"
+  }
+]
 ```
 
-### Dados de Editora
-```json
-{
-  "nome": "Editora Globo",
-  "cnpj": "12.345.678/0001-90",
-  "email": "contato@editoraglobo.com",
-  "telefone": "11333333333",
-  "endereco": "Av. Paulista, 1000",
-  "cidade": "São Paulo",
-  "estado": "SP",
-  "cep": "01310-100",
-  "pais": "Brasil",
-  "site": "https://editoraglobo.com",
-  "dataFundacao": "1925-01-01T00:00:00Z"
-}
-```
+#### POST /api/Livro
+**Descrição**: Criar novo livro
 
-### Dados de Livro
+**Request Body:**
 ```json
 {
-  "titulo": "Dom Casmurro",
-  "subtitulo": "Romance",
-  "isbn": "978-85-250-1234-5",
-  "ano": 1899,
+  "titulo": "O Senhor dos Anéis",
+  "subtitulo": "A Sociedade do Anel",
+  "isbn": "978-85-333-0227-4",
+  "ano": 1954,
   "edicao": 1,
-  "numeroPaginas": 256,
+  "numeroPaginas": 576,
   "idioma": "Português",
-  "genero": "Romance",
-  "sinopse": "Romance clássico da literatura brasileira...",
-  "preco": 29.90,
-  "capaUrl": "https://exemplo.com/capa.jpg",
-  "codigoBarras": "9788525012345",
+  "genero": "Fantasia",
+  "sinopse": "Primeiro volume da trilogia épica...",
+  "preco": 49.90,
+  "capaUrl": "http://example.com/capa_aneis.jpg",
+  "codigoBarras": "1234567890124",
   "idAutor": 1,
   "idEditora": 1
 }
 ```
 
-### Dados de Exemplar
+**Resposta Esperada (200 OK):**
 ```json
 {
-  "idLivro": 1,
-  "numeroExemplar": "DC-001",
-  "localizacao": "Estante A, Prateleira 1",
-  "condicao": "Excelente",
-  "disponivel": true,
-  "dataAquisicao": "2024-01-10T00:00:00Z",
-  "valorAquisicao": 25.00,
-  "fornecedor": "Distribuidora Livros Ltda",
-  "observacoes": "Exemplar em perfeito estado"
+  "id": 2,
+  "titulo": "O Senhor dos Anéis",
+  "subtitulo": "A Sociedade do Anel",
+  "isbn": "978-85-333-0227-4",
+  "ano": 1954,
+  "edicao": 1,
+  "numeroPaginas": 576,
+  "idioma": "Português",
+  "genero": "Fantasia",
+  "sinopse": "Primeiro volume da trilogia épica...",
+  "preco": 49.90,
+  "capaUrl": "http://example.com/capa_aneis.jpg",
+  "codigoBarras": "1234567890124",
+  "ativo": true,
+  "dataCriacao": "2025-09-21T20:30:00Z",
+  "idAutor": 1,
+  "idEditora": 1,
+  "totalExemplares": 0,
+  "exemplaresDisponiveis": 0,
+  "temExemplaresDisponiveis": false,
+  "nomeAutor": "J.R.R. Tolkien",
+  "nomeEditora": "Editora Martins Fontes"
 }
 ```
 
-### Dados de Empréstimo
+#### GET /api/Livro/disponiveis
+**Descrição**: Listar livros com exemplares disponíveis
+
+**Resposta Esperada (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "titulo": "Dom Casmurro",
+    "subtitulo": "Romance",
+    "isbn": "978-85-333-0227-3",
+    "ano": 1899,
+    "edicao": 1,
+    "numeroPaginas": 256,
+    "idioma": "Português",
+    "genero": "Romance",
+    "sinopse": "Romance de Machado de Assis...",
+    "preco": 29.90,
+    "capaUrl": "http://example.com/capa_dom_casmurro.jpg",
+    "codigoBarras": "1234567890123",
+    "ativo": true,
+    "dataCriacao": "2025-09-21T20:00:00Z",
+    "idAutor": 1,
+    "idEditora": 1,
+    "totalExemplares": 2,
+    "exemplaresDisponiveis": 1,
+    "temExemplaresDisponiveis": true,
+    "nomeAutor": "Machado de Assis",
+    "nomeEditora": "Editora Globo"
+  }
+]
+```
+
+---
+
+### 📚 Exemplares
+
+#### GET /api/Exemplar
+**Descrição**: Listar todos os exemplares
+
+**Resposta Esperada (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "idLivro": 1,
+    "numeroExemplar": "DC-001",
+    "localizacao": "Estante A, Prateleira 1",
+    "condicao": "Excelente",
+    "disponivel": true,
+    "ativo": true,
+    "dataAquisicao": "2025-09-21T20:00:00Z",
+    "valorAquisicao": 25.00,
+    "fornecedor": "Distribuidora Livros Ltda",
+    "observacoes": "Exemplar em perfeito estado",
+    "dataCriacao": "2025-09-21T20:00:00Z",
+    "tituloLivro": "Dom Casmurro",
+    "isbn": "978-85-333-0227-3",
+    "nomeAutor": "Machado de Assis",
+    "nomeEditora": "Editora Globo"
+  }
+]
+```
+
+#### POST /api/Exemplar
+**Descrição**: Criar novo exemplar
+
+**Request Body:**
+```json
+{
+  "idLivro": 1,
+  "numeroExemplar": "DC-002",
+  "localizacao": "Estante A, Prateleira 2",
+  "condicao": "Bom",
+  "disponivel": true,
+  "dataAquisicao": "2025-09-21T20:00:00Z",
+  "valorAquisicao": 30.00,
+  "fornecedor": "Distribuidora Livros Ltda",
+  "observacoes": "Exemplar com pequenos sinais de uso"
+}
+```
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "id": 2,
+  "idLivro": 1,
+  "numeroExemplar": "DC-002",
+  "localizacao": "Estante A, Prateleira 2",
+  "condicao": "Bom",
+  "disponivel": true,
+  "ativo": true,
+  "dataAquisicao": "2025-09-21T20:00:00Z",
+  "valorAquisicao": 30.00,
+  "fornecedor": "Distribuidora Livros Ltda",
+  "observacoes": "Exemplar com pequenos sinais de uso",
+  "dataCriacao": "2025-09-21T20:30:00Z",
+  "tituloLivro": "Dom Casmurro",
+  "isbn": "978-85-333-0227-3",
+  "nomeAutor": "Machado de Assis",
+  "nomeEditora": "Editora Globo"
+}
+```
+
+---
+
+### 👥 Usuários
+
+#### GET /api/Usuario
+**Descrição**: Listar todos os usuários
+
+**Resposta Esperada (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "nome": "João Silva",
+    "email": "joao.silva@email.com",
+    "telefone": "11987654321",
+    "cpf": "12345678901",
+    "dataNascimento": "1990-05-15T00:00:00Z",
+    "ativo": true,
+    "dataCriacao": "2025-09-21T20:00:00Z"
+  }
+]
+```
+
+#### POST /api/Usuario
+**Descrição**: Criar novo usuário
+
+**Request Body:**
+```json
+{
+  "nome": "Maria Santos",
+  "email": "maria.santos@email.com",
+  "senha": "123456",
+  "telefone": "11999887766",
+  "cpf": "98765432100",
+  "dataNascimento": "1985-03-20T00:00:00Z"
+}
+```
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "id": 2,
+  "nome": "Maria Santos",
+  "email": "maria.santos@email.com",
+  "telefone": "11999887766",
+  "cpf": "98765432100",
+  "dataNascimento": "1985-03-20T00:00:00Z",
+  "ativo": true,
+  "dataCriacao": "2025-09-21T20:30:00Z"
+}
+```
+
+---
+
+### 👨‍💼 Funcionários
+
+#### GET /api/Funcionario
+**Descrição**: Listar todos os funcionários
+
+**Resposta Esperada (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "nome": "Administrador Sistema",
+    "email": "admin@biblioteca.com",
+    "telefone": "11999999999",
+    "cargo": "Administrador",
+    "salario": 5000.00,
+    "dataAdmissao": "2024-01-01T00:00:00Z",
+    "dataDemissao": null,
+    "ativo": true,
+    "dataCriacao": "2025-09-21T20:00:00Z"
+  }
+]
+```
+
+#### POST /api/Funcionario
+**Descrição**: Criar novo funcionário
+
+**Request Body:**
+```json
+{
+  "nome": "Carlos Almeida",
+  "email": "carlos.almeida@biblioteca.com",
+  "senha": "123456",
+  "telefone": "11988776655",
+  "cargo": "Bibliotecário",
+  "salario": 3500.00,
+  "dataAdmissao": "2024-06-01T00:00:00Z",
+  "dataDemissao": null
+}
+```
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "id": 2,
+  "nome": "Carlos Almeida",
+  "email": "carlos.almeida@biblioteca.com",
+  "telefone": "11988776655",
+  "cargo": "Bibliotecário",
+  "salario": 3500.00,
+  "dataAdmissao": "2024-06-01T00:00:00Z",
+  "dataDemissao": null,
+  "ativo": true,
+  "dataCriacao": "2025-09-21T20:30:00Z"
+}
+```
+
+---
+
+### ✍️ Autores
+
+#### GET /api/Autor
+**Descrição**: Listar todos os autores
+
+**Resposta Esperada (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "nome": "Machado de Assis",
+    "nomeCompleto": "Joaquim Maria Machado de Assis",
+    "nomeArtistico": "Machado de Assis",
+    "dataNascimento": "1839-06-21T00:00:00Z",
+    "nacionalidade": "Brasileira",
+    "pais": "Brasil",
+    "paisOrigem": "Brasil",
+    "email": "machado@classicos.com",
+    "telefone": "11999999999",
+    "website": "https://machadodeassis.com",
+    "endereco": "Rua das Flores, 123",
+    "cidade": "Rio de Janeiro",
+    "estado": "RJ",
+    "cep": "20000-000",
+    "ativo": true,
+    "dataCriacao": "2025-09-21T20:00:00Z"
+  }
+]
+```
+
+#### POST /api/Autor
+**Descrição**: Criar novo autor
+
+**Request Body:**
+```json
+{
+  "nome": "J.R.R. Tolkien",
+  "nomeCompleto": "John Ronald Reuel Tolkien",
+  "nomeArtistico": "J.R.R. Tolkien",
+  "dataNascimento": "1892-01-03T00:00:00Z",
+  "nacionalidade": "Britânica",
+  "pais": "Reino Unido",
+  "paisOrigem": "África do Sul",
+  "email": "tolkien@middleearth.com",
+  "telefone": "11988887777",
+  "website": "https://tolkienestate.com",
+  "endereco": "Oxford, Inglaterra",
+  "cidade": "Oxford",
+  "estado": "Oxfordshire",
+  "cep": "OX1 1AA"
+}
+```
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "id": 2,
+  "nome": "J.R.R. Tolkien",
+  "nomeCompleto": "John Ronald Reuel Tolkien",
+  "nomeArtistico": "J.R.R. Tolkien",
+  "dataNascimento": "1892-01-03T00:00:00Z",
+  "nacionalidade": "Britânica",
+  "pais": "Reino Unido",
+  "paisOrigem": "África do Sul",
+  "email": "tolkien@middleearth.com",
+  "telefone": "11988887777",
+  "website": "https://tolkienestate.com",
+  "endereco": "Oxford, Inglaterra",
+  "cidade": "Oxford",
+  "estado": "Oxfordshire",
+  "cep": "OX1 1AA",
+  "ativo": true,
+  "dataCriacao": "2025-09-21T20:30:00Z"
+}
+```
+
+---
+
+### 🏢 Editoras
+
+#### GET /api/Editora
+**Descrição**: Listar todas as editoras
+
+**Resposta Esperada (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "nome": "Editora Globo",
+    "cnpj": "12.345.678/0001-90",
+    "email": "contato@editoraglobo.com.br",
+    "telefone": "1133334444",
+    "endereco": "Av. Paulista, 1000",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "01310-100",
+    "pais": "Brasil",
+    "site": "https://editoraglobo.com.br",
+    "dataFundacao": "1950-01-01T00:00:00Z",
+    "ativa": true,
+    "dataCriacao": "2025-09-21T20:00:00Z"
+  }
+]
+```
+
+#### POST /api/Editora
+**Descrição**: Criar nova editora
+
+**Request Body:**
+```json
+{
+  "nome": "Editora Martins Fontes",
+  "cnpj": "98.765.432/0001-10",
+  "email": "contato@martinsfontes.com.br",
+  "telefone": "1122223333",
+  "endereco": "Rua Consolação, 2000",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "cep": "01302-000",
+  "pais": "Brasil",
+  "site": "https://martinsfontes.com.br",
+  "dataFundacao": "1980-05-15T00:00:00Z"
+}
+```
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "id": 2,
+  "nome": "Editora Martins Fontes",
+  "cnpj": "98.765.432/0001-10",
+  "email": "contato@martinsfontes.com.br",
+  "telefone": "1122223333",
+  "endereco": "Rua Consolação, 2000",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "cep": "01302-000",
+  "pais": "Brasil",
+  "site": "https://martinsfontes.com.br",
+  "dataFundacao": "1980-05-15T00:00:00Z",
+  "ativa": true,
+  "dataCriacao": "2025-09-21T20:30:00Z"
+}
+```
+
+---
+
+### 📋 Empréstimos
+
+#### GET /api/Emprestimo
+**Descrição**: Listar todos os empréstimos
+
+**Resposta Esperada (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "idExemplar": 1,
+    "idUsuario": 1,
+    "dataEmprestimo": "2025-09-21T20:30:00Z",
+    "dataPrevistaDevolucao": "2025-10-05T20:30:00Z",
+    "dataDevolucao": null,
+    "dataRenovacao": null,
+    "quantidadeRenovacoes": 0,
+    "maxRenovacoes": 3,
+    "multa": 0.00,
+    "status": "Emprestado",
+    "observacoes": "Empréstimo de teste",
+    "ativo": true,
+    "dataCriacao": "2025-09-21T20:30:00Z",
+    "tituloLivro": "Dom Casmurro",
+    "numeroExemplar": "DC-001",
+    "nomeUsuario": "João Silva",
+    "emailUsuario": "joao.silva@email.com",
+    "estaAtrasado": false,
+    "diasAtraso": 0,
+    "podeRenovar": true
+  }
+]
+```
+
+#### POST /api/Emprestimo
+**Descrição**: Criar novo empréstimo
+
+**Request Body:**
 ```json
 {
   "idExemplar": 1,
   "idUsuario": 1,
-  "dataEmprestimo": "2024-01-20T10:00:00Z",
-  "dataPrevistaDevolucao": "2024-02-03T10:00:00Z",
+  "dataEmprestimo": "2025-09-21T20:30:00Z",
+  "dataPrevistaDevolucao": "2025-10-05T20:30:00Z",
   "maxRenovacoes": 3,
   "observacoes": "Empréstimo para pesquisa acadêmica"
 }
 ```
 
+**Resposta Esperada (200 OK):**
+```json
+{
+  "id": 2,
+  "idExemplar": 1,
+  "idUsuario": 1,
+  "dataEmprestimo": "2025-09-21T20:30:00Z",
+  "dataPrevistaDevolucao": "2025-10-05T20:30:00Z",
+  "dataDevolucao": null,
+  "dataRenovacao": null,
+  "quantidadeRenovacoes": 0,
+  "maxRenovacoes": 3,
+  "multa": 0.00,
+  "status": "Emprestado",
+  "observacoes": "Empréstimo para pesquisa acadêmica",
+  "ativo": true,
+  "dataCriacao": "2025-09-21T20:30:00Z",
+  "tituloLivro": "Dom Casmurro",
+  "numeroExemplar": "DC-001",
+  "nomeUsuario": "João Silva",
+  "emailUsuario": "joao.silva@email.com",
+  "estaAtrasado": false,
+  "diasAtraso": 0,
+  "podeRenovar": true
+}
+```
+
+#### POST /api/Emprestimo/{id}/devolver
+**Descrição**: Devolver empréstimo
+
+**Parâmetros**: `id` = 1
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "id": 1,
+  "idExemplar": 1,
+  "idUsuario": 1,
+  "dataEmprestimo": "2025-09-21T20:30:00Z",
+  "dataPrevistaDevolucao": "2025-10-05T20:30:00Z",
+  "dataDevolucao": "2025-09-25T15:30:00Z",
+  "dataRenovacao": null,
+  "quantidadeRenovacoes": 0,
+  "maxRenovacoes": 3,
+  "multa": 0.00,
+  "status": "Devolvido",
+  "observacoes": "Empréstimo de teste",
+  "ativo": true,
+  "dataCriacao": "2025-09-21T20:30:00Z",
+  "tituloLivro": "Dom Casmurro",
+  "numeroExemplar": "DC-001",
+  "nomeUsuario": "João Silva",
+  "emailUsuario": "joao.silva@email.com",
+  "estaAtrasado": false,
+  "diasAtraso": 0,
+  "podeRenovar": false
+}
+```
+
 ---
 
-## 🔧 Troubleshooting
+## ⚠️ Códigos de Resposta e Solução de Problemas
 
-### Problemas Comuns
+### ✅ Sucesso
+- **200 OK**: Operação realizada com sucesso
+- **201 Created**: Recurso criado com sucesso
+- **204 No Content**: Operação realizada sem retorno de conteúdo
 
-#### 1. **Erro 401 - Unauthorized**
-- **Causa**: Token inválido ou expirado
-- **Solução**: Fazer novo login e atualizar token no Swagger
+### ❌ Erros Comuns
 
-#### 2. **Erro 403 - Forbidden**
-- **Causa**: Usuário não tem permissão para o endpoint
-- **Solução**: Verificar se o usuário tem role adequada (Admin/Funcionario)
+#### 400 Bad Request
+**Causa**: Dados inválidos no JSON ou parâmetros incorretos
+**Solução**: Verifique se o JSON está bem formatado e todos os campos obrigatórios estão preenchidos
 
-#### 3. **Erro 400 - Bad Request**
-- **Causa**: Dados inválidos no body
-- **Solução**: Verificar formato JSON e campos obrigatórios
+**Exemplo de Resposta:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "0HMQ5VQKJQ7C8:00000001",
+  "errors": {
+    "Email": ["O campo Email é obrigatório."],
+    "Senha": ["O campo Senha é obrigatório."]
+  }
+}
+```
 
-#### 4. **Erro 500 - Internal Server Error**
-- **Causa**: Erro interno do servidor
-- **Solução**: Verificar logs da aplicação
+#### 401 Unauthorized
+**Causa**: Token JWT inválido ou expirado
+**Solução**: Faça login novamente para obter um novo token
 
-#### 5. **Token não funciona no Swagger**
-- **Causa**: Formato incorreto do token
-- **Solução**: Usar formato `Bearer {token}` (com espaço)
+**Exemplo de Resposta:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "traceId": "0HMQ5VQKJQ7C8:00000002"
+}
+```
 
-### Dicas Importantes
+#### 403 Forbidden
+**Causa**: Token válido mas sem permissão para a operação
+**Solução**: Use um token de usuário com role "Admin" ou "Funcionario"
 
-1. **Sempre faça login primeiro** antes de testar endpoints protegidos
-2. **Copie o token completo** da resposta do login
-3. **Use dados únicos** para evitar conflitos de chave duplicada
-4. **Teste em ordem**: Crie dados básicos (Autor, Editora) antes de criar Livros
-5. **Verifique as permissões** de cada endpoint antes de testar
+#### 404 Not Found
+**Causa**: Recurso não encontrado (ID inexistente)
+**Solução**: Verifique se o ID existe no banco de dados
 
-### Sequência Recomendada de Testes
+#### 500 Internal Server Error
+**Causa**: Erro interno do servidor
+**Solução**: Verifique os logs da aplicação para mais detalhes
 
-1. **Criar Administrador** → `POST /api/auth/criar-admin`
-2. **Fazer Login** → `POST /api/auth/login`
-3. **Configurar Token** no Swagger
-4. **Criar Autor** → `POST /api/Autor`
-5. **Criar Editora** → `POST /api/Editora`
-6. **Criar Livro** → `POST /api/Livro`
-7. **Criar Exemplar** → `POST /api/Exemplar`
-8. **Criar Usuário** → `POST /api/Usuario`
-9. **Criar Empréstimo** → `POST /api/Emprestimo`
-10. **Testar outros endpoints** conforme necessário
+**Exemplo de Resposta:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+  "title": "An error occurred while processing your request.",
+  "status": 500,
+  "traceId": "0HMQ5VQKJQ7C8:00000003"
+}
+```
 
 ---
 
-**🎯 Este guia cobre todos os 95+ endpoints da API com exemplos práticos e troubleshooting completo!**
+## 💡 Dicas Importantes
+
+1. **Sempre configure a autenticação** antes de testar endpoints protegidos
+2. **Use IDs existentes** para operações GET, PUT e DELETE
+3. **Verifique os relacionamentos** - para criar um Livro, você precisa de um Autor e Editora existentes
+4. **O token expira em 8 horas** - faça login novamente se necessário
+5. **Para endpoints de busca**, use termos que existem no banco de dados
+6. **Campos obrigatórios** devem sempre ser preenchidos nos requests
+
+---
+
+Este guia deve cobrir todos os cenários de teste da API usando o Swagger UI! 🚀
