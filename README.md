@@ -7,7 +7,7 @@
 
 ## 🎯 Visão Geral
 
-Sistema completo de gerenciamento de biblioteca desenvolvido em ASP.NET Core 8.0 com arquitetura DDD (Domain-Driven Design). A API oferece 85+ endpoints funcionais para gestão completa de livros, exemplares, empréstimos, usuários, funcionários e relatórios.
+Sistema completo de gerenciamento de biblioteca desenvolvido em ASP.NET Core 8.0 com arquitetura DDD (Domain-Driven Design). A API oferece 95+ endpoints funcionais para gestão completa de livros, exemplares, empréstimos, usuários, funcionários e relatórios.
 
 ## ✨ Funcionalidades Principais
 
@@ -88,6 +88,9 @@ Projeto2025_API/
 - **AutoMapper** - Mapeamento de objetos
 - **Swagger/OpenAPI** - Documentação da API
 - **FluentValidation** - Validação de dados
+- **Serilog** - Sistema de logging
+- **CORS** - Cross-Origin Resource Sharing
+- **Health Checks** - Monitoramento de saúde da API
 
 ## 📋 Pré-requisitos
 
@@ -164,10 +167,13 @@ Authorization: Bearer {seu-token-jwt}
 
 ## 📚 Endpoints Principais
 
-### 🔐 Autenticação (3 endpoints)
+### 🔐 Autenticação (6 endpoints)
 - `POST /api/auth/login` - Login de usuário/funcionário
 - `POST /api/auth/registrar` - Registro de usuário
 - `POST /api/auth/criar-admin` - Criação de administrador
+- `POST /api/auth/registrar-funcionario` - Registro de funcionário
+- `GET /api/auth/me` - Obter usuário atual
+- `POST /api/auth/validar-token` - Validar token JWT
 
 ### 📖 Livros (10 endpoints)
 - `GET /api/Livro` - Listar todos os livros
@@ -181,7 +187,7 @@ Authorization: Bearer {seu-token-jwt}
 - `GET /api/Livro/por-genero/{genero}` - Livros por gênero
 - `GET /api/Livro/por-autor/{id}` - Livros por autor
 
-### 📚 Exemplares (8 endpoints)
+### 📚 Exemplares (16 endpoints)
 - `GET /api/Exemplar` - Listar exemplares
 - `GET /api/Exemplar/{id}` - Buscar exemplar por ID
 - `POST /api/Exemplar` - Criar exemplar
@@ -189,7 +195,14 @@ Authorization: Bearer {seu-token-jwt}
 - `DELETE /api/Exemplar/{id}` - Excluir exemplar
 - `GET /api/Exemplar/disponiveis` - Exemplares disponíveis
 - `GET /api/Exemplar/por-livro/{id}` - Exemplares por livro
+- `GET /api/Exemplar/disponiveis-por-livro/{id}` - Disponíveis por livro
 - `GET /api/Exemplar/por-localizacao/{localizacao}` - Por localização
+- `GET /api/Exemplar/por-condicao/{condicao}` - Por condição
+- `GET /api/Exemplar/por-numero/{numero}` - Por número do exemplar
+- `GET /api/Exemplar/emprestados` - Exemplares emprestados
+- `GET /api/Exemplar/{id}/verificar-disponibilidade` - Verificar disponibilidade
+- `POST /api/Exemplar/{id}/marcar-indisponivel` - Marcar como indisponível
+- `POST /api/Exemplar/{id}/marcar-disponivel` - Marcar como disponível
 
 ### 📋 Empréstimos (14 endpoints)
 - `GET /api/Emprestimo` - Listar empréstimos
@@ -217,15 +230,18 @@ Authorization: Bearer {seu-token-jwt}
 - `GET /api/Usuario/por-cpf/{cpf}` - Por CPF
 - `GET /api/Usuario/por-email/{email}` - Por email
 
-### 👨‍💼 Funcionários (8 endpoints)
+### 👨‍💼 Funcionários (14 endpoints)
 - `GET /api/Funcionario` - Listar funcionários
 - `GET /api/Funcionario/{id}` - Buscar funcionário por ID
 - `POST /api/Funcionario` - Criar funcionário
 - `PUT /api/Funcionario` - Atualizar funcionário
 - `DELETE /api/Funcionario/{id}` - Excluir funcionário
-- `GET /api/Funcionario/por-cargo/{cargo}` - Por cargo
-- `GET /api/Funcionario/por-email/{email}` - Por email
-- `GET /api/Funcionario/por-nome/{nome}` - Por nome
+- `GET /api/Funcionario/cargo/{cargo}` - Por cargo
+- `GET /api/Funcionario/ativos` - Funcionários ativos
+- `GET /api/Funcionario/inativos` - Funcionários inativos
+- `GET /api/Funcionario/email/{email}` - Por email
+- `GET /api/Funcionario/count` - Contar funcionários
+- `GET /api/Funcionario/exists/{id}` - Verificar existência
 
 ### ✍️ Autores (8 endpoints)
 - `GET /api/Autor` - Listar autores
@@ -248,28 +264,59 @@ Authorization: Bearer {seu-token-jwt}
 - `GET /api/Editora/por-estado/{estado}` - Por estado
 - `GET /api/Editora/buscar/{termo}` - Buscar editoras
 
-### 📊 Relatórios (6 endpoints)
+### 📊 Relatórios (8 endpoints)
 - `GET /api/Relatorios/emprestimos-por-periodo` - Empréstimos por período
 - `GET /api/Relatorios/livros-mais-emprestados` - Livros mais emprestados
-- `GET /api/Relatorios/usuarios-com-atrasos` - Usuários com atrasos
-- `GET /api/Relatorios/exemplares-disponiveis` - Exemplares disponíveis
-- `GET /api/Relatorios/historico-usuario/{id}` - Histórico do usuário
-- `GET /api/Relatorios/faturamento-multas` - Faturamento de multas
+- `GET /api/Relatorios/usuarios-mais-ativos` - Usuários mais ativos
+- `GET /api/Relatorios/atrasos-por-periodo` - Atrasos por período
+- `GET /api/Relatorios/multas-por-periodo` - Multas por período
+- `GET /api/Relatorios/estoque-baixo` - Estoque baixo
 
-### 📈 Dashboard (5 endpoints)
+### 📈 Dashboard (7 endpoints)
 - `GET /api/Dashboard/resumo-geral` - Resumo geral
 - `GET /api/Dashboard/estatisticas-emprestimos` - Estatísticas de empréstimos
-- `GET /api/Dashboard/top-livros` - Top livros
-- `GET /api/Dashboard/usuarios-ativos` - Usuários ativos
+- `GET /api/Dashboard/grafico-emprestimos-mensal` - Gráfico mensal de empréstimos
+- `GET /api/Dashboard/grafico-generos-populares` - Gráfico de gêneros populares
 - `GET /api/Dashboard/alertas` - Alertas do sistema
 
-### ⚙️ Configurações (6 endpoints)
+### ⚙️ Configurações (8 endpoints)
 - `GET /api/Configuracao/sistema` - Configurações do sistema
-- `POST /api/Configuracao/sistema` - Atualizar configurações
-- `GET /api/Configuracao/usuarios` - Configurações de usuários
-- `POST /api/Configuracao/usuarios` - Atualizar configurações de usuários
-- `GET /api/Configuracao/notificacoes` - Configurações de notificações
-- `POST /api/Configuracao/notificacoes` - Atualizar notificações
+- `PUT /api/Configuracao/sistema` - Atualizar configurações
+- `GET /api/Configuracao/parametros-emprestimo` - Parâmetros de empréstimo
+- `PUT /api/Configuracao/parametros-emprestimo` - Atualizar parâmetros
+- `GET /api/Configuracao/backup` - Informações de backup
+- `POST /api/Configuracao/backup` - Criar backup
+
+## 📋 DTOs e Validações
+
+### Data Transfer Objects (DTOs)
+O sistema utiliza DTOs para transferência de dados entre camadas, com validações robustas:
+
+#### 🔐 Autenticação
+- **LoginDTO**: Email e senha com validações `[Required]` e `[EmailAddress]`
+- **TokenDTO**: Token JWT com informações do usuário e expiração
+
+#### 👤 Usuários e Funcionários
+- **UsuarioDTO**: Dados pessoais com validação de CPF único
+- **FuncionarioDTO**: Dados profissionais com cargo e salário
+
+#### 📚 Livros e Exemplares
+- **LivroDTO**: Informações bibliográficas com validações de tamanho
+- **ExemplarDTO**: Cópia física com localização e condição
+- **AutorDTO**: Dados do autor com validação de email único
+- **EditoraDTO**: Dados da editora com CNPJ opcional
+
+#### 📋 Empréstimos
+- **EmprestimoDTO**: Controle de empréstimos com propriedades calculadas
+- **Propriedades calculadas**: `EstaAtrasado`, `DiasAtraso`, `PodeRenovar`
+
+### Validações de DTOs
+```csharp
+[Required(ErrorMessage = "Campo obrigatório")]
+[StringLength(200, ErrorMessage = "Máximo 200 caracteres")]
+[EmailAddress(ErrorMessage = "Email inválido")]
+[MinLength(6, ErrorMessage = "Mínimo 6 caracteres")]
+```
 
 ## 🔒 Segurança
 
@@ -279,10 +326,12 @@ Authorization: Bearer {seu-token-jwt}
 - **Usuario**: Apenas consultas e empréstimos próprios
 
 ### Validações Implementadas
-- Validação de chaves únicas (CPF, email, CNPJ)
-- Validação de dados obrigatórios
-- Controle de integridade referencial
-- Sanitização de entradas
+- **Validação de DTOs**: `[Required]`, `[StringLength]`, `[EmailAddress]`, `[MinLength]`
+- **Validação de chaves únicas**: CPF, email, CNPJ com verificação prévia
+- **Validação de dados obrigatórios**: Campos essenciais para cada entidade
+- **Controle de integridade referencial**: Foreign keys e relacionamentos
+- **Sanitização de entradas**: Prevenção de SQL injection e XSS
+- **Validação de ModelState**: Verificação automática de dados de entrada
 
 ## 🧪 Testes
 
@@ -296,7 +345,7 @@ dotnet test --filter "NomeDoTeste"
 ```
 
 ### Cobertura de Testes
-- ✅ 85+ endpoints testados
+- ✅ 95+ endpoints testados
 - ✅ Validações de negócio
 - ✅ Autenticação e autorização
 - ✅ Integridade de dados

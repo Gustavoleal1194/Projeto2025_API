@@ -1,5 +1,35 @@
 # 📋 Documentação Técnica - Sistema de Biblioteca
 
+## 🚀 Tecnologias Utilizadas
+
+### Framework e Runtime
+- **.NET 8.0** - Framework principal
+- **ASP.NET Core Web API** - API REST
+- **C# 12** - Linguagem de programação
+
+### Banco de Dados e ORM
+- **Entity Framework Core 9.0.8** - ORM
+- **SQL Server** - Banco de dados relacional
+- **Microsoft.EntityFrameworkCore.SqlServer** - Provider SQL Server
+
+### Autenticação e Segurança
+- **JWT Bearer 8.0.1** - Autenticação baseada em tokens
+- **Microsoft.IdentityModel.Tokens** - Manipulação de tokens JWT
+- **System.IdentityModel.Tokens.Jwt** - Geração de tokens JWT
+- **PasswordHashService** - Hash de senhas com SHA256
+
+### Mapeamento e Validação
+- **AutoMapper 15.0.1** - Mapeamento de objetos
+- **FluentValidation 11.3.1** - Validação de dados
+
+### Documentação e Logging
+- **Swagger/OpenAPI 6.4.0** - Documentação da API
+- **Serilog 9.0.0** - Sistema de logging estruturado
+
+### Infraestrutura
+- **CORS 2.3.0** - Cross-Origin Resource Sharing
+- **Health Checks 2.2.0** - Monitoramento de saúde da API
+
 ## 🏗️ Arquitetura do Sistema
 
 ### Padrão DDD (Domain-Driven Design)
@@ -226,6 +256,52 @@ Projeto2025_API/
 - **Controllers**: Endpoints da API REST
 - **Mapeamento**: Configuração do AutoMapper
 - **Configuração**: Setup da aplicação e dependências
+
+## 🔧 Serviços Auxiliares
+
+### PasswordHashService
+Serviço responsável pelo hash seguro de senhas usando SHA256:
+
+```csharp
+public static class PasswordHashService
+{
+    public static string HashPassword(string password)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            var salt = "Biblioteca2025_Salt_Key";
+            var saltedPassword = password + salt;
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
+            return Convert.ToBase64String(hashedBytes);
+        }
+    }
+}
+```
+
+### MappingProfile (AutoMapper)
+Configuração de mapeamento entre entidades e DTOs:
+
+```csharp
+public class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+        // Mapeamento Livro <-> LivroDTO
+        CreateMap<Livro, LivroDTO>()
+            .ForMember(dest => dest.TotalExemplares, opt => opt.MapFrom(src => src.TotalExemplares))
+            .ForMember(dest => dest.ExemplaresDisponiveis, opt => opt.MapFrom(src => src.ExemplaresDisponiveis))
+            .ForMember(dest => dest.TemExemplaresDisponiveis, opt => opt.MapFrom(src => src.TemExemplaresDisponiveis))
+            .ForMember(dest => dest.NomeAutor, opt => opt.MapFrom(src => src.Autor != null ? src.Autor.Nome : null))
+            .ForMember(dest => dest.NomeEditora, opt => opt.MapFrom(src => src.Editora != null ? src.Editora.Nome : null));
+            
+        // Mapeamento reverso (DTO -> Entity) ignorando propriedades calculadas
+        CreateMap<LivroDTO, Livro>()
+            .ForMember(dest => dest.Exemplares, opt => opt.Ignore())
+            .ForMember(dest => dest.Autor, opt => opt.Ignore())
+            .ForMember(dest => dest.Editora, opt => opt.Ignore());
+    }
+}
+```
 
 ## 🔐 Sistema de Autenticação
 
