@@ -75,5 +75,17 @@ namespace InfraEstrutura.Repositorio
                 .OrderBy(e => e.Nome)
                 .ToListAsync();
         }
+
+        public async Task<Editora?> GetByCnpjAsync(string cnpj)
+        {
+            return await _contexto.Editoras
+                .FirstOrDefaultAsync(e => e.CNPJ == cnpj);
+        }
+
+        public async Task<Editora?> GetByEmailAsync(string email)
+        {
+            return await _contexto.Editoras
+                .FirstOrDefaultAsync(e => e.Email == email);
+        }
     }
 }

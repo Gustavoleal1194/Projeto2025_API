@@ -32,7 +32,9 @@ namespace Service
             var funcionario = await _funcionarioRepositorio.GetByEmailAsync(loginDTO.Email);
             if (funcionario != null && funcionario.Ativo && VerificarSenha(loginDTO.Senha, funcionario.Senha))
             {
-                return GerarToken(funcionario.Nome, funcionario.Email, "Funcionario");
+                // Se for administrador, dá role Admin, senão Funcionario
+                var role = funcionario.Cargo?.ToLower() == "administrador" ? "Admin" : "Funcionario";
+                return GerarToken(funcionario.Nome, funcionario.Email, role);
             }
 
             // Se não for funcionário, tenta como usuário

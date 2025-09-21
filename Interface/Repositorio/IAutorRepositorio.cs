@@ -10,5 +10,6 @@ namespace Interface.Repositorio
         Task<IEnumerable<Autor>> GetByNacionalidadeAsync(string nacionalidade);
         Task<IEnumerable<Autor>> BuscarAsync(string termo);
         Task<IEnumerable<Autor>> GetComLivrosAsync();
+        Task<Autor?> GetByEmailAsync(string email);
     }
 }

@@ -22,6 +22,11 @@ namespace Projeto2025_API.Controllers
         [HttpPost]
         public async Task<ActionResult<EditoraDTO>> AddAsync([FromBody] EditoraDTO editoraDTO)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var dto = await service.AddAsync(editoraDTO);
             return Ok(dto);
         }

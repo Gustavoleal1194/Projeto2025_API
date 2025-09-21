@@ -11,5 +11,7 @@ namespace Interface.Repositorio
         Task<IEnumerable<Editora>> GetByCidadeAsync(string cidade);
         Task<IEnumerable<Editora>> GetByEstadoAsync(string estado);
         Task<IEnumerable<Editora>> BuscarAsync(string termo);
+        Task<Editora?> GetByCnpjAsync(string cnpj);
+        Task<Editora?> GetByEmailAsync(string email);
     }
 }

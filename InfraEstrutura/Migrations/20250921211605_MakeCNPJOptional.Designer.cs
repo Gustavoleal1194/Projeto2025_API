@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfraEstrutura.Migrations
 {
     [DbContext(typeof(EmpresaContexto))]
-    [Migration("20250920173204_AddPasswordFields")]
-    partial class AddPasswordFields
+    [Migration("20250921211605_MakeCNPJOptional")]
+    partial class MakeCNPJOptional
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,8 +33,43 @@ namespace InfraEstrutura.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Ativo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<DateTime>("DataNascimento")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Endereco")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Nacionalidade")
                         .IsRequired()
@@ -46,7 +81,41 @@ namespace InfraEstrutura.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<string>("NomeArtistico")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("NomeCompleto")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Pais")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PaisOrigem")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL AND [Email] != ''");
 
                     b.ToTable("Autor", (string)null);
                 });
@@ -163,7 +232,7 @@ namespace InfraEstrutura.Migrations
                     b.Property<DateTime?>("DataRenovacao")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdLivro")
+                    b.Property<int>("IdExemplar")
                         .HasColumnType("int");
 
                     b.Property<int>("IdUsuario")
@@ -174,8 +243,10 @@ namespace InfraEstrutura.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(3);
 
-                    b.Property<decimal?>("Multa")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("Multa")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.Property<string>("Observacoes")
                         .IsRequired()
@@ -196,11 +267,84 @@ namespace InfraEstrutura.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdLivro");
+                    b.HasIndex("IdExemplar");
 
                     b.HasIndex("IdUsuario");
 
                     b.ToTable("Emprestimo", (string)null);
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.Exemplar", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Condicao")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Bom");
+
+                    b.Property<DateTime>("DataAquisicao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("Disponivel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Fornecedor")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("IdLivro")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Localizacao")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NumeroExemplar")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Observacoes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("ValorAquisicao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdLivro");
+
+                    b.HasIndex("NumeroExemplar")
+                        .IsUnique();
+
+                    b.ToTable("Exemplar", (string)null);
                 });
 
             modelBuilder.Entity("Dominio.Entidades.Funcionario", b =>
@@ -284,35 +428,15 @@ namespace InfraEstrutura.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Condicao")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("Bom");
-
-                    b.Property<DateTime?>("DataAquisicao")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("DataCriacao")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<bool>("Disponivel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<int>("Edicao")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1);
-
-                    b.Property<string>("Fornecedor")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Genero")
                         .IsRequired()
@@ -337,36 +461,11 @@ namespace InfraEstrutura.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasDefaultValue("Português");
 
-                    b.Property<string>("Localizacao")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("NumeroExemplar")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("NumeroPaginas")
                         .HasColumnType("int");
 
-                    b.Property<string>("ObservacoesExemplar")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<decimal>("Preco")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("QuantidadeDisponivel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("QuantidadeEstoque")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
 
                     b.Property<string>("Sinopse")
                         .IsRequired()
@@ -383,9 +482,6 @@ namespace InfraEstrutura.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<decimal?>("ValorAquisicao")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CodigoBarras")
@@ -399,10 +495,6 @@ namespace InfraEstrutura.Migrations
 
                     b.HasIndex("IdEditora");
 
-                    b.HasIndex("NumeroExemplar")
-                        .IsUnique()
-                        .HasFilter("[NumeroExemplar] IS NOT NULL AND [NumeroExemplar] != ''");
-
                     b.ToTable("Livro", (string)null);
                 });
 
@@ -413,6 +505,14 @@ namespace InfraEstrutura.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)");
+
+                    b.Property<DateTime>("DataNascimento")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -436,6 +536,10 @@ namespace InfraEstrutura.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CPF")
+                        .IsUnique()
+                        .HasFilter("[CPF] IS NOT NULL AND [CPF] != ''");
+
                     b.HasIndex("Email")
                         .IsUnique();
 
@@ -444,9 +548,9 @@ namespace InfraEstrutura.Migrations
 
             modelBuilder.Entity("Dominio.Entidades.Emprestimo", b =>
                 {
-                    b.HasOne("Dominio.Entidades.Livro", "Livro")
+                    b.HasOne("Dominio.Entidades.Exemplar", "Exemplar")
                         .WithMany("Emprestimos")
-                        .HasForeignKey("IdLivro")
+                        .HasForeignKey("IdExemplar")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -456,9 +560,20 @@ namespace InfraEstrutura.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Livro");
+                    b.Navigation("Exemplar");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.Exemplar", b =>
+                {
+                    b.HasOne("Dominio.Entidades.Livro", "Livro")
+                        .WithMany("Exemplares")
+                        .HasForeignKey("IdLivro")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Livro");
                 });
 
             modelBuilder.Entity("Dominio.Entidades.Livro", b =>
@@ -490,9 +605,14 @@ namespace InfraEstrutura.Migrations
                     b.Navigation("Livros");
                 });
 
-            modelBuilder.Entity("Dominio.Entidades.Livro", b =>
+            modelBuilder.Entity("Dominio.Entidades.Exemplar", b =>
                 {
                     b.Navigation("Emprestimos");
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.Livro", b =>
+                {
+                    b.Navigation("Exemplares");
                 });
 
             modelBuilder.Entity("Dominio.Entidades.Usuario", b =>

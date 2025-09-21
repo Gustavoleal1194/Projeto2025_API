@@ -16,7 +16,40 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
+    { 
+        Title = "Projeto2025 API", 
+        Version = "v1",
+        Description = "API para sistema de biblioteca com autenticação JWT"
+    });
+    
+    // Configurar autenticação JWT no Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 //configurar contexto
 builder.Services.AddDbContext<EmpresaContexto>(p =>
     p.UseSqlServer(
@@ -30,6 +63,9 @@ builder.Services.AddAutoMapper(p => p.AddProfile<MappingProfile>());
 
 builder.Services.AddScoped<ILivroRepositorio, LivroRepositorio>();
 builder.Services.AddScoped<ILivroService, LivroService>();
+
+builder.Services.AddScoped<IExemplarRepositorio, ExemplarRepositorio>();
+builder.Services.AddScoped<IExemplarService, ExemplarService>();
 
 builder.Services.AddScoped<IAutorRepositorio, AutorRepositorio>();
 builder.Services.AddScoped<IAutorService, AutorService>();

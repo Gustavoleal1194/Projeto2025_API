@@ -63,5 +63,11 @@ namespace InfraEstrutura.Repositorio
                 .OrderBy(a => a.Nome)
                 .ToListAsync();
         }
+
+        public async Task<Autor?> GetByEmailAsync(string email)
+        {
+            return await _contexto.Autores
+                .FirstOrDefaultAsync(a => a.Email == email);
+        }
     }
 }       

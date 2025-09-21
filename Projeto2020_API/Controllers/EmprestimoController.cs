@@ -64,10 +64,10 @@ namespace Projeto2025_API.Controllers
             return Ok(emprestimos);
         }
 
-        [HttpGet("por-livro/{idLivro}")]
-        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetByLivroAsync(int idLivro)
+        [HttpGet("por-exemplar/{idExemplar}")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetByExemplarAsync(int idExemplar)
         {
-            var emprestimos = await service.GetByLivroAsync(idLivro);
+            var emprestimos = await service.GetByExemplarAsync(idExemplar);
             return Ok(emprestimos);
         }
 
@@ -90,6 +90,40 @@ namespace Projeto2025_API.Controllers
         {
             var emprestimos = await service.GetByStatusAsync(status);
             return Ok(emprestimos);
+        }
+
+        [HttpGet("emprestados")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetEmprestadosAsync()
+        {
+            var emprestimos = await service.GetByStatusAsync("Emprestado");
+            return Ok(emprestimos);
+        }
+
+        [HttpGet("atrasados")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetAtrasadosAsync()
+        {
+            var emprestimos = await service.GetVencidosAsync();
+            return Ok(emprestimos);
+        }
+
+        [HttpPost("{id}/devolver")]
+        public async Task<ActionResult> DevolverAsync(int id)
+        {
+            var sucesso = await service.DevolverAsync(id);
+            if (!sucesso)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        [HttpPost("{id}/renovar")]
+        public async Task<ActionResult> RenovarAsync(int id)
+        {
+            var sucesso = await service.RenovarAsync(id);
+            if (!sucesso)
+                return BadRequest("Não é possível renovar este empréstimo");
+
+            return NoContent();
         }
     }
 }

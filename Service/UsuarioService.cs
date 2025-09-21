@@ -21,6 +21,23 @@ namespace Service
 
         public async Task<UsuarioDTO> AddAsync(UsuarioDTO usuarioDTO)
         {
+            // Validar se email já existe
+            var usuarioExistente = await usuarioRepositorio.GetByEmailAsync(usuarioDTO.Email);
+            if (usuarioExistente != null)
+            {
+                throw new InvalidOperationException("Já existe um usuário com este email.");
+            }
+
+            // Validar se CPF já existe
+            if (!string.IsNullOrEmpty(usuarioDTO.CPF))
+            {
+                var usuarioComCpf = await usuarioRepositorio.GetByCpfAsync(usuarioDTO.CPF);
+                if (usuarioComCpf != null)
+                {
+                    throw new InvalidOperationException("Já existe um usuário com este CPF.");
+                }
+            }
+
             var usuario = mapper.Map<Usuario>(usuarioDTO);
             await usuarioRepositorio.AddAsync(usuario);
             return mapper.Map<UsuarioDTO>(usuario);

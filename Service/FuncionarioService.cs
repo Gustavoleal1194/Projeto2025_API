@@ -20,6 +20,13 @@ namespace Service
 
         public async Task<FuncionarioDTO> AddAsync(FuncionarioDTO funcionarioDTO)
         {
+            // Validar se email já existe
+            var funcionarioExistente = await _funcionarioRepositorio.GetByEmailAsync(funcionarioDTO.Email);
+            if (funcionarioExistente != null)
+            {
+                throw new InvalidOperationException("Já existe um funcionário com este email.");
+            }
+
             var funcionario = _mapper.Map<Dominio.Entidades.Funcionario>(funcionarioDTO);
             await _funcionarioRepositorio.AddAsync(funcionario);
             return _mapper.Map<FuncionarioDTO>(funcionario);

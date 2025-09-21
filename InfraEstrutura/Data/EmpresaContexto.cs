@@ -16,6 +16,7 @@ namespace InfraEstrutura.Data
 
         // DbSets para o tema Biblioteca
         public DbSet<Livro> Livros { get; set; }
+        public DbSet<Exemplar> Exemplares { get; set; }
         public DbSet<Autor> Autores { get; set; }
         public DbSet<Editora> Editoras { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
@@ -41,25 +42,13 @@ namespace InfraEstrutura.Data
                 builder.Property(p => p.Genero).HasMaxLength(100);
                 builder.Property(p => p.Sinopse).HasMaxLength(2000);
                 builder.Property(p => p.Preco).IsRequired().HasColumnType("decimal(18,2)");
-                builder.Property(p => p.QuantidadeEstoque).IsRequired().HasDefaultValue(0);
-                builder.Property(p => p.QuantidadeDisponivel).IsRequired().HasDefaultValue(0);
                 builder.Property(p => p.CapaUrl).HasMaxLength(500);
                 builder.Property(p => p.CodigoBarras).HasMaxLength(50);
-                builder.Property(p => p.Disponivel).IsRequired().HasDefaultValue(true);
                 builder.Property(p => p.Ativo).IsRequired().HasDefaultValue(true);
                 builder.Property(p => p.DataCriacao).IsRequired().HasDefaultValueSql("GETDATE()");
                 
-                // Informações do Exemplar
-                builder.Property(p => p.NumeroExemplar).HasMaxLength(50);
-                builder.Property(p => p.Localizacao).HasMaxLength(100);
-                builder.Property(p => p.Condicao).IsRequired().HasMaxLength(20).HasDefaultValue("Bom");
-                builder.Property(p => p.ObservacoesExemplar).HasMaxLength(500);
-                builder.Property(p => p.ValorAquisicao).HasColumnType("decimal(18,2)");
-                builder.Property(p => p.Fornecedor).HasMaxLength(200);
-                
                 builder.HasIndex(p => p.ISBN).IsUnique();
                 builder.HasIndex(p => p.CodigoBarras).IsUnique().HasFilter("[CodigoBarras] IS NOT NULL AND [CodigoBarras] != ''");
-                builder.HasIndex(p => p.NumeroExemplar).IsUnique().HasFilter("[NumeroExemplar] IS NOT NULL AND [NumeroExemplar] != ''");
                 builder.HasOne(p => p.Autor)
                        .WithMany(a => a.Livros)
                        .HasForeignKey(p => p.IdAutor)
@@ -67,6 +56,30 @@ namespace InfraEstrutura.Data
                 builder.HasOne(p => p.Editora)
                        .WithMany(e => e.Livros)
                        .HasForeignKey(p => p.IdEditora)
+                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Exemplar
+            modelBuilder.Entity<Exemplar>(builder =>
+            {
+                builder.ToTable("Exemplar");
+                builder.HasKey(e => e.Id);
+                builder.Property(e => e.IdLivro).IsRequired();
+                builder.Property(e => e.NumeroExemplar).IsRequired().HasMaxLength(50);
+                builder.Property(e => e.Localizacao).HasMaxLength(100);
+                builder.Property(e => e.Condicao).IsRequired().HasMaxLength(20).HasDefaultValue("Bom");
+                builder.Property(e => e.Disponivel).IsRequired().HasDefaultValue(true);
+                builder.Property(e => e.Ativo).IsRequired().HasDefaultValue(true);
+                builder.Property(e => e.DataAquisicao).IsRequired().HasDefaultValueSql("GETDATE()");
+                builder.Property(e => e.ValorAquisicao).IsRequired().HasColumnType("decimal(18,2)").HasDefaultValue(0);
+                builder.Property(e => e.Fornecedor).HasMaxLength(100);
+                builder.Property(e => e.Observacoes).HasMaxLength(500);
+                builder.Property(e => e.DataCriacao).IsRequired().HasDefaultValueSql("GETDATE()");
+                
+                builder.HasIndex(e => e.NumeroExemplar).IsUnique();
+                builder.HasOne(e => e.Livro)
+                       .WithMany(l => l.Exemplares)
+                       .HasForeignKey(e => e.IdLivro)
                        .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -100,7 +113,7 @@ namespace InfraEstrutura.Data
                 builder.ToTable("Editora");
                 builder.HasKey(e => e.Id);
                 builder.Property(e => e.Nome).IsRequired().HasMaxLength(150);
-                builder.Property(e => e.CNPJ).IsRequired().HasMaxLength(18);
+                builder.Property(e => e.CNPJ).HasMaxLength(18);
                 builder.Property(e => e.Telefone).HasMaxLength(20);
                 builder.Property(e => e.Email).HasMaxLength(100);
                 builder.Property(e => e.Endereco).HasMaxLength(300);
@@ -136,18 +149,20 @@ namespace InfraEstrutura.Data
             {
                 builder.ToTable("Emprestimo");
                 builder.HasKey(e => e.Id);
+                builder.Property(e => e.IdExemplar).IsRequired();
+                builder.Property(e => e.IdUsuario).IsRequired();
                 builder.Property(e => e.DataEmprestimo).IsRequired();
                 builder.Property(e => e.DataPrevistaDevolucao).IsRequired();
                 builder.Property(e => e.QuantidadeRenovacoes).IsRequired().HasDefaultValue(0);
                 builder.Property(e => e.MaxRenovacoes).IsRequired().HasDefaultValue(3);
-                builder.Property(e => e.Multa).HasColumnType("decimal(18,2)");
+                builder.Property(e => e.Multa).IsRequired().HasColumnType("decimal(18,2)").HasDefaultValue(0);
                 builder.Property(e => e.Status).IsRequired().HasMaxLength(20).HasDefaultValue("Emprestado");
                 builder.Property(e => e.Observacoes).HasMaxLength(500);
                 builder.Property(e => e.Ativo).IsRequired().HasDefaultValue(true);
                 builder.Property(e => e.DataCriacao).IsRequired().HasDefaultValueSql("GETDATE()");
-                builder.HasOne(e => e.Livro)
-                       .WithMany(l => l.Emprestimos)
-                       .HasForeignKey(e => e.IdLivro)
+                builder.HasOne(e => e.Exemplar)
+                       .WithMany(ex => ex.Emprestimos)
+                       .HasForeignKey(e => e.IdExemplar)
                        .OnDelete(DeleteBehavior.Restrict);
                 builder.HasOne(e => e.Usuario)
                        .WithMany(u => u.Emprestimos)

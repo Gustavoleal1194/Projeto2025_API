@@ -21,6 +21,16 @@ namespace Service
 
         public async Task<AutorDTO> AddAsync(AutorDTO autorDTO)
         {
+            // Validar se email já existe
+            if (!string.IsNullOrEmpty(autorDTO.Email))
+            {
+                var autorExistente = await autorRepositorio.GetByEmailAsync(autorDTO.Email);
+                if (autorExistente != null)
+                {
+                    throw new InvalidOperationException("Já existe um autor com este email.");
+                }
+            }
+
             var autor = mapper.Map<Autor>(autorDTO);
             await autorRepositorio.AddAsync(autor);
             return mapper.Map<AutorDTO>(autor);

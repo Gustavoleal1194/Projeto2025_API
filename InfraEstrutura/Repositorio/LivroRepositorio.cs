@@ -15,7 +15,8 @@ namespace InfraEstrutura.Repositorio
         public async Task<IEnumerable<Livro>> GetDisponiveisAsync()
         {
             return await _contexto.Livros
-                .Where(l => l.Disponivel && l.Ativo && l.QuantidadeDisponivel > 0)
+                .Where(l => l.Ativo && l.Exemplares.Any(e => e.Ativo && e.Disponivel))
+                .Include(l => l.Exemplares.Where(e => e.Ativo && e.Disponivel))
                 .OrderBy(l => l.Titulo)
                 .ToListAsync();
         }
@@ -60,7 +61,8 @@ namespace InfraEstrutura.Repositorio
         public async Task<IEnumerable<Livro>> GetEmEstoqueAsync()
         {
             return await _contexto.Livros
-                .Where(l => l.Ativo && l.QuantidadeEstoque > 0)
+                .Where(l => l.Ativo && l.Exemplares.Any(e => e.Ativo))
+                .Include(l => l.Exemplares.Where(e => e.Ativo))
                 .OrderBy(l => l.Titulo)
                 .ToListAsync();
         }

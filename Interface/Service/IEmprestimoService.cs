@@ -14,9 +14,13 @@ namespace Interface.Service
         
         // Métodos específicos para consultas
         Task<IEnumerable<EmprestimoDTO>> GetByUsuarioAsync(int idUsuario);
-        Task<IEnumerable<EmprestimoDTO>> GetByLivroAsync(int idLivro);
+        Task<IEnumerable<EmprestimoDTO>> GetByExemplarAsync(int idExemplar);
         Task<IEnumerable<EmprestimoDTO>> GetAtivosAsync();
         Task<IEnumerable<EmprestimoDTO>> GetVencidosAsync();
         Task<IEnumerable<EmprestimoDTO>> GetByStatusAsync(string status);
+        
+        // Métodos específicos para empréstimos
+        Task<bool> DevolverAsync(int idEmprestimo);
+        Task<bool> RenovarAsync(int idEmprestimo);
     }
 }

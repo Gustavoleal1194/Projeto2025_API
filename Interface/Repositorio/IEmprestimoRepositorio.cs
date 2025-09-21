@@ -8,7 +8,7 @@ namespace Interface.Repositorio
     {
         // Métodos específicos para consultas de Emprestimo
         Task<IEnumerable<Emprestimo>> GetByUsuarioAsync(int idUsuario);
-        Task<IEnumerable<Emprestimo>> GetByLivroAsync(int idLivro);
+        Task<IEnumerable<Emprestimo>> GetByExemplarAsync(int idExemplar);
         Task<IEnumerable<Emprestimo>> GetAtivosAsync();
         Task<IEnumerable<Emprestimo>> GetVencidosAsync();
         Task<IEnumerable<Emprestimo>> GetByStatusAsync(string status);

@@ -9,7 +9,7 @@ namespace Projeto2025_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Funcionario")]
+    [Authorize(Roles = "Admin,Funcionario")]
     public class FuncionarioController : ControllerBase
     {
         private readonly IFuncionarioService _service;

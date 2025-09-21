@@ -11,6 +11,21 @@ namespace InfraEstrutura.Repositorio
         {
         }
 
+        public override async Task<IEnumerable<Emprestimo>> GetAllAsync()
+        {
+            return await _contexto.Emprestimos
+                .Where(e => e.Ativo)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Autor)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Editora)
+                .Include(e => e.Usuario)
+                .OrderByDescending(e => e.DataEmprestimo)
+                .ToListAsync();
+        }
+
         // Métodos específicos para consultas
         public async Task<IEnumerable<Emprestimo>> GetByUsuarioAsync(int idUsuario)
         {
@@ -20,10 +35,13 @@ namespace InfraEstrutura.Repositorio
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Emprestimo>> GetByLivroAsync(int idLivro)
+        public async Task<IEnumerable<Emprestimo>> GetByExemplarAsync(int idExemplar)
         {
             return await _contexto.Emprestimos
-                .Where(e => e.IdLivro == idLivro && e.Ativo)
+                .Where(e => e.IdExemplar == idExemplar && e.Ativo)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .Include(e => e.Usuario)
                 .OrderByDescending(e => e.DataEmprestimo)
                 .ToListAsync();
         }

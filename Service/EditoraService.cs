@@ -21,6 +21,26 @@ namespace Service
 
         public async Task<EditoraDTO> AddAsync(EditoraDTO editoraDTO)
         {
+            // Validar se CNPJ já existe
+            if (!string.IsNullOrEmpty(editoraDTO.CNPJ))
+            {
+                var editoraExistente = await editoraRepositorio.GetByCnpjAsync(editoraDTO.CNPJ);
+                if (editoraExistente != null)
+                {
+                    throw new InvalidOperationException("Já existe uma editora com este CNPJ.");
+                }
+            }
+
+            // Validar se email já existe
+            if (!string.IsNullOrEmpty(editoraDTO.Email))
+            {
+                var editoraComEmail = await editoraRepositorio.GetByEmailAsync(editoraDTO.Email);
+                if (editoraComEmail != null)
+                {
+                    throw new InvalidOperationException("Já existe uma editora com este email.");
+                }
+            }
+
             var editora = mapper.Map<Editora>(editoraDTO);
             await editoraRepositorio.AddAsync(editora);
             return mapper.Map<EditoraDTO>(editora);

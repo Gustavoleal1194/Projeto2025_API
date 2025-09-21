@@ -1,46 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Dominio.Entidades
 {
     public class Livro
     {
         public int Id { get; set; }
+        
+        [Required]
+        [StringLength(200)]
         public string Titulo { get; set; } = string.Empty;
+        
+        [StringLength(200)]
         public string Subtitulo { get; set; } = string.Empty;
+        
+        [Required]
+        [StringLength(20)]
         public string ISBN { get; set; } = string.Empty;
+        
         public int Ano { get; set; }
         public int Edicao { get; set; } = 1;
         public int NumeroPaginas { get; set; }
+        
+        [StringLength(50)]
         public string Idioma { get; set; } = "Português";
+        
+        [StringLength(100)]
         public string Genero { get; set; } = string.Empty;
+        
+        [StringLength(2000)]
         public string Sinopse { get; set; } = string.Empty;
+        
         public decimal Preco { get; set; }
-        public int QuantidadeEstoque { get; set; } = 0;
-        public int QuantidadeDisponivel { get; set; } = 0;
+        
+        [StringLength(500)]
         public string CapaUrl { get; set; } = string.Empty;
+        
+        [StringLength(50)]
         public string CodigoBarras { get; set; } = string.Empty;
-        public bool Disponivel { get; set; } = true;
+        
         public bool Ativo { get; set; } = true;
         public DateTime DataCriacao { get; set; } = DateTime.Now;
         
-        // Informações do Exemplar
-        public string NumeroExemplar { get; set; } = string.Empty;
-        public string Localizacao { get; set; } = string.Empty; // Estante, Prateleira, etc.
-        public string Condicao { get; set; } = "Bom"; // Bom, Regular, Ruim
-        public string ObservacoesExemplar { get; set; } = string.Empty;
-        public DateTime? DataAquisicao { get; set; }
-        public decimal? ValorAquisicao { get; set; }
-        public string Fornecedor { get; set; } = string.Empty;
-        
+        // Relacionamentos
         public int IdAutor { get; set; }
         public int IdEditora { get; set; }
         public virtual Autor? Autor { get; set; }
         public virtual Editora? Editora { get; set; }
-        public virtual List<Emprestimo> Emprestimos { get; set; } = new();
+        public virtual List<Exemplar> Exemplares { get; set; } = new();
+        
+        // Propriedades calculadas
+        public int TotalExemplares => Exemplares?.Count(e => e.Ativo) ?? 0;
+        public int ExemplaresDisponiveis => Exemplares?.Count(e => e.Ativo && e.Disponivel) ?? 0;
+        public bool TemExemplaresDisponiveis => ExemplaresDisponiveis > 0;
     }
 }
