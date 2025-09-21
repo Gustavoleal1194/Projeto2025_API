@@ -723,6 +723,55 @@ Após iniciar a aplicação, abra seu navegador e acesse: `http://localhost:5072
 }
 ```
 
+#### POST /api/Exemplar/{id}/marcar-indisponivel
+**Descrição**: Marcar exemplar como indisponível
+
+**Parâmetros**: `id` = 1
+
+**Resposta Esperada (204 No Content):**
+```
+(Sem conteúdo)
+```
+
+**Resposta Esperada (404 Not Found):**
+```
+(Sem conteúdo)
+```
+
+#### POST /api/Exemplar/{id}/marcar-disponivel
+**Descrição**: Marcar exemplar como disponível
+
+**Parâmetros**: `id` = 1
+
+**Resposta Esperada (204 No Content):**
+```
+(Sem conteúdo)
+```
+
+**Resposta Esperada (404 Not Found):**
+```
+(Sem conteúdo)
+```
+
+---
+
+### 🔐 Autenticação
+
+#### GET /api/Auth/teste-token
+**Descrição**: Endpoint de teste de token (sem autenticação necessária)
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.teste",
+  "expiration": "2025-09-22T04:00:00Z",
+  "tipo": "Bearer",
+  "nome": "João Teste",
+  "email": "joao@teste.com",
+  "role": "Usuario"
+}
+```
+
 ---
 
 ## 💡 Dicas Importantes
