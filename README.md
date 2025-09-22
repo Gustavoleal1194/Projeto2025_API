@@ -7,7 +7,14 @@
 
 ## 🎯 Visão Geral
 
-Sistema completo de gerenciamento de biblioteca desenvolvido em ASP.NET Core 8.0 com arquitetura DDD (Domain-Driven Design). A API oferece 95+ endpoints funcionais para gestão completa de livros, exemplares, empréstimos, usuários, funcionários e relatórios.
+Sistema completo de gerenciamento de biblioteca desenvolvido em ASP.NET Core 8.0 com arquitetura DDD (Domain-Driven Design) e frontend React moderno. A API oferece 95+ endpoints funcionais para gestão completa de livros, exemplares, empréstimos, usuários, funcionários e relatórios, integrada com uma interface web interativa.
+
+### 🎨 Frontend React
+- **Interface moderna** com animações interativas do Yeti
+- **Sistema de login** com animações personalizadas
+- **Dashboards** específicos por tipo de usuário
+- **Integração completa** com API backend
+- **Tecnologias:** React 18, TypeScript, Tailwind CSS, GSAP
 
 ## ✨ Funcionalidades Principais
 
@@ -395,9 +402,32 @@ O projeto inclui especificação completa para implementação de um frontend 3D
 3. **Fase 3 - Avançado** (2-3 semanas): Animações e PWA
 4. **Fase 4 - Polimento** (1-2 semanas): Testes e otimização
 
+## 🚀 Como Executar o Projeto
+
+### **Backend (API)**
+```bash
+cd Projeto2020_API
+dotnet run
+# API rodando em: http://localhost:5072
+```
+
+### **Frontend (React)**
+```bash
+cd frontend-yeti
+npm install
+npm run dev
+# Frontend rodando em: http://localhost:5173
+```
+
+### **Acessar o Sistema**
+- **Frontend:** http://localhost:5173
+- **API Swagger:** http://localhost:5072/swagger
+- **Login de teste:** admin@biblioteca.com / 123456
+
 ## 📚 Documentação
 
 - [Documentação Técnica](DOCUMENTACAO_TECNICA.md) - Arquitetura e implementação detalhada
+- [Estrutura Frontend Atual](FRONTEND_ESTRUTURA_ATUAL.md) - Estrutura e funcionalidades do frontend React
 - [Guia de Testes no Swagger](GUIA_TESTES_SWAGGER.md) - Como testar todos os endpoints
 - [Guia de Contribuição](CONTRIBUTING.md) - Como contribuir com o projeto
 - [Changelog](CHANGELOG.md) - Histórico de versões
