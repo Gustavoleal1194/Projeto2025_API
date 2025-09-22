@@ -1,0 +1,401 @@
+/* Tailwind CSS imports - will be processed by PostCSS */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
+
+:root {
+    font-family: 'Source Sans Pro', sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light;
+    color: #333333;
+    background-color: #eff3f4;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: #eff3f4;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+}
+
+#root {
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Yeti Form Original Styles */
+.yeti-form-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #eff3f4;
+}
+
+.yeti-form-original {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    background-color: #FFF;
+    margin: 0;
+    padding: 2.25em;
+    box-sizing: border-box;
+    border: solid 1px #DDD;
+    border-radius: .5em;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* SVG Container */
+.svgContainer {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1em;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.svgContainer div {
+    position: relative;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    padding-bottom: 100%;
+}
+
+.mySVG {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.svgContainer:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: inherit;
+    height: inherit;
+    box-sizing: border-box;
+    border: solid 2.5px #217093;
+    border-radius: 50%;
+}
+
+/* Input Groups */
+.inputGroup {
+    margin: 0 0 2em;
+    padding: 0;
+    position: relative;
+}
+
+.inputGroup:last-of-type {
+    margin-bottom: 0;
+}
+
+.inputGroup label {
+    margin: 0 0 12px;
+    display: block;
+    font-size: 1.25em;
+    color: #217093;
+    font-weight: 700;
+    font-family: inherit;
+}
+
+.inputGroup input[type='email'],
+.inputGroup input[type="text"],
+.inputGroup input[type="number"],
+.inputGroup input[type="url"],
+.inputGroup input[type="search"],
+.inputGroup input[type="password"] {
+    display: block;
+    margin: 0;
+    padding: .875em 1em 0;
+    background-color: #f3fafd;
+    border: solid 2px #217093;
+    border-radius: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    width: 100%;
+    height: 65px;
+    font-size: 1.55em;
+    color: #353538;
+    font-weight: 600;
+    font-family: inherit;
+    transition: box-shadow .2s linear, border-color .25s ease-out;
+    position: relative;
+    z-index: 2;
+}
+
+.inputGroup input::placeholder {
+    color: transparent;
+}
+
+.inputGroup1 input::placeholder {
+    color: #217093;
+    opacity: 0.65;
+    font-size: 1.55em;
+    font-weight: 400;
+}
+
+.inputGroup1 input:focus::placeholder {
+    opacity: 0;
+}
+
+.inputGroup input:focus {
+    outline: none;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, .1);
+    border: solid 2px #4eb8dd;
+}
+
+.inputGroup button {
+    display: block;
+    margin: 0;
+    padding: .65em 1em 1em;
+    background-color: #4eb8dd;
+    border: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+    box-shadow: none;
+    width: 100%;
+    height: 65px;
+    font-size: 1.55em;
+    color: #FFF;
+    font-weight: 600;
+    font-family: inherit;
+    transition: background-color .2s ease-out;
+    cursor: pointer;
+}
+
+.inputGroup button:hover,
+.inputGroup button:active {
+    background-color: #217093;
+}
+
+.inputGroup button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Input Group 1 - Email */
+.inputGroup1 .helper {
+    position: absolute;
+    z-index: 1;
+    font-family: inherit;
+}
+
+.inputGroup1 .helper1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(1em, 2.2em) scale(1);
+    transform-origin: 0 0;
+    color: #217093;
+    font-size: 1.55em;
+    font-weight: 400;
+    opacity: .65;
+    pointer-events: none;
+    transition: transform .2s ease-out, opacity .2s linear;
+    z-index: 1;
+}
+
+.inputGroup1.focusWithText .helper1 {
+    transform: translate(1em, 1.55em) scale(.6);
+    opacity: 1;
+}
+
+.inputGroup1:has(input:focus) .helper1,
+.inputGroup1:has(input:not(:placeholder-shown)) .helper1 {
+    transform: translate(1em, 1.55em) scale(.6);
+    opacity: 1;
+}
+
+.inputGroup1 input:not(:placeholder-shown)+.helper1 {
+    transform: translate(1em, 1.55em) scale(.6);
+    opacity: 1;
+}
+
+.inputGroup1 input:focus+.helper1 {
+    transform: translate(1em, 1.55em) scale(.6);
+    opacity: 1;
+}
+
+.inputGroup1 input:not(:placeholder-shown)~.helper1 {
+    transform: translate(1em, 1.55em) scale(.6);
+    opacity: 1;
+}
+
+.inputGroup1 input:focus~.helper1 {
+    transform: translate(1em, 1.55em) scale(.6);
+    opacity: 1;
+}
+
+.inputGroup1 input:not(:placeholder-shown)~.helper1 {
+    transform: translate(1em, 1.55em) scale(.6);
+    opacity: 1;
+}
+
+/* Input Group 2 - Password */
+.inputGroup2 input[type="password"] {
+    padding: .4em 1em .5em;
+}
+
+.inputGroup2 input[type="text"] {
+    padding: .025em 1em 0;
+}
+
+.inputGroup2 #showPasswordToggle {
+    display: block;
+    padding: 0 0 0 1.45em;
+    position: absolute;
+    top: .25em;
+    right: 0;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.inputGroup2 #showPasswordToggle input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.inputGroup2 #showPasswordToggle .indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: .85em;
+    width: .85em;
+    background-color: #f3fafd;
+    border: solid 2px #217093;
+    border-radius: 3px;
+}
+
+.inputGroup2 #showPasswordToggle .indicator:after {
+    content: "";
+    position: absolute;
+    left: .25em;
+    top: .025em;
+    width: .2em;
+    height: .5em;
+    border: solid #217093;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+    visibility: hidden;
+}
+
+.inputGroup2 #showPasswordToggle input:checked~.indicator:after {
+    visibility: visible;
+}
+
+.inputGroup2 #showPasswordToggle input:focus~.indicator,
+.inputGroup2 #showPasswordToggle input:hover~.indicator {
+    border-color: #4eb8dd;
+}
+
+.inputGroup2 #showPasswordToggle input:disabled~.indicator {
+    opacity: .5;
+}
+
+.inputGroup2 #showPasswordToggle input:disabled~.indicator:after {
+    visibility: hidden;
+}
+
+/* Role Selector */
+.yeti-role-selector {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    background: rgba(33, 112, 147, 0.1);
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.yeti-role-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-weight: 600;
+    color: #217093;
+    font-size: 0.95rem;
+}
+
+.yeti-role-btn:hover {
+    background: rgba(33, 112, 147, 0.2);
+    transform: translateY(-2px);
+}
+
+.yeti-role-btn.active {
+    background: linear-gradient(135deg, #217093 0%, #4eb8dd 100%);
+    color: white;
+    box-shadow: 0 8px 20px rgba(33, 112, 147, 0.3);
+    transform: translateY(-2px);
+}
+
+.role-icon {
+    font-size: 1.2rem;
+}
+
+/* Error Message */
+.yeti-error-message {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 600;
+    background: rgba(231, 76, 60, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .yeti-form-wrapper {
+        padding: 15px;
+    }
+
+    .yeti-form-original {
+        padding: 1.5em;
+    }
+
+    .yeti-role-selector {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .yeti-role-btn {
+        padding: 15px;
+    }
+}

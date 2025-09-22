@@ -1,0 +1,61 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "useDefineForClassFields": true,
+        "lib": [
+            "ES2020",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "module": "ESNext",
+        "skipLibCheck": true,
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./frontend-yeti/src/*"
+            ],
+            "@/components/*": [
+                "./frontend-yeti/src/components/*"
+            ],
+            "@/pages/*": [
+                "./frontend-yeti/src/pages/*"
+            ],
+            "@/hooks/*": [
+                "./frontend-yeti/src/hooks/*"
+            ],
+            "@/services/*": [
+                "./frontend-yeti/src/services/*"
+            ],
+            "@/store/*": [
+                "./frontend-yeti/src/store/*"
+            ],
+            "@/types/*": [
+                "./frontend-yeti/src/types/*"
+            ],
+            "@/utils/*": [
+                "./frontend-yeti/src/utils/*"
+            ],
+            "@/assets/*": [
+                "./frontend-yeti/src/assets/*"
+            ]
+        }
+    },
+    "include": [
+        "frontend-yeti/src"
+    ],
+    "references": [
+        {
+            "path": "./frontend-yeti/tsconfig.node.json"
+        }
+    ]
+}
