@@ -1,6 +1,37 @@
 @Projeto2025_API_HostAddress = http://localhost:5072
 
-GET {{Projeto2025_API_HostAddress}}/weatherforecast/
-Accept: application/json
+### Login como Administrador
+POST {{Projeto2025_API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@biblioteca.com",
+  "senha": "123456"
+}
+
+### Login como Usuário
+POST {{Projeto2025_API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "teste@teste.com",
+  "senha": "123456"
+}
+
+### Validar Token (usar token retornado do login)
+POST {{Projeto2025_API_HostAddress}}/api/auth/validar-token
+Authorization: Bearer SEU_TOKEN_AQUI
+
+### Obter usuário atual
+GET {{Projeto2025_API_HostAddress}}/api/auth/me
+Authorization: Bearer SEU_TOKEN_AQUI
+
+### Listar funcionários (apenas Admin/Funcionario)
+GET {{Projeto2025_API_HostAddress}}/api/funcionario
+Authorization: Bearer SEU_TOKEN_AQUI
+
+### Listar usuários (apenas Admin/Funcionario)
+GET {{Projeto2025_API_HostAddress}}/api/usuario
+Authorization: Bearer SEU_TOKEN_AQUI
 
 ###
