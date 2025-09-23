@@ -2,8 +2,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
 
 /* Tailwind CSS imports - will be processed by PostCSS */
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind base;
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind components;
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind utilities;
 
 /* Classes customizadas para o Dashboard e GerenciarUsuarios */
@@ -448,9 +451,7 @@ svg {
     stroke: currentColor;
 }
 
-.viewBox-0-0-24-24 {
-    viewBox: "0 0 24 24";
-}
+/* SVG viewBox is handled in HTML, not CSS */
 
 .strokeLinecap-round {
     stroke-linecap: round;
@@ -606,12 +607,6 @@ svg {
     gap: 1.5rem;
 }
 
-.group {}
-
-.group:hover .group-hover\:opacity-100:hover {
-    opacity: 1;
-}
-
 .group:hover .group-hover\:opacity-100:hover {
     opacity: 1;
 }
@@ -660,6 +655,7 @@ svg {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
 }
 
 .text-sm {
@@ -776,11 +772,7 @@ svg {
     margin-top: 2rem;
 }
 
-.md\:grid-cols-2 {}
-
-.lg\:grid-cols-3 {}
-
-.xl\:grid-cols-4 {}
+/* Media queries for grid columns are defined below */
 
 .border-gray-200 {
     border-color: #e5e7eb;
