@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import UsuarioDashboard from './pages/UsuarioDashboard';
 import GerenciarUsuarios from './pages/GerenciarUsuarios';
 import GerenciarLivros from './pages/GerenciarLivros';
+import GerenciarExemplares from './pages/GerenciarExemplares';
 
 const App: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const App: React.FC = () => {
         <Route path="/usuario-dashboard" element={<UsuarioDashboard />} />
         <Route path="/gerenciar-usuarios" element={<GerenciarUsuarios />} />
         <Route path="/gerenciar-livros" element={<GerenciarLivros />} />
+        <Route path="/gerenciar-exemplares" element={<GerenciarExemplares />} />
         {/* Add other React routes here */}
       </Routes>
     </Router>

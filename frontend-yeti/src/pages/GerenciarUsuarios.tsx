@@ -677,19 +677,19 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                     </>
                                 )}
 
-                                <div className="flex gap-4 pt-4">
+                                <div className="flex justify-end gap-4 mt-8">
                                     <button
                                         type="button"
                                         onClick={closeModal}
-                                        className="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold border-2 border-red-400 hover:border-red-500 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                                        className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-red-500 hover:border-red-600"
                                     >
-                                        ❌ Cancelar
+                                        Cancelar
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-1 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold border-2 border-green-400 hover:border-green-500 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                                        className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-black hover:border-gray-800"
                                     >
-                                        ✅ {editingUsuario ? 'Atualizar' : 'Criar'}
+                                        {editingUsuario ? 'Atualizar' : 'Criar'}
                                     </button>
                                 </div>
                             </form>

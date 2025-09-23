@@ -377,7 +377,7 @@ const GerenciarLivros: React.FC = () => {
                                 <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     ⚡ Status
                                 </th>
-                                <th className="px-8 py-4 text-center text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     ⚙️ Ações
                                 </th>
                             </tr>
@@ -662,7 +662,7 @@ const GerenciarLivros: React.FC = () => {
                             </button>
                             <button
                                 onClick={saveLivro}
-                                className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-green-500 hover:border-green-600"
+                                className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-black hover:border-gray-800"
                             >
                                 {editingLivro ? 'Atualizar' : 'Criar'}
                             </button>

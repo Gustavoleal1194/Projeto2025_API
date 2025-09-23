@@ -480,3 +480,40 @@ export interface LivroCreateRequest {
 export interface LivroUpdateRequest extends LivroCreateRequest {
     id: number;
 }
+
+// ===== EXEMPLARES =====
+export interface Exemplar {
+    id: number;
+    idLivro: number;
+    numeroExemplar: string;
+    localizacao: string;
+    condicao: string;
+    disponivel: boolean;
+    ativo: boolean;
+    dataAquisicao: string;
+    valorAquisicao: number;
+    fornecedor: string;
+    observacoes: string;
+    dataCriacao: string;
+    tituloLivro?: string;
+    isbn?: string;
+    nomeAutor?: string;
+    nomeEditora?: string;
+}
+
+export interface ExemplarCreateRequest {
+    idLivro: number;
+    numeroExemplar: string;
+    localizacao: string;
+    condicao: string;
+    disponivel: boolean;
+    ativo: boolean;
+    dataAquisicao: string;
+    valorAquisicao: number;
+    fornecedor: string;
+    observacoes: string;
+}
+
+export interface ExemplarUpdateRequest extends ExemplarCreateRequest {
+    id: number;
+}
