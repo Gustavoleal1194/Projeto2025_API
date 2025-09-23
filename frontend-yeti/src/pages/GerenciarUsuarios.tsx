@@ -300,255 +300,255 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                 </div>
             )}
 
-                {/* Error Alert */}
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
-                    >
-                        <div className="flex items-center">
-                            <span className="text-red-500 mr-2">❌</span>
-                            <span>{error}</span>
-                            <button
-                                onClick={() => setError(null)}
-                                className="ml-auto text-red-500 hover:text-red-700"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* Stats Cards */}
+            {/* Error Alert */}
+            {error && (
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
                 >
-                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-blue-100 transform hover:scale-105 transition-all duration-300">
-                        <div className="text-center">
-                            <div className="flex justify-center mb-4">
-                                <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl">
-                                    <span className="text-2xl text-white">👥</span>
-                                </div>
-                            </div>
-                            <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Total de Usuários</p>
-                            <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.length}</p>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-green-100 transform hover:scale-105 transition-all duration-300">
-                        <div className="text-center">
-                            <div className="flex justify-center mb-4">
-                                <div className="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl">
-                                    <span className="text-2xl text-white">✅</span>
-                                </div>
-                            </div>
-                            <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Usuários Ativos</p>
-                            <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.filter(u => u.ativo).length}</p>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-red-100 transform hover:scale-105 transition-all duration-300">
-                        <div className="text-center">
-                            <div className="flex justify-center mb-4">
-                                <div className="p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-xl">
-                                    <span className="text-2xl text-white">❌</span>
-                                </div>
-                            </div>
-                            <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Usuários Inativos</p>
-                            <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.filter(u => !u.ativo).length}</p>
-                        </div>
+                    <div className="flex items-center">
+                        <span className="text-red-500 mr-2">❌</span>
+                        <span>{error}</span>
+                        <button
+                            onClick={() => setError(null)}
+                            className="ml-auto text-red-500 hover:text-red-700"
+                        >
+                            ✕
+                        </button>
                     </div>
                 </motion.div>
+            )}
 
-                {/* Search and Filter Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    className="bg-white rounded-2xl shadow-2xl p-8 mb-8 border border-blue-100"
-                >
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        {/* Search */}
-                        <div className="flex-1">
-                            <label className="block text-lg font-semibold text-gray-800 mb-3" style={{ color: '#1f2937' }}>
-                                Buscar Usuários
-                            </label>
-                            <div className="relative">
-                                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 flex items-center justify-center">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="text"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    placeholder="Digite nome, email ou CPF..."
-                                    className="w-full pl-12 pr-4 py-4 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-lg transition-all duration-300 bg-blue-50 placeholder-gray-500"
-                                />
+            {/* Stats Cards */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+            >
+                <div className="bg-white rounded-2xl shadow-xl p-6 border border-blue-100 transform hover:scale-105 transition-all duration-300">
+                    <div className="text-center">
+                        <div className="flex justify-center mb-4">
+                            <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl">
+                                <span className="text-2xl text-white">👥</span>
                             </div>
                         </div>
+                        <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Total de Usuários</p>
+                        <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.length}</p>
+                    </div>
+                </div>
 
-                        {/* Filter */}
-                        <div className="lg:w-64">
-                            <label className="block text-lg font-semibold text-gray-700 mb-3">
-                                📊 Filtrar por Status
-                            </label>
-                            <select
-                                value={filterStatus}
-                                onChange={(e) => setFilterStatus(e.target.value as any)}
-                                className="w-full px-4 py-4 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-lg transition-all duration-300 bg-blue-50"
-                            >
-                                <option value="todos">Todos os Usuários</option>
-                                <option value="ativos">Apenas Ativos</option>
-                                <option value="inativos">Apenas Inativos</option>
-                            </select>
+                <div className="bg-white rounded-2xl shadow-xl p-6 border border-green-100 transform hover:scale-105 transition-all duration-300">
+                    <div className="text-center">
+                        <div className="flex justify-center mb-4">
+                            <div className="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl">
+                                <span className="text-2xl text-white">✅</span>
+                            </div>
                         </div>
+                        <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Usuários Ativos</p>
+                        <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.filter(u => u.ativo).length}</p>
+                    </div>
+                </div>
 
-                        {/* Add Button */}
-                        <div className="flex items-end justify-center">
-                            <button
-                                onClick={() => openModal()}
-                                className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-3 border-2 border-green-400 hover:border-green-500"
-                                style={{ minWidth: '300px', paddingLeft: '48px', paddingRight: '48px' }}
-                            >
-                                Criar Novo Usuário
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <div className="bg-white rounded-2xl shadow-xl p-6 border border-red-100 transform hover:scale-105 transition-all duration-300">
+                    <div className="text-center">
+                        <div className="flex justify-center mb-4">
+                            <div className="p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-xl">
+                                <span className="text-2xl text-white">❌</span>
+                            </div>
+                        </div>
+                        <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Usuários Inativos</p>
+                        <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.filter(u => !u.ativo).length}</p>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Search and Filter Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="bg-white rounded-2xl shadow-2xl p-8 mb-8 border border-blue-100"
+            >
+                <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Search */}
+                    <div className="flex-1">
+                        <label className="block text-lg font-semibold text-gray-800 mb-3" style={{ color: '#1f2937' }}>
+                            Buscar Usuários
+                        </label>
+                        <div className="relative">
+                            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 flex items-center justify-center">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                            </button>
+                            </div>
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Digite nome, email ou CPF..."
+                                className="w-full pl-12 pr-4 py-4 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-lg transition-all duration-300 bg-blue-50 placeholder-gray-500"
+                            />
                         </div>
                     </div>
-                </motion.div>
 
-                {/* Users Table */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden"
-                >
-                    {loading ? (
-                        <div className="flex justify-center items-center py-20">
-                            <div className="flex flex-col items-center">
-                                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
-                                <p className="mt-4 text-lg text-gray-600">Carregando usuários...</p>
-                            </div>
+                    {/* Filter */}
+                    <div className="lg:w-64">
+                        <label className="block text-lg font-semibold text-gray-700 mb-3">
+                            📊 Filtrar por Status
+                        </label>
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value as any)}
+                            className="w-full px-4 py-4 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-lg transition-all duration-300 bg-blue-50"
+                        >
+                            <option value="todos">Todos os Usuários</option>
+                            <option value="ativos">Apenas Ativos</option>
+                            <option value="inativos">Apenas Inativos</option>
+                        </select>
+                    </div>
+
+                    {/* Add Button */}
+                    <div className="flex items-end justify-center">
+                        <button
+                            onClick={() => openModal()}
+                            className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-3 border-2 border-green-400 hover:border-green-500"
+                            style={{ minWidth: '300px', paddingLeft: '48px', paddingRight: '48px' }}
+                        >
+                            Criar Novo Usuário
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Users Table */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden"
+            >
+                {loading ? (
+                    <div className="flex justify-center items-center py-20">
+                        <div className="flex flex-col items-center">
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+                            <p className="mt-4 text-lg text-gray-600">Carregando usuários...</p>
                         </div>
-                    ) : error ? (
-                        <div className="flex flex-col items-center justify-center py-20">
-                            <div className="text-red-500 text-xl mb-4">❌ {error}</div>
-                            <button
-                                onClick={loadUsuarios}
-                                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300"
-                            >
-                                Tentar Novamente
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto bg-white rounded-2xl shadow-2xl border border-blue-100">
-                            <table className="min-w-full divide-y divide-blue-100">
-                                <thead className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
-                                    <tr>
-                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                            👤 Usuário
-                                        </th>
-                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                            📧 Email
-                                        </th>
-                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                            📄 CPF
-                                        </th>
-                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                            📱 Telefone
-                                        </th>
-                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                            📊 Status
-                                        </th>
-                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                            ⚙️ Ações
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-blue-100 rounded-b-2xl">
-                                    {filteredUsuarios.map((usuario, index) => (
-                                        <motion.tr
-                                            key={usuario.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.3, delay: index * 0.1 }}
-                                            className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300"
-                                        >
-                                            <td className="px-6 py-6 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <div className="flex-shrink-0 h-14 w-14">
-                                                        <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
-                                                            <span className="text-xl font-bold text-white">
-                                                                {usuario.nome.charAt(0).toUpperCase()}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-4">
-                                                        <div className="text-lg font-semibold text-gray-900">{usuario.nome}</div>
-                                                        <div className="text-sm text-blue-600 font-medium">
-                                                            ID: {usuario.id}
-                                                        </div>
+                    </div>
+                ) : error ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="text-red-500 text-xl mb-4">❌ {error}</div>
+                        <button
+                            onClick={loadUsuarios}
+                            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+                        >
+                            Tentar Novamente
+                        </button>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto bg-white rounded-2xl shadow-2xl border border-blue-100">
+                        <table className="min-w-full divide-y divide-blue-100">
+                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
+                                <tr>
+                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        👤 Usuário
+                                    </th>
+                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        📧 Email
+                                    </th>
+                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        📄 CPF
+                                    </th>
+                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        📱 Telefone
+                                    </th>
+                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        📊 Status
+                                    </th>
+                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        ⚙️ Ações
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-blue-100 rounded-b-2xl">
+                                {filteredUsuarios.map((usuario, index) => (
+                                    <motion.tr
+                                        key={usuario.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                                        className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300"
+                                    >
+                                        <td className="px-6 py-6 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <div className="flex-shrink-0 h-14 w-14">
+                                                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
+                                                        <span className="text-xl font-bold text-white">
+                                                            {usuario.nome.charAt(0).toUpperCase()}
+                                                        </span>
                                                     </div>
                                                 </div>
-                                            </td>
-                                            <td className="px-6 py-6 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">{usuario.email}</div>
-                                            </td>
-                                            <td className="px-6 py-6 whitespace-nowrap">
-                                                <div className="text-sm font-mono text-gray-900">{usuario.cpf}</div>
-                                            </td>
-                                            <td className="px-6 py-6 whitespace-nowrap">
-                                                <div className="text-sm font-mono text-gray-900">{usuario.telefone}</div>
-                                            </td>
-                                            <td className="px-6 py-6 whitespace-nowrap">
-                                                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${usuario.ativo
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
-                                                    }`}>
-                                                    {usuario.ativo ? '✅ Ativo' : '❌ Inativo'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-6 whitespace-nowrap text-sm font-medium">
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => openModal(usuario)}
-                                                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
-                                                    >
-                                                        ✏️ Editar
-                                                    </button>
-                                                    <button
-                                                        onClick={() => toggleStatus(usuario.id)}
-                                                        className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${usuario.ativo
-                                                            ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white'
-                                                            : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
-                                                            }`}
-                                                    >
-                                                        {usuario.ativo ? '⏸️ Desativar' : '▶️ Ativar'}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => deleteUsuario(usuario.id)}
-                                                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
-                                                    >
-                                                        🗑️ Excluir
-                                                    </button>
+                                                <div className="ml-4">
+                                                    <div className="text-lg font-semibold text-gray-900">{usuario.nome}</div>
+                                                    <div className="text-sm text-blue-600 font-medium">
+                                                        ID: {usuario.id}
+                                                    </div>
                                                 </div>
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </motion.div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-6 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900">{usuario.email}</div>
+                                        </td>
+                                        <td className="px-6 py-6 whitespace-nowrap">
+                                            <div className="text-sm font-mono text-gray-900">{usuario.cpf}</div>
+                                        </td>
+                                        <td className="px-6 py-6 whitespace-nowrap">
+                                            <div className="text-sm font-mono text-gray-900">{usuario.telefone}</div>
+                                        </td>
+                                        <td className="px-6 py-6 whitespace-nowrap">
+                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${usuario.ativo
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                {usuario.ativo ? '✅ Ativo' : '❌ Inativo'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-6 whitespace-nowrap text-sm font-medium">
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={() => openModal(usuario)}
+                                                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                                                >
+                                                    ✏️ Editar
+                                                </button>
+                                                <button
+                                                    onClick={() => toggleStatus(usuario.id)}
+                                                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${usuario.ativo
+                                                        ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white'
+                                                        : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                                                        }`}
+                                                >
+                                                    {usuario.ativo ? '⏸️ Desativar' : '▶️ Ativar'}
+                                                </button>
+                                                <button
+                                                    onClick={() => deleteUsuario(usuario.id)}
+                                                    className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                                                >
+                                                    🗑️ Excluir
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </motion.div>
 
             {/* Modal de Criação/Edição */}
             {showModal && (

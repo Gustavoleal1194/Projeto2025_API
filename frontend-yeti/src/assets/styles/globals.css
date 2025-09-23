@@ -1,9 +1,10 @@
+/* Google Fonts import - must come before @tailwind directives */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
+
 /* Tailwind CSS imports - will be processed by PostCSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
 
 /* Classes customizadas para o Dashboard e GerenciarUsuarios */
 
@@ -475,20 +476,8 @@ svg {
     padding-right: 1rem;
 }
 
-.bg-white {
-    background-color: #ffffff;
-}
-
 .border-2 {
     border-width: 2px;
-}
-
-.rounded-full {
-    border-radius: 9999px;
-}
-
-.text-gray-700 {
-    color: #374151;
 }
 
 .focus\:outline-none:focus {
@@ -534,10 +523,6 @@ svg {
     font-weight: 600;
 }
 
-.text-gray-700 {
-    color: #374151;
-}
-
 .ml-70 {
     margin-left: 17.5rem;
 }
@@ -552,10 +537,6 @@ svg {
 
 .rounded-2xl {
     border-radius: 1rem;
-}
-
-.shadow-2xl {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .overflow-hidden {
@@ -708,10 +689,6 @@ svg {
     padding-bottom: 0.25rem;
 }
 
-.rounded-full {
-    border-radius: 9999px;
-}
-
 .text-xs {
     font-size: 0.75rem;
     line-height: 1rem;
@@ -767,10 +744,6 @@ svg {
 
 .text-amber-900 {
     color: #78350f;
-}
-
-.text-gray-700 {
-    color: #374151;
 }
 
 .text-gray-600 {

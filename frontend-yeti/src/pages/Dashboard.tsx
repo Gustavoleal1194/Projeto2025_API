@@ -133,342 +133,342 @@ const Dashboard: React.FC = () => {
                 </div>
             )}
 
-                {/* Error Alert */}
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
-                    >
-                        <div className="flex items-center">
-                            <div className="text-red-500 mr-3">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="text-sm font-medium text-red-800">Erro ao carregar dados</h3>
-                                <p className="text-sm text-red-700 mt-1">{error}</p>
-                            </div>
-                            <button
-                                onClick={() => setError(null)}
-                                className="text-red-400 hover:text-red-600"
-                            >
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
-                            </button>
+            {/* Error Alert */}
+            {error && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+                >
+                    <div className="flex items-center">
+                        <div className="text-red-500 mr-3">
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            </svg>
                         </div>
-                    </motion.div>
-                )}
-
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {[
-                        {
-                            title: 'Total de Usuários',
-                            value: dashboardData.totalUsuarios.toLocaleString(),
-                            icon: '👥',
-                            color: 'bg-blue-500',
-                            change: '+12%',
-                            subtitle: `${dashboardData.usuariosOnline} online agora`,
-                            trend: 'up'
-                        },
-                        {
-                            title: 'Livros Cadastrados',
-                            value: dashboardData.totalLivros.toLocaleString(),
-                            icon: '📚',
-                            color: 'bg-green-500',
-                            change: '+8%',
-                            subtitle: `${dashboardData.totalExemplares.toLocaleString()} exemplares`,
-                            trend: 'up'
-                        },
-                        {
-                            title: 'Empréstimos Ativos',
-                            value: dashboardData.emprestimosAtivos.toString(),
-                            icon: '📖',
-                            color: 'bg-yellow-500',
-                            change: '+5%',
-                            subtitle: `${dashboardData.livrosDisponiveis.toLocaleString()} disponíveis`,
-                            trend: 'up'
-                        },
-                        {
-                            title: 'Livros Atrasados',
-                            value: dashboardData.livrosAtrasados.toString(),
-                            icon: '⚠️',
-                            color: 'bg-red-500',
-                            change: '-2%',
-                            subtitle: `${dashboardData.funcionariosAtivos} funcionários ativos`,
-                            trend: 'down'
-                        }
-                    ].map((stat, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
-                            className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow cursor-pointer"
+                        <div className="flex-1">
+                            <h3 className="text-sm font-medium text-red-800">Erro ao carregar dados</h3>
+                            <p className="text-sm text-red-700 mt-1">{error}</p>
+                        </div>
+                        <button
+                            onClick={() => setError(null)}
+                            className="text-red-400 hover:text-red-600"
                         >
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
-                                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{stat.subtitle}</p>
-                                    <div className="flex items-center mt-2">
-                                        <span className={`text-sm font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                                            {stat.change}
-                                        </span>
-                                        <span className="text-xs text-gray-500 ml-1">vs mês anterior</span>
-                                    </div>
-                                </div>
-                                <div className={`w-16 h-16 ${stat.color} rounded-full flex items-center justify-center text-2xl shadow-lg`}>
-                                    {stat.icon}
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </motion.div>
+            )}
 
-                {/* Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                    {/* Recent Activities */}
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {[
+                    {
+                        title: 'Total de Usuários',
+                        value: dashboardData.totalUsuarios.toLocaleString(),
+                        icon: '👥',
+                        color: 'bg-blue-500',
+                        change: '+12%',
+                        subtitle: `${dashboardData.usuariosOnline} online agora`,
+                        trend: 'up'
+                    },
+                    {
+                        title: 'Livros Cadastrados',
+                        value: dashboardData.totalLivros.toLocaleString(),
+                        icon: '📚',
+                        color: 'bg-green-500',
+                        change: '+8%',
+                        subtitle: `${dashboardData.totalExemplares.toLocaleString()} exemplares`,
+                        trend: 'up'
+                    },
+                    {
+                        title: 'Empréstimos Ativos',
+                        value: dashboardData.emprestimosAtivos.toString(),
+                        icon: '📖',
+                        color: 'bg-yellow-500',
+                        change: '+5%',
+                        subtitle: `${dashboardData.livrosDisponiveis.toLocaleString()} disponíveis`,
+                        trend: 'up'
+                    },
+                    {
+                        title: 'Livros Atrasados',
+                        value: dashboardData.livrosAtrasados.toString(),
+                        icon: '⚠️',
+                        color: 'bg-red-500',
+                        change: '-2%',
+                        subtitle: `${dashboardData.funcionariosAtivos} funcionários ativos`,
+                        trend: 'down'
+                    }
+                ].map((stat, index) => (
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
-                    >
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-gray-900">Atividades Recentes</h3>
-                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">Ver todas</button>
-                        </div>
-                        <div className="space-y-4 max-h-80 overflow-y-auto">
-                            {recentActivities.length > 0 ? (
-                                recentActivities.map((activity) => (
-                                    <div key={activity.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <div className={`text-2xl ${getActivityColor(activity.type)}`}>
-                                            {getActivityIcon(activity.type)}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-gray-900">{activity.user}</p>
-                                            <p className="text-sm text-gray-600">{activity.action}</p>
-                                        </div>
-                                        <span className="text-xs text-gray-500">{activity.time}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <div className="text-4xl mb-2">📊</div>
-                                    <p>Nenhuma atividade recente</p>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
-
-                    {/* Overdue Books */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
-                    >
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-gray-900">Livros Atrasados</h3>
-                            <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                {overdueBooks.length} atrasados
-                            </span>
-                        </div>
-                        <div className="space-y-4 max-h-80 overflow-y-auto">
-                            {overdueBooks.length > 0 ? (
-                                overdueBooks.map((book) => (
-                                    <div key={book.id} className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200 hover:bg-red-100 transition-colors">
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-900">{book.title}</p>
-                                            <p className="text-sm text-gray-600">{book.user}</p>
-                                            <p className="text-xs text-gray-500">Exemplar: {book.exemplar}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-medium text-red-600">{book.daysOverdue} dias</p>
-                                            <p className="text-xs text-red-500">Multa: R$ {book.multa.toFixed(2)}</p>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <div className="text-4xl mb-2">✅</div>
-                                    <p>Nenhum livro atrasado</p>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
-
-                    {/* System Alerts */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
-                    >
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-gray-900">Alertas do Sistema</h3>
-                            <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                {systemAlerts.length} alertas
-                            </span>
-                        </div>
-                        <div className="space-y-4 max-h-80 overflow-y-auto">
-                            {systemAlerts.length > 0 ? (
-                                systemAlerts.map((alert) => (
-                                    <div key={alert.id} className={`p-3 rounded-lg border-l-4 ${alert.type === 'error' ? 'bg-red-50 border-red-400' :
-                                        alert.type === 'warning' ? 'bg-yellow-50 border-yellow-400' :
-                                            alert.type === 'success' ? 'bg-green-50 border-green-400' :
-                                                'bg-blue-50 border-blue-400'
-                                        }`}>
-                                        <div className="flex items-start">
-                                            <div className={`w-2 h-2 rounded-full mt-2 mr-3 ${alert.priority === 'high' ? 'bg-red-500' :
-                                                alert.priority === 'medium' ? 'bg-yellow-500' :
-                                                    'bg-green-500'
-                                                }`}></div>
-                                            <p className="text-sm text-gray-700">{alert.message}</p>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <div className="text-4xl mb-2">🔔</div>
-                                    <p>Nenhum alerta do sistema</p>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* Charts and Analytics */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    {/* Monthly Statistics Chart */}
-                    <motion.div
+                        key={index}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.5 }}
-                        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow cursor-pointer"
                     >
-                        <h3 className="text-xl font-bold text-gray-900 mb-6">Estatísticas Mensais</h3>
-                        <div className="space-y-4">
-                            {monthlyStats.length > 0 ? (
-                                monthlyStats.map((stat, index) => (
-                                    <div key={index} className="flex items-center justify-between">
-                                        <span className="text-sm font-medium text-gray-600 w-12">{stat.month}</span>
-                                        <div className="flex-1 mx-4">
-                                            <div className="flex items-center space-x-2">
-                                                <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className="bg-blue-500 h-2 rounded-full"
-                                                        style={{ width: `${(stat.emprestimos / 200) * 100}%` }}
-                                                    ></div>
-                                                </div>
-                                                <span className="text-xs text-gray-500 w-12 text-right">{stat.emprestimos}</span>
-                                            </div>
-                                            <div className="flex items-center space-x-2 mt-1">
-                                                <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className="bg-green-500 h-2 rounded-full"
-                                                        style={{ width: `${(stat.devolucoes / 200) * 100}%` }}
-                                                    ></div>
-                                                </div>
-                                                <span className="text-xs text-gray-500 w-12 text-right">{stat.devolucoes}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <div className="text-4xl mb-2">📈</div>
-                                    <p>Nenhum dado estatístico</p>
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
+                                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                                <p className="text-xs text-gray-500 mt-1">{stat.subtitle}</p>
+                                <div className="flex items-center mt-2">
+                                    <span className={`text-sm font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                                        {stat.change}
+                                    </span>
+                                    <span className="text-xs text-gray-500 ml-1">vs mês anterior</span>
                                 </div>
-                            )}
-                        </div>
-                        <div className="flex items-center justify-center mt-4 space-x-6">
-                            <div className="flex items-center">
-                                <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                                <span className="text-sm text-gray-600">Empréstimos</span>
                             </div>
-                            <div className="flex items-center">
-                                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                                <span className="text-sm text-gray-600">Devoluções</span>
+                            <div className={`w-16 h-16 ${stat.color} rounded-full flex items-center justify-center text-2xl shadow-lg`}>
+                                {stat.icon}
                             </div>
                         </div>
                     </motion.div>
+                ))}
+            </div>
 
-                    {/* Top Books */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.6 }}
-                        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
-                    >
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-gray-900">Livros Mais Emprestados</h3>
-                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">Ver ranking</button>
-                        </div>
-                        <div className="space-y-4">
-                            {topBooks.length > 0 ? (
-                                topBooks.map((book, index) => (
-                                    <div key={book.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
-                                            {index + 1}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-900">{book.title}</p>
-                                            <p className="text-sm text-gray-600">{book.author}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-medium text-gray-900">{book.emprestimos} empréstimos</p>
-                                            <div className="flex items-center">
-                                                <span className="text-yellow-500">★</span>
-                                                <span className="text-xs text-gray-500 ml-1">{book.rating}</span>
-                                            </div>
-                                        </div>
+            {/* Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                {/* Recent Activities */}
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-gray-900">Atividades Recentes</h3>
+                        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">Ver todas</button>
+                    </div>
+                    <div className="space-y-4 max-h-80 overflow-y-auto">
+                        {recentActivities.length > 0 ? (
+                            recentActivities.map((activity) => (
+                                <div key={activity.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div className={`text-2xl ${getActivityColor(activity.type)}`}>
+                                        {getActivityIcon(activity.type)}
                                     </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <div className="text-4xl mb-2">📚</div>
-                                    <p>Nenhum dado de popularidade</p>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-gray-900">{activity.user}</p>
+                                        <p className="text-sm text-gray-600">{activity.action}</p>
+                                    </div>
+                                    <span className="text-xs text-gray-500">{activity.time}</span>
                                 </div>
-                            )}
-                        </div>
-                    </motion.div>
-                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                <div className="text-4xl mb-2">📊</div>
+                                <p>Nenhuma atividade recente</p>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
 
-                {/* Quick Actions */}
+                {/* Overdue Books */}
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-gray-900">Livros Atrasados</h3>
+                        <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {overdueBooks.length} atrasados
+                        </span>
+                    </div>
+                    <div className="space-y-4 max-h-80 overflow-y-auto">
+                        {overdueBooks.length > 0 ? (
+                            overdueBooks.map((book) => (
+                                <div key={book.id} className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200 hover:bg-red-100 transition-colors">
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-900">{book.title}</p>
+                                        <p className="text-sm text-gray-600">{book.user}</p>
+                                        <p className="text-xs text-gray-500">Exemplar: {book.exemplar}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium text-red-600">{book.daysOverdue} dias</p>
+                                        <p className="text-xs text-red-500">Multa: R$ {book.multa.toFixed(2)}</p>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                <div className="text-4xl mb-2">✅</div>
+                                <p>Nenhum livro atrasado</p>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+
+                {/* System Alerts */}
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-gray-900">Alertas do Sistema</h3>
+                        <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {systemAlerts.length} alertas
+                        </span>
+                    </div>
+                    <div className="space-y-4 max-h-80 overflow-y-auto">
+                        {systemAlerts.length > 0 ? (
+                            systemAlerts.map((alert) => (
+                                <div key={alert.id} className={`p-3 rounded-lg border-l-4 ${alert.type === 'error' ? 'bg-red-50 border-red-400' :
+                                    alert.type === 'warning' ? 'bg-yellow-50 border-yellow-400' :
+                                        alert.type === 'success' ? 'bg-green-50 border-green-400' :
+                                            'bg-blue-50 border-blue-400'
+                                    }`}>
+                                    <div className="flex items-start">
+                                        <div className={`w-2 h-2 rounded-full mt-2 mr-3 ${alert.priority === 'high' ? 'bg-red-500' :
+                                            alert.priority === 'medium' ? 'bg-yellow-500' :
+                                                'bg-green-500'
+                                            }`}></div>
+                                        <p className="text-sm text-gray-700">{alert.message}</p>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                <div className="text-4xl mb-2">🔔</div>
+                                <p>Nenhum alerta do sistema</p>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Charts and Analytics */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* Monthly Statistics Chart */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.7 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
                     className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
                 >
-                    <h3 className="text-xl font-bold text-gray-900 mb-6">Ações Rápidas</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {[
-                            { label: 'Novo Livro', icon: '📚', color: 'bg-blue-500', action: () => console.log('Novo Livro') },
-                            { label: 'Novo Usuário', icon: '👤', color: 'bg-green-500', action: () => navigate('/gerenciar-usuarios') },
-                            { label: 'Novo Empréstimo', icon: '📖', color: 'bg-yellow-500', action: () => console.log('Novo Empréstimo') },
-                            { label: 'Adicionar Exemplar', icon: '📚', color: 'bg-orange-500', action: () => console.log('Adicionar Exemplar') },
-                            { label: 'Adicionar Funcionário', icon: '👨‍💼', color: 'bg-indigo-500', action: () => console.log('Adicionar Funcionário') },
-                            { label: 'Relatórios', icon: '📊', color: 'bg-purple-500', action: () => console.log('Relatórios') }
-                        ].map((action, index) => (
-                            <button
-                                key={index}
-                                onClick={action.action}
-                                className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors"
-                            >
-                                <div className={`w-12 h-12 ${action.color} rounded-full flex items-center justify-center text-2xl mb-2`}>
-                                    {action.icon}
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Estatísticas Mensais</h3>
+                    <div className="space-y-4">
+                        {monthlyStats.length > 0 ? (
+                            monthlyStats.map((stat, index) => (
+                                <div key={index} className="flex items-center justify-between">
+                                    <span className="text-sm font-medium text-gray-600 w-12">{stat.month}</span>
+                                    <div className="flex-1 mx-4">
+                                        <div className="flex items-center space-x-2">
+                                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                                <div
+                                                    className="bg-blue-500 h-2 rounded-full"
+                                                    style={{ width: `${(stat.emprestimos / 200) * 100}%` }}
+                                                ></div>
+                                            </div>
+                                            <span className="text-xs text-gray-500 w-12 text-right">{stat.emprestimos}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-2 mt-1">
+                                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                                <div
+                                                    className="bg-green-500 h-2 rounded-full"
+                                                    style={{ width: `${(stat.devolucoes / 200) * 100}%` }}
+                                                ></div>
+                                            </div>
+                                            <span className="text-xs text-gray-500 w-12 text-right">{stat.devolucoes}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span className="text-sm font-medium text-gray-700">{action.label}</span>
-                            </button>
-                        ))}
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                <div className="text-4xl mb-2">📈</div>
+                                <p>Nenhum dado estatístico</p>
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex items-center justify-center mt-4 space-x-6">
+                        <div className="flex items-center">
+                            <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                            <span className="text-sm text-gray-600">Empréstimos</span>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                            <span className="text-sm text-gray-600">Devoluções</span>
+                        </div>
                     </div>
                 </motion.div>
+
+                {/* Top Books */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-gray-900">Livros Mais Emprestados</h3>
+                        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">Ver ranking</button>
+                    </div>
+                    <div className="space-y-4">
+                        {topBooks.length > 0 ? (
+                            topBooks.map((book, index) => (
+                                <div key={book.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
+                                        {index + 1}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-900">{book.title}</p>
+                                        <p className="text-sm text-gray-600">{book.author}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium text-gray-900">{book.emprestimos} empréstimos</p>
+                                        <div className="flex items-center">
+                                            <span className="text-yellow-500">★</span>
+                                            <span className="text-xs text-gray-500 ml-1">{book.rating}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                <div className="text-4xl mb-2">📚</div>
+                                <p>Nenhum dado de popularidade</p>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Quick Actions */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+            >
+                <h3 className="text-xl font-bold text-gray-900 mb-6">Ações Rápidas</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {[
+                        { label: 'Novo Livro', icon: '📚', color: 'bg-blue-500', action: () => console.log('Novo Livro') },
+                        { label: 'Novo Usuário', icon: '👤', color: 'bg-green-500', action: () => navigate('/gerenciar-usuarios') },
+                        { label: 'Novo Empréstimo', icon: '📖', color: 'bg-yellow-500', action: () => console.log('Novo Empréstimo') },
+                        { label: 'Adicionar Exemplar', icon: '📚', color: 'bg-orange-500', action: () => console.log('Adicionar Exemplar') },
+                        { label: 'Adicionar Funcionário', icon: '👨‍💼', color: 'bg-indigo-500', action: () => console.log('Adicionar Funcionário') },
+                        { label: 'Relatórios', icon: '📊', color: 'bg-purple-500', action: () => console.log('Relatórios') }
+                    ].map((action, index) => (
+                        <button
+                            key={index}
+                            onClick={action.action}
+                            className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                            <div className={`w-12 h-12 ${action.color} rounded-full flex items-center justify-center text-2xl mb-2`}>
+                                {action.icon}
+                            </div>
+                            <span className="text-sm font-medium text-gray-700">{action.label}</span>
+                        </button>
+                    ))}
+                </div>
+            </motion.div>
 
 
             {/* Logout Button */}
