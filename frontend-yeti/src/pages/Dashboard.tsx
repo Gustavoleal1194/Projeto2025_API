@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Layout from '../components/Layout/Layout';
 import DashboardService from '../services/dashboardService';
 import type {
     DashboardData,
@@ -13,7 +14,6 @@ import type {
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('dashboard');
     const [isLoading, setIsLoading] = useState(true);
 
     // Estados para dados da API
@@ -116,118 +116,22 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Sidebar */}
-            <aside className="fixed left-0 top-0 w-70 h-full bg-blue-900 text-white shadow-2xl z-50">
-                {/* Logo Container */}
-                <div className="p-8 text-center border-b border-blue-700">
-                    <div className="w-20 h-20 bg-blue-200 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-blue-400">
-                        <img
-                            src="/images/logo.png"
-                            alt="Yeti Library"
-                            className="w-12 h-12 object-contain"
-                        />
+        <Layout
+            pageTitle="Painel Administrativo"
+            pageSubtitle="Gerencie sua biblioteca digital com eficiência"
+            onRefresh={loadDashboardData}
+            loading={isLoading}
+            lastUpdate={new Date().toLocaleString('pt-BR')}
+        >
+            {/* Loading State */}
+            {isLoading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-8 flex items-center space-x-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <span className="text-lg font-medium text-gray-700">Carregando dados...</span>
                     </div>
-                    <h1 className="text-xl font-bold uppercase tracking-wider">
-                        Yeti Library Admin
-                    </h1>
                 </div>
-
-                {/* Navigation */}
-                <nav className="p-4">
-                    {[
-                        { id: 'dashboard', label: 'Dashboard Admin', icon: '🏠' },
-                        { id: 'users', label: 'Gerenciar Usuários', icon: '👥' },
-                        { id: 'books', label: 'Gerenciar Livros', icon: '📚' },
-                        { id: 'exemplares', label: 'Gerenciar Exemplares', icon: '📚' },
-                        { id: 'funcionarios', label: 'Gerenciar Funcionários', icon: '👨‍💼' },
-                        { id: 'loans', label: 'Empréstimos', icon: '📖' },
-                        { id: 'reports', label: 'Relatórios', icon: '📊' },
-                        { id: 'settings', label: 'Configurações', icon: '⚙️' }
-                    ].map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => {
-                                if (item.id === 'users') {
-                                    navigate('/gerenciar-usuarios');
-                                } else {
-                                    setActiveTab(item.id);
-                                }
-                            }}
-                            className={`w-full flex items-center p-4 mb-2 rounded-lg transition-all duration-300 ${activeTab === item.id
-                                ? 'bg-amber-200 text-amber-900 border-l-4 border-green-600'
-                                : 'hover:bg-blue-800 hover:border-l-4 hover:border-green-400'
-                                }`}
-                        >
-                            <span className="text-2xl mr-3">{item.icon}</span>
-                            <span className="font-medium">{item.label}</span>
-                        </button>
-                    ))}
-                </nav>
-            </aside>
-
-            {/* Top Bar */}
-            <header className="fixed top-0 right-0 left-70 h-18 bg-white border-b border-blue-400 flex items-center justify-end px-8 z-40">
-                {/* Admin Profile */}
-                <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
-                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        A
-                    </div>
-                    <span className="text-gray-700 font-medium">Administrador</span>
-                </div>
-            </header>
-
-            {/* Main Content */}
-            <main className="ml-70 mt-18 p-8">
-                {/* Loading State */}
-                {isLoading && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-8 flex items-center space-x-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                            <span className="text-lg font-medium text-gray-700">Carregando dados...</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Welcome Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-2xl"
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold mb-4 text-gray-800" style={{ color: '#1f2937' }}>Painel Administrativo</h1>
-                            <p className="text-xl text-gray-600" style={{ color: '#4b5563' }}>Gerencie sua biblioteca digital com eficiência</p>
-                        </div>
-                        <div className="text-right">
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={loadDashboardData}
-                                    disabled={isLoading}
-                                    className="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700"></div>
-                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizando...</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <span>🔄</span>
-                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizar</span>
-                                        </div>
-                                    )}
-                                </button>
-                                <div>
-                                    <p className="text-sm text-gray-600" style={{ color: '#4b5563' }}>Última atualização</p>
-                                    <p className="text-lg font-semibold text-gray-800" style={{ color: '#1f2937' }}>{new Date().toLocaleString('pt-BR')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
+            )}
 
                 {/* Error Alert */}
                 {error && (
@@ -545,12 +449,12 @@ const Dashboard: React.FC = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-6">Ações Rápidas</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {[
-                            { label: 'Novo Livro', icon: '📚', color: 'bg-blue-500', action: () => setActiveTab('books') },
+                            { label: 'Novo Livro', icon: '📚', color: 'bg-blue-500', action: () => console.log('Novo Livro') },
                             { label: 'Novo Usuário', icon: '👤', color: 'bg-green-500', action: () => navigate('/gerenciar-usuarios') },
-                            { label: 'Novo Empréstimo', icon: '📖', color: 'bg-yellow-500', action: () => setActiveTab('loans') },
-                            { label: 'Adicionar Exemplar', icon: '📚', color: 'bg-orange-500', action: () => setActiveTab('exemplares') },
-                            { label: 'Adicionar Funcionário', icon: '👨‍💼', color: 'bg-indigo-500', action: () => setActiveTab('funcionarios') },
-                            { label: 'Relatórios', icon: '📊', color: 'bg-purple-500', action: () => setActiveTab('reports') }
+                            { label: 'Novo Empréstimo', icon: '📖', color: 'bg-yellow-500', action: () => console.log('Novo Empréstimo') },
+                            { label: 'Adicionar Exemplar', icon: '📚', color: 'bg-orange-500', action: () => console.log('Adicionar Exemplar') },
+                            { label: 'Adicionar Funcionário', icon: '👨‍💼', color: 'bg-indigo-500', action: () => console.log('Adicionar Funcionário') },
+                            { label: 'Relatórios', icon: '📊', color: 'bg-purple-500', action: () => console.log('Relatórios') }
                         ].map((action, index) => (
                             <button
                                 key={index}
@@ -567,17 +471,16 @@ const Dashboard: React.FC = () => {
                 </motion.div>
 
 
-                {/* Logout Button */}
-                <div className="mt-8 text-center">
-                    <button
-                        onClick={handleLogout}
-                        className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300 shadow-lg"
-                    >
-                        Fazer Logout
-                    </button>
-                </div>
-            </main>
-        </div>
+            {/* Logout Button */}
+            <div className="mt-8 text-center">
+                <button
+                    onClick={handleLogout}
+                    className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300 shadow-lg"
+                >
+                    Fazer Logout
+                </button>
+            </div>
+        </Layout>
     );
 };
 

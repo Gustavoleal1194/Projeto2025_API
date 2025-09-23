@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import Layout from '../components/Layout/Layout';
 import type { Usuario, UsuarioDTO } from '../types/entities';
 
 interface GerenciarUsuariosProps { }
 
 const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
-    const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('users');
 
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [loading, setLoading] = useState(true);
@@ -120,13 +118,13 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
     const validarCPF = (cpf: string): boolean => {
         // Remove caracteres não numéricos
         const cpfLimpo = cpf.replace(/\D/g, '');
-        
+
         // Verifica se tem 11 dígitos
         if (cpfLimpo.length !== 11) return false;
-        
+
         // Verifica se não são todos iguais
         if (/^(\d)\1{10}$/.test(cpfLimpo)) return false;
-        
+
         // Validação dos dígitos verificadores
         let soma = 0;
         for (let i = 0; i < 9; i++) {
@@ -135,7 +133,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         let resto = 11 - (soma % 11);
         if (resto === 10 || resto === 11) resto = 0;
         if (resto !== parseInt(cpfLimpo.charAt(9))) return false;
-        
+
         soma = 0;
         for (let i = 0; i < 10; i++) {
             soma += parseInt(cpfLimpo.charAt(i)) * (11 - i);
@@ -143,7 +141,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         resto = 11 - (soma % 11);
         if (resto === 10 || resto === 11) resto = 0;
         if (resto !== parseInt(cpfLimpo.charAt(10))) return false;
-        
+
         return true;
     };
 
@@ -285,120 +283,22 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Sidebar */}
-            <aside className="fixed left-0 top-0 h-full bg-blue-900 text-white shadow-2xl z-50" style={{ width: '17.5rem' }}>
-                {/* Logo Container */}
-                <div className="p-8 text-center border-b border-blue-700">
-                    <div className="w-20 h-20 bg-blue-200 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-blue-400">
-                        <img
-                            src="/images/logo.png"
-                            alt="Yeti Library"
-                            className="w-12 h-12 object-contain"
-                        />
+        <Layout
+            pageTitle="👥 Gerenciar Usuários"
+            pageSubtitle="Gerencie usuários do sistema, visualize e edite informações"
+            onRefresh={loadUsuarios}
+            loading={loading}
+            lastUpdate={new Date().toLocaleString('pt-BR')}
+        >
+            {/* Loading State */}
+            {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-8 flex items-center space-x-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <span className="text-lg font-medium text-gray-700">Carregando usuários...</span>
                     </div>
-                    <h1 className="text-xl font-bold uppercase tracking-wider">
-                        Yeti Library Admin
-                    </h1>
                 </div>
-
-                {/* Navigation */}
-                <nav className="p-4">
-                    {[
-                        { id: 'dashboard', label: 'Dashboard Admin', icon: '🏠' },
-                        { id: 'users', label: 'Gerenciar Usuários', icon: '👥' },
-                        { id: 'books', label: 'Gerenciar Livros', icon: '📚' },
-                        { id: 'exemplares', label: 'Gerenciar Exemplares', icon: '📚' },
-                        { id: 'funcionarios', label: 'Gerenciar Funcionários', icon: '👨‍💼' },
-                        { id: 'loans', label: 'Empréstimos', icon: '📖' },
-                        { id: 'reports', label: 'Relatórios', icon: '📊' },
-                        { id: 'settings', label: 'Configurações', icon: '⚙️' }
-                    ].map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => {
-                                if (item.id === 'dashboard') {
-                                    navigate('/dashboard');
-                                } else if (item.id === 'users') {
-                                    navigate('/gerenciar-usuarios');
-                                } else {
-                                    setActiveTab(item.id);
-                                }
-                            }}
-                            className={`w-full flex items-center p-4 mb-2 rounded-lg transition-all duration-300 ${activeTab === item.id
-                                ? 'bg-amber-200 text-amber-900 border-l-4 border-green-600'
-                                : 'hover:bg-blue-800 hover:border-l-4 hover:border-green-400'
-                                }`}
-                        >
-                            <span className="text-2xl mr-3">{item.icon}</span>
-                            <span className="font-medium">{item.label}</span>
-                        </button>
-                    ))}
-                </nav>
-            </aside>
-
-            {/* Top Bar */}
-            <header className="fixed top-0 right-0 h-18 bg-white border-b border-blue-400 flex items-center justify-end px-8 z-40" style={{ left: '17.5rem' }}>
-                {/* Admin Profile */}
-                <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
-                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        A
-                    </div>
-                    <span className="text-gray-700 font-medium">Administrador</span>
-                </div>
-            </header>
-
-            {/* Main Content */}
-            <main className="mt-18 p-8" style={{ marginLeft: '17.5rem' }}>
-                {/* Loading State */}
-                {loading && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-8 flex items-center space-x-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                            <span className="text-lg font-medium text-gray-700">Carregando usuários...</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* Welcome Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-2xl"
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold mb-4 text-gray-800" style={{ color: '#1f2937' }}>👥 Gerenciar Usuários</h1>
-                            <p className="text-xl text-gray-600" style={{ color: '#4b5563' }}>Gerencie usuários do sistema, visualize e edite informações</p>
-                        </div>
-                        <div className="text-right">
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={loadUsuarios}
-                                    disabled={loading}
-                                    className="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {loading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700"></div>
-                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizando...</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <span>🔄</span>
-                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizar</span>
-                                        </div>
-                                    )}
-                                </button>
-                                <div>
-                                    <p className="text-sm text-gray-600" style={{ color: '#4b5563' }}>Última atualização</p>
-                                    <p className="text-lg font-semibold text-gray-800" style={{ color: '#1f2937' }}>{new Date().toLocaleString('pt-BR')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
+            )}
 
                 {/* Error Alert */}
                 {error && (
@@ -649,7 +549,6 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                         </div>
                     )}
                 </motion.div>
-            </main>
 
             {/* Modal de Criação/Edição */}
             {showModal && (
@@ -788,7 +687,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                     </motion.div>
                 </div>
             )}
-        </div>
+        </Layout>
     );
 };
 
