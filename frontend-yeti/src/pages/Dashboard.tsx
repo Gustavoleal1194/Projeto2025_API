@@ -14,7 +14,6 @@ import type {
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('dashboard');
-    const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
     // Estados para dados da API
@@ -168,23 +167,7 @@ const Dashboard: React.FC = () => {
             </aside>
 
             {/* Top Bar */}
-            <header className="fixed top-0 right-0 left-70 h-18 bg-white border-b border-blue-400 flex items-center justify-between px-8 z-40">
-                {/* Search Container */}
-                <div className="flex-1 max-w-lg relative">
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Buscar usuários, livros, empréstimos..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full h-12 pl-12 pr-4 bg-white border-2 border-blue-400 rounded-full text-gray-700 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
-                    />
-                </div>
-
+            <header className="fixed top-0 right-0 left-70 h-18 bg-white border-b border-blue-400 flex items-center justify-end px-8 z-40">
                 {/* Admin Profile */}
                 <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
                     <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">
@@ -215,8 +198,8 @@ const Dashboard: React.FC = () => {
                 >
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-4xl font-bold mb-4">Painel Administrativo</h1>
-                            <p className="text-xl opacity-90">Gerencie sua biblioteca digital com eficiência</p>
+                            <h1 className="text-4xl font-bold mb-4 text-gray-800" style={{ color: '#1f2937' }}>Painel Administrativo</h1>
+                            <p className="text-xl text-gray-600" style={{ color: '#4b5563' }}>Gerencie sua biblioteca digital com eficiência</p>
                         </div>
                         <div className="text-right">
                             <div className="flex items-center gap-4">
@@ -227,19 +210,19 @@ const Dashboard: React.FC = () => {
                                 >
                                     {isLoading ? (
                                         <div className="flex items-center gap-2">
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                            <span>Atualizando...</span>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700"></div>
+                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizando...</span>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
                                             <span>🔄</span>
-                                            <span>Atualizar</span>
+                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizar</span>
                                         </div>
                                     )}
                                 </button>
                                 <div>
-                                    <p className="text-sm opacity-75">Última atualização</p>
-                                    <p className="text-lg font-semibold">{new Date().toLocaleString('pt-BR')}</p>
+                                    <p className="text-sm text-gray-600" style={{ color: '#4b5563' }}>Última atualização</p>
+                                    <p className="text-lg font-semibold text-gray-800" style={{ color: '#1f2937' }}>{new Date().toLocaleString('pt-BR')}</p>
                                 </div>
                             </div>
                         </div>
@@ -563,7 +546,7 @@ const Dashboard: React.FC = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {[
                             { label: 'Novo Livro', icon: '📚', color: 'bg-blue-500', action: () => setActiveTab('books') },
-                            { label: 'Novo Usuário', icon: '👤', color: 'bg-green-500', action: () => setActiveTab('users') },
+                            { label: 'Novo Usuário', icon: '👤', color: 'bg-green-500', action: () => navigate('/gerenciar-usuarios') },
                             { label: 'Novo Empréstimo', icon: '📖', color: 'bg-yellow-500', action: () => setActiveTab('loans') },
                             { label: 'Adicionar Exemplar', icon: '📚', color: 'bg-orange-500', action: () => setActiveTab('exemplares') },
                             { label: 'Adicionar Funcionário', icon: '👨‍💼', color: 'bg-indigo-500', action: () => setActiveTab('funcionarios') },

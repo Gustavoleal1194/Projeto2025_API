@@ -39,6 +39,13 @@ namespace Service
             }
 
             var usuario = mapper.Map<Usuario>(usuarioDTO);
+            
+            // Fazer hash da senha se fornecida
+            if (!string.IsNullOrEmpty(usuarioDTO.Senha))
+            {
+                usuario.Senha = PasswordHashService.HashPassword(usuarioDTO.Senha);
+            }
+            
             await usuarioRepositorio.AddAsync(usuario);
             return mapper.Map<UsuarioDTO>(usuario);
         }

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import type { Usuario, UsuarioDTO } from '../types/entities';
 
 interface GerenciarUsuariosProps { }
 
 const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
+    const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState('users');
+
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -17,15 +21,17 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         email: '',
         cpf: '',
         telefone: '',
-        dataNascimento: ''
+        dataNascimento: '',
+        senha: ''
     });
+    const [confirmarSenha, setConfirmarSenha] = useState('');
 
     // Carregar usuários
     const loadUsuarios = async () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('yeti_token');
-            const response = await fetch('http://localhost:5072/api/usuario', {
+            const response = await fetch('http://localhost:5072/api/Usuario', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -39,7 +45,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             const data = await response.json();
             setUsuarios(data);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erro desconhecido');
+            setError(err instanceof Error ? err.message : 'Erro ao carregar usuários');
         } finally {
             setLoading(false);
         }
@@ -62,16 +68,18 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         return matchesSearch && matchesStatus;
     });
 
-    // Abrir modal para criar/editar
+    // Abrir modal
     const openModal = (usuario?: Usuario) => {
         if (usuario) {
             setEditingUsuario(usuario);
             setFormData({
+                id: usuario.id,
                 nome: usuario.nome,
                 email: usuario.email,
                 cpf: usuario.cpf,
                 telefone: usuario.telefone,
-                dataNascimento: usuario.dataNascimento ? new Date(usuario.dataNascimento).toISOString().split('T')[0] : ''
+                dataNascimento: usuario.dataNascimento,
+                senha: ''
             });
         } else {
             setEditingUsuario(null);
@@ -80,9 +88,11 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                 email: '',
                 cpf: '',
                 telefone: '',
-                dataNascimento: ''
+                dataNascimento: '',
+                senha: ''
             });
         }
+        setConfirmarSenha('');
         setShowModal(true);
     };
 
@@ -95,17 +105,29 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             email: '',
             cpf: '',
             telefone: '',
-            dataNascimento: ''
+            dataNascimento: '',
+            senha: ''
         });
+        setConfirmarSenha('');
     };
 
     // Salvar usuário
     const saveUsuario = async () => {
         try {
+            // Validar senhas se for criação de novo usuário
+            if (!editingUsuario) {
+                if (!formData.senha || formData.senha.length < 6) {
+                    throw new Error('A senha deve ter pelo menos 6 caracteres');
+                }
+                if (formData.senha !== confirmarSenha) {
+                    throw new Error('As senhas não coincidem');
+                }
+            }
+
             const token = localStorage.getItem('yeti_token');
             const url = editingUsuario
-                ? `http://localhost:5072/api/usuario/${editingUsuario.id}`
-                : 'http://localhost:5072/api/usuario';
+                ? `http://localhost:5072/api/Usuario/${editingUsuario.id}`
+                : 'http://localhost:5072/api/Usuario';
 
             const method = editingUsuario ? 'PUT' : 'POST';
 
@@ -131,15 +153,16 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
     // Deletar usuário
     const deleteUsuario = async (id: number) => {
-        if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+        if (!window.confirm('Tem certeza que deseja excluir este usuário?')) {
+            return;
+        }
 
         try {
             const token = localStorage.getItem('yeti_token');
-            const response = await fetch(`http://localhost:5072/api/usuario/${id}`, {
+            const response = await fetch(`http://localhost:5072/api/Usuario/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -153,15 +176,14 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         }
     };
 
-    // Alternar status ativo/inativo
+    // Toggle status
     const toggleStatus = async (id: number) => {
         try {
             const token = localStorage.getItem('yeti_token');
-            const response = await fetch(`http://localhost:5072/api/usuario/${id}/toggle-status`, {
+            const response = await fetch(`http://localhost:5072/api/Usuario/${id}/toggle-status`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -175,189 +197,362 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         }
     };
 
+
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-6">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Gerenciar Usuários</h1>
-                            <p className="mt-1 text-sm text-gray-500">
-                                Gerencie usuários do sistema, visualize e edite informações
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => openModal()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                            Novo Usuário
-                        </button>
+            {/* Sidebar */}
+            <aside className="fixed left-0 top-0 h-full bg-blue-900 text-white shadow-2xl z-50" style={{ width: '17.5rem' }}>
+                {/* Logo Container */}
+                <div className="p-8 text-center border-b border-blue-700">
+                    <div className="w-20 h-20 bg-blue-200 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-blue-400">
+                        <img
+                            src="/images/logo.png"
+                            alt="Yeti Library"
+                            className="w-12 h-12 object-contain"
+                        />
                     </div>
+                    <h1 className="text-xl font-bold uppercase tracking-wider">
+                        Yeti Library Admin
+                    </h1>
                 </div>
-            </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Filtros e Busca */}
-                <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Busca */}
+                {/* Navigation */}
+                <nav className="p-4">
+                    {[
+                        { id: 'dashboard', label: 'Dashboard Admin', icon: '🏠' },
+                        { id: 'users', label: 'Gerenciar Usuários', icon: '👥' },
+                        { id: 'books', label: 'Gerenciar Livros', icon: '📚' },
+                        { id: 'exemplares', label: 'Gerenciar Exemplares', icon: '📚' },
+                        { id: 'funcionarios', label: 'Gerenciar Funcionários', icon: '👨‍💼' },
+                        { id: 'loans', label: 'Empréstimos', icon: '📖' },
+                        { id: 'reports', label: 'Relatórios', icon: '📊' },
+                        { id: 'settings', label: 'Configurações', icon: '⚙️' }
+                    ].map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => {
+                                if (item.id === 'dashboard') {
+                                    navigate('/dashboard');
+                                } else if (item.id === 'users') {
+                                    navigate('/gerenciar-usuarios');
+                                } else {
+                                    setActiveTab(item.id);
+                                }
+                            }}
+                            className={`w-full flex items-center p-4 mb-2 rounded-lg transition-all duration-300 ${activeTab === item.id
+                                ? 'bg-amber-200 text-amber-900 border-l-4 border-green-600'
+                                : 'hover:bg-blue-800 hover:border-l-4 hover:border-green-400'
+                                }`}
+                        >
+                            <span className="text-2xl mr-3">{item.icon}</span>
+                            <span className="font-medium">{item.label}</span>
+                        </button>
+                    ))}
+                </nav>
+            </aside>
+
+            {/* Top Bar */}
+            <header className="fixed top-0 right-0 h-18 bg-white border-b border-blue-400 flex items-center justify-end px-8 z-40" style={{ left: '17.5rem' }}>
+                {/* Admin Profile */}
+                <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
+                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">
+                        A
+                    </div>
+                    <span className="text-gray-700 font-medium">Administrador</span>
+                </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="mt-18 p-8" style={{ marginLeft: '17.5rem' }}>
+                {/* Loading State */}
+                {loading && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg p-8 flex items-center space-x-4">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span className="text-lg font-medium text-gray-700">Carregando usuários...</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Welcome Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-2xl"
+                >
+                    <div className="flex items-center justify-between">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Buscar
+                            <h1 className="text-4xl font-bold mb-4 text-gray-800" style={{ color: '#1f2937' }}>👥 Gerenciar Usuários</h1>
+                            <p className="text-xl text-gray-600" style={{ color: '#4b5563' }}>Gerencie usuários do sistema, visualize e edite informações</p>
+                        </div>
+                        <div className="text-right">
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={loadUsuarios}
+                                    disabled={loading}
+                                    className="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700"></div>
+                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizando...</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <span>🔄</span>
+                                            <span className="text-gray-700" style={{ color: '#374151' }}>Atualizar</span>
+                                        </div>
+                                    )}
+                                </button>
+                                <div>
+                                    <p className="text-sm text-gray-600" style={{ color: '#4b5563' }}>Última atualização</p>
+                                    <p className="text-lg font-semibold text-gray-800" style={{ color: '#1f2937' }}>{new Date().toLocaleString('pt-BR')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Error Alert */}
+                {error && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
+                    >
+                        <div className="flex items-center">
+                            <span className="text-red-500 mr-2">❌</span>
+                            <span>{error}</span>
+                            <button
+                                onClick={() => setError(null)}
+                                className="ml-auto text-red-500 hover:text-red-700"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Stats Cards */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+                >
+                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-blue-100 transform hover:scale-105 transition-all duration-300">
+                        <div className="text-center">
+                            <div className="flex justify-center mb-4">
+                                <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl">
+                                    <span className="text-2xl text-white">👥</span>
+                                </div>
+                            </div>
+                            <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Total de Usuários</p>
+                            <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.length}</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-green-100 transform hover:scale-105 transition-all duration-300">
+                        <div className="text-center">
+                            <div className="flex justify-center mb-4">
+                                <div className="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl">
+                                    <span className="text-2xl text-white">✅</span>
+                                </div>
+                            </div>
+                            <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Usuários Ativos</p>
+                            <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.filter(u => u.ativo).length}</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-red-100 transform hover:scale-105 transition-all duration-300">
+                        <div className="text-center">
+                            <div className="flex justify-center mb-4">
+                                <div className="p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-xl">
+                                    <span className="text-2xl text-white">❌</span>
+                                </div>
+                            </div>
+                            <p className="text-sm font-medium text-gray-800 mb-2" style={{ color: '#1f2937' }}>Usuários Inativos</p>
+                            <p className="text-4xl font-bold text-blue-600" style={{ color: '#2563eb' }}>{usuarios.filter(u => !u.ativo).length}</p>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Search and Filter Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="bg-white rounded-2xl shadow-2xl p-8 mb-8 border border-blue-100"
+                >
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        {/* Search */}
+                        <div className="flex-1">
+                            <label className="block text-lg font-semibold text-gray-800 mb-3" style={{ color: '#1f2937' }}>
+                                Buscar Usuários
                             </label>
                             <div className="relative">
+                                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 flex items-center justify-center">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
                                 <input
                                     type="text"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    placeholder="Nome, email ou CPF..."
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Digite nome, email ou CPF..."
+                                    className="w-full pl-12 pr-4 py-4 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-lg transition-all duration-300 bg-blue-50 placeholder-gray-500"
                                 />
-                                <svg className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
                             </div>
                         </div>
 
-                        {/* Filtro de Status */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Status
+                        {/* Filter */}
+                        <div className="lg:w-64">
+                            <label className="block text-lg font-semibold text-gray-700 mb-3">
+                                📊 Filtrar por Status
                             </label>
                             <select
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value as any)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-4 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-lg transition-all duration-300 bg-blue-50"
                             >
-                                <option value="todos">Todos</option>
-                                <option value="ativos">Ativos</option>
-                                <option value="inativos">Inativos</option>
+                                <option value="todos">Todos os Usuários</option>
+                                <option value="ativos">Apenas Ativos</option>
+                                <option value="inativos">Apenas Inativos</option>
                             </select>
                         </div>
 
-                        {/* Estatísticas */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Estatísticas
-                            </label>
-                            <div className="text-sm text-gray-600">
-                                <div>Total: {usuarios.length}</div>
-                                <div>Ativos: {usuarios.filter(u => u.ativo).length}</div>
-                                <div>Inativos: {usuarios.filter(u => !u.ativo).length}</div>
-                            </div>
+                        {/* Add Button */}
+                        <div className="flex items-end justify-center">
+                            <button
+                                onClick={() => openModal()}
+                                className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-3 border-2 border-green-400 hover:border-green-500"
+                                style={{ minWidth: '300px', paddingLeft: '48px', paddingRight: '48px' }}
+                            >
+                                Criar Novo Usuário
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
-                {/* Lista de Usuários */}
-                <div className="bg-white rounded-lg shadow-sm">
+                {/* Users Table */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden"
+                >
                     {loading ? (
-                        <div className="flex justify-center items-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <div className="flex justify-center items-center py-20">
+                            <div className="flex flex-col items-center">
+                                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+                                <p className="mt-4 text-lg text-gray-600">Carregando usuários...</p>
+                            </div>
                         </div>
                     ) : error ? (
-                        <div className="text-center py-12">
-                            <div className="text-red-600 mb-4">{error}</div>
+                        <div className="flex flex-col items-center justify-center py-20">
+                            <div className="text-red-500 text-xl mb-4">❌ {error}</div>
                             <button
                                 onClick={loadUsuarios}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300"
                             >
                                 Tentar Novamente
                             </button>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                        <div className="overflow-x-auto bg-white rounded-2xl shadow-2xl border border-blue-100">
+                            <table className="min-w-full divide-y divide-blue-100">
+                                <thead className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Usuário
+                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                            👤 Usuário
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Email
+                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                            📧 Email
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            CPF
+                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                            📄 CPF
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Telefone
+                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                            📱 Telefone
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
+                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                            📊 Status
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Ações
+                                        <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                            ⚙️ Ações
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {filteredUsuarios.map((usuario) => (
+                                <tbody className="bg-white divide-y divide-blue-100 rounded-b-2xl">
+                                    {filteredUsuarios.map((usuario, index) => (
                                         <motion.tr
                                             key={usuario.id}
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            className="hover:bg-gray-50"
+                                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                                            className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300"
                                         >
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-6 py-6 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <div className="flex-shrink-0 h-10 w-10">
-                                                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                                            <span className="text-sm font-medium text-blue-600">
+                                                    <div className="flex-shrink-0 h-14 w-14">
+                                                        <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
+                                                            <span className="text-xl font-bold text-white">
                                                                 {usuario.nome.charAt(0).toUpperCase()}
                                                             </span>
                                                         </div>
                                                     </div>
                                                     <div className="ml-4">
-                                                        <div className="text-sm font-medium text-gray-900">{usuario.nome}</div>
-                                                        <div className="text-sm text-gray-500">
+                                                        <div className="text-lg font-semibold text-gray-900">{usuario.nome}</div>
+                                                        <div className="text-sm text-blue-600 font-medium">
                                                             ID: {usuario.id}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {usuario.email}
+                                            <td className="px-6 py-6 whitespace-nowrap">
+                                                <div className="text-sm font-medium text-gray-900">{usuario.email}</div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {usuario.cpf}
+                                            <td className="px-6 py-6 whitespace-nowrap">
+                                                <div className="text-sm font-mono text-gray-900">{usuario.cpf}</div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {usuario.telefone || '-'}
+                                            <td className="px-6 py-6 whitespace-nowrap">
+                                                <div className="text-sm font-mono text-gray-900">{usuario.telefone}</div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${usuario.ativo
+                                            <td className="px-6 py-6 whitespace-nowrap">
+                                                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${usuario.ativo
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800'
                                                     }`}>
-                                                    {usuario.ativo ? 'Ativo' : 'Inativo'}
+                                                    {usuario.ativo ? '✅ Ativo' : '❌ Inativo'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <td className="px-6 py-6 whitespace-nowrap text-sm font-medium">
                                                 <div className="flex space-x-2">
                                                     <button
                                                         onClick={() => openModal(usuario)}
-                                                        className="text-blue-600 hover:text-blue-900"
+                                                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
                                                     >
-                                                        Editar
+                                                        ✏️ Editar
                                                     </button>
                                                     <button
                                                         onClick={() => toggleStatus(usuario.id)}
-                                                        className={`${usuario.ativo
-                                                            ? 'text-yellow-600 hover:text-yellow-900'
-                                                            : 'text-green-600 hover:text-green-900'
+                                                        className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${usuario.ativo
+                                                            ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white'
+                                                            : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
                                                             }`}
                                                     >
-                                                        {usuario.ativo ? 'Desativar' : 'Ativar'}
+                                                        {usuario.ativo ? '⏸️ Desativar' : '▶️ Ativar'}
                                                     </button>
                                                     <button
                                                         onClick={() => deleteUsuario(usuario.id)}
-                                                        className="text-red-600 hover:text-red-900"
+                                                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
                                                     >
-                                                        Excluir
+                                                        🗑️ Excluir
                                                     </button>
                                                 </div>
                                             </td>
@@ -367,112 +562,134 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                             </table>
                         </div>
                     )}
-                </div>
-            </div>
+                </motion.div>
+            </main>
 
             {/* Modal de Criação/Edição */}
             {showModal && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                        <div className="mt-3">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-medium text-gray-900">
-                                    {editingUsuario ? 'Editar Usuário' : 'Novo Usuário'}
+                <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md"
+                    >
+                        <div className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-2xl font-bold text-gray-900">
+                                    {editingUsuario ? '✏️ Editar Usuário' : '➕ Novo Usuário'}
                                 </h3>
                                 <button
                                     onClick={closeModal}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full border-2 border-red-400 hover:border-red-500 transition-all duration-300 transform hover:scale-110 shadow-md hover:shadow-lg"
+                                    title="Fechar"
                                 >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
 
-                            <form onSubmit={(e) => { e.preventDefault(); saveUsuario(); }}>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Nome *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.nome || ''}
-                                            onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                            required
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Email *
-                                        </label>
-                                        <input
-                                            type="email"
-                                            value={formData.email || ''}
-                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            required
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            CPF *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.cpf || ''}
-                                            onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
-                                            required
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Telefone
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.telefone || ''}
-                                            onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Data de Nascimento
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={formData.dataNascimento || ''}
-                                            onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
+                            <form onSubmit={(e) => { e.preventDefault(); saveUsuario(); }} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nome</label>
+                                    <input
+                                        type="text"
+                                        value={formData.nome || ''}
+                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        required
+                                    />
                                 </div>
 
-                                <div className="flex justify-end space-x-3 mt-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                    <input
+                                        type="email"
+                                        value={formData.email || ''}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">CPF</label>
+                                    <input
+                                        type="text"
+                                        value={formData.cpf || ''}
+                                        onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone</label>
+                                    <input
+                                        type="text"
+                                        value={formData.telefone || ''}
+                                        onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Data de Nascimento</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataNascimento || ''}
+                                        onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
+                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    />
+                                </div>
+
+                                {!editingUsuario && (
+                                    <>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Senha</label>
+                                            <input
+                                                type="password"
+                                                value={formData.senha || ''}
+                                                onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                                                className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                                placeholder="Mínimo 6 caracteres"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha</label>
+                                            <input
+                                                type="password"
+                                                value={confirmarSenha}
+                                                onChange={(e) => setConfirmarSenha(e.target.value)}
+                                                className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                                placeholder="Digite a senha novamente"
+                                                required
+                                            />
+                                        </div>
+                                    </>
+                                )}
+
+                                <div className="flex gap-4 pt-4">
                                     <button
                                         type="button"
                                         onClick={closeModal}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                                        className="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold border-2 border-red-400 hover:border-red-500 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
                                     >
-                                        Cancelar
+                                        ❌ Cancelar
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+                                        className="flex-1 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold border-2 border-green-400 hover:border-green-500 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
                                     >
-                                        {editingUsuario ? 'Salvar Alterações' : 'Criar Usuário'}
+                                        ✅ {editingUsuario ? 'Atualizar' : 'Criar'}
                                     </button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>
