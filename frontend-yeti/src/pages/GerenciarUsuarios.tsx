@@ -401,7 +401,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value as any)}
-                            className="w-full px-4 py-4 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-lg transition-all duration-300 bg-blue-50"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
                         >
                             <option value="todos">Todos os Usuários</option>
                             <option value="ativos">Apenas Ativos</option>
@@ -413,13 +413,10 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                     <div className="flex items-end justify-center">
                         <button
                             onClick={() => openModal()}
-                            className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-3 border-2 border-green-400 hover:border-green-500"
-                            style={{ minWidth: '300px', paddingLeft: '48px', paddingRight: '48px' }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-2 border-blue-700 hover:border-blue-800"
                         >
                             Criar Novo Usuário
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
+                            <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
                         </button>
                     </div>
                 </div>
@@ -430,7 +427,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden"
+                className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
             >
                 {loading ? (
                     <div className="flex justify-center items-center py-20">
@@ -450,9 +447,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto bg-white rounded-2xl shadow-2xl border border-blue-100">
+                    <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
                         <table className="min-w-full divide-y divide-blue-100">
-                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
+                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                                 <tr>
                                     <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         👤 Usuário
@@ -521,22 +518,35 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => openModal(usuario)}
-                                                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-blue-700"
                                                 >
                                                     ✏️ Editar
                                                 </button>
                                                 <button
                                                     onClick={() => toggleStatus(usuario.id)}
-                                                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${usuario.ativo
-                                                        ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white'
-                                                        : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                                                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 ${usuario.ativo
+                                                        ? 'bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-600'
+                                                        : 'bg-green-500 hover:bg-green-600 text-white border-green-600'
                                                         }`}
                                                 >
                                                     {usuario.ativo ? '⏸️ Desativar' : '▶️ Ativar'}
                                                 </button>
                                                 <button
                                                     onClick={() => deleteUsuario(usuario.id)}
-                                                    className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                                                    className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
+                                                    style={{
+                                                        backgroundColor: '#dc2626',
+                                                        color: 'white',
+                                                        borderColor: '#991b1b'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#b91c1c';
+                                                        e.currentTarget.style.borderColor = '#7f1d1d';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#dc2626';
+                                                        e.currentTarget.style.borderColor = '#991b1b';
+                                                    }}
                                                 >
                                                     🗑️ Excluir
                                                 </button>

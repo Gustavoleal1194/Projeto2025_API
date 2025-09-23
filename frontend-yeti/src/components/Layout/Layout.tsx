@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
@@ -19,7 +20,30 @@ const Layout: React.FC<LayoutProps> = ({
     loading = false,
     lastUpdate
 }) => {
+    const location = useLocation();
     const [activeTab, setActiveTab] = useState('dashboard');
+
+    // Detectar a rota atual e definir o activeTab
+    useEffect(() => {
+        const path = location.pathname;
+        if (path === '/dashboard') {
+            setActiveTab('dashboard');
+        } else if (path === '/gerenciar-usuarios') {
+            setActiveTab('users');
+        } else if (path === '/gerenciar-livros') {
+            setActiveTab('books');
+        } else if (path === '/gerenciar-exemplares') {
+            setActiveTab('exemplares');
+        } else if (path === '/gerenciar-funcionarios') {
+            setActiveTab('funcionarios');
+        } else if (path === '/emprestimos') {
+            setActiveTab('loans');
+        } else if (path === '/relatorios') {
+            setActiveTab('reports');
+        } else if (path === '/configuracoes') {
+            setActiveTab('settings');
+        }
+    }, [location.pathname]);
 
     return (
         <div className="min-h-screen bg-gray-50">

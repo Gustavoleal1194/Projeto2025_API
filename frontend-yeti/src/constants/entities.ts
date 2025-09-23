@@ -430,3 +430,53 @@ export const CACHE = {
         EMPRESTIMOS: 'emprestimos'
     }
 } as const;
+
+// ========================================
+// 21. INTERFACES DE ENTIDADES
+// ========================================
+
+export interface Livro {
+    id: number;
+    titulo: string;
+    subtitulo?: string;
+    isbn: string;
+    ano: number;
+    edicao: number;
+    numeroPaginas: number;
+    idioma: string;
+    genero: string;
+    sinopse?: string;
+    preco: number;
+    capaUrl?: string;
+    codigoBarras?: string;
+    ativo: boolean;
+    dataCriacao: string;
+    idAutor: number;
+    idEditora: number;
+    totalExemplares: number;
+    exemplaresDisponiveis: number;
+    temExemplaresDisponiveis: boolean;
+    nomeAutor?: string;
+    nomeEditora?: string;
+}
+
+export interface LivroCreateRequest {
+    titulo: string;
+    subtitulo?: string;
+    isbn: string;
+    ano: number;
+    edicao?: number;
+    numeroPaginas: number;
+    idioma?: string;
+    genero: string;
+    sinopse?: string;
+    preco: number;
+    capaUrl?: string;
+    codigoBarras?: string;
+    idAutor: number;
+    idEditora: number;
+}
+
+export interface LivroUpdateRequest extends LivroCreateRequest {
+    id: number;
+}
