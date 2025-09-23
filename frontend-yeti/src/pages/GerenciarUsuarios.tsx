@@ -111,9 +111,94 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         setConfirmarSenha('');
     };
 
+    // Funções de validação
+    const validarEmail = (email: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validarCPF = (cpf: string): boolean => {
+        // Remove caracteres não numéricos
+        const cpfLimpo = cpf.replace(/\D/g, '');
+        
+        // Verifica se tem 11 dígitos
+        if (cpfLimpo.length !== 11) return false;
+        
+        // Verifica se não são todos iguais
+        if (/^(\d)\1{10}$/.test(cpfLimpo)) return false;
+        
+        // Validação dos dígitos verificadores
+        let soma = 0;
+        for (let i = 0; i < 9; i++) {
+            soma += parseInt(cpfLimpo.charAt(i)) * (10 - i);
+        }
+        let resto = 11 - (soma % 11);
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpfLimpo.charAt(9))) return false;
+        
+        soma = 0;
+        for (let i = 0; i < 10; i++) {
+            soma += parseInt(cpfLimpo.charAt(i)) * (11 - i);
+        }
+        resto = 11 - (soma % 11);
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpfLimpo.charAt(10))) return false;
+        
+        return true;
+    };
+
+    const validarDataNascimento = (data: string): boolean => {
+        if (!data) return true; // Data é opcional
+        const dataNasc = new Date(data);
+        const hoje = new Date();
+        const idade = hoje.getFullYear() - dataNasc.getFullYear();
+        return idade >= 0 && idade <= 120; // Idade válida entre 0 e 120 anos
+    };
+
+    // Funções de formatação
+    const formatarCPF = (cpf: string): string => {
+        const cpfLimpo = cpf.replace(/\D/g, '');
+        return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    };
+
+    const formatarTelefone = (telefone: string): string => {
+        const telefoneLimpo = telefone.replace(/\D/g, '');
+        if (telefoneLimpo.length <= 10) {
+            return telefoneLimpo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        } else {
+            return telefoneLimpo.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        }
+    };
+
     // Salvar usuário
     const saveUsuario = async () => {
         try {
+            // Validar campos obrigatórios
+            if (!formData.nome?.trim()) {
+                throw new Error('Nome é obrigatório');
+            }
+            if (!formData.email?.trim()) {
+                throw new Error('Email é obrigatório');
+            }
+            if (!formData.cpf?.trim()) {
+                throw new Error('CPF é obrigatório');
+            }
+
+            // Validar formato do email
+            if (!validarEmail(formData.email)) {
+                throw new Error('Email inválido');
+            }
+
+            // Validar CPF
+            if (!validarCPF(formData.cpf)) {
+                throw new Error('CPF inválido');
+            }
+
+            // Validar data de nascimento
+            if (formData.dataNascimento && !validarDataNascimento(formData.dataNascimento)) {
+                throw new Error('Data de nascimento inválida');
+            }
+
             // Validar senhas se for criação de novo usuário
             if (!editingUsuario) {
                 if (!formData.senha || formData.senha.length < 6) {
@@ -141,7 +226,8 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao salvar usuário');
+                const errorText = await response.text();
+                throw new Error(errorText || 'Erro ao salvar usuário');
             }
 
             await loadUsuarios();
@@ -618,7 +704,12 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                     <input
                                         type="text"
                                         value={formData.cpf || ''}
-                                        onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
+                                        onChange={(e) => {
+                                            const cpfFormatado = formatarCPF(e.target.value);
+                                            setFormData({ ...formData, cpf: cpfFormatado });
+                                        }}
+                                        placeholder="000.000.000-00"
+                                        maxLength={14}
                                         className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
                                         required
                                     />
@@ -629,7 +720,12 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                     <input
                                         type="text"
                                         value={formData.telefone || ''}
-                                        onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                                        onChange={(e) => {
+                                            const telefoneFormatado = formatarTelefone(e.target.value);
+                                            setFormData({ ...formData, telefone: telefoneFormatado });
+                                        }}
+                                        placeholder="(00) 00000-0000"
+                                        maxLength={15}
                                         className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
                                     />
                                 </div>
