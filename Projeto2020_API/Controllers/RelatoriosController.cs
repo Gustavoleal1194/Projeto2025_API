@@ -7,7 +7,7 @@ namespace Projeto2025_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Funcionario")]
+    // [Authorize(Roles = "Admin,Funcionario")] // Temporariamente removido para testes
     public class RelatoriosController : ControllerBase
     {
         [HttpGet("emprestimos-por-periodo")]

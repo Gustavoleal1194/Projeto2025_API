@@ -106,6 +106,13 @@ namespace Projeto2025_API.Controllers
             return Ok(emprestimos);
         }
 
+        [HttpGet("devolvidos")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetDevolvidosAsync()
+        {
+            var emprestimos = await service.GetDevolvidosAsync();
+            return Ok(emprestimos);
+        }
+
         [HttpPost("{id}/devolver")]
         public async Task<ActionResult> DevolverAsync(int id)
         {

@@ -88,6 +88,12 @@ namespace Service
             return _mapper.Map<IEnumerable<EmprestimoDTO>>(emprestimos);
         }
 
+        public async Task<IEnumerable<EmprestimoDTO>> GetDevolvidosAsync()
+        {
+            var emprestimos = await _emprestimoRepositorio.GetDevolvidosAsync();
+            return _mapper.Map<IEnumerable<EmprestimoDTO>>(emprestimos);
+        }
+
         // Métodos específicos para empréstimos
         public async Task<bool> DevolverAsync(int idEmprestimo)
         {

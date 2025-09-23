@@ -12,5 +12,6 @@ namespace Interface.Repositorio
         Task<IEnumerable<Emprestimo>> GetAtivosAsync();
         Task<IEnumerable<Emprestimo>> GetVencidosAsync();
         Task<IEnumerable<Emprestimo>> GetByStatusAsync(string status);
+        Task<IEnumerable<Emprestimo>> GetDevolvidosAsync();
     }
 }

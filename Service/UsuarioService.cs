@@ -78,5 +78,17 @@ namespace Service
             var usuario = await usuarioRepositorio.GetByCpfAsync(cpf);
             return usuario != null ? mapper.Map<UsuarioDTO>(usuario) : null;
         }
+
+        public async Task ToggleStatusAsync(int id)
+        {
+            var usuario = await usuarioRepositorio.GetByIdAsync(id);
+            if (usuario == null)
+            {
+                throw new InvalidOperationException("Usuário não encontrado.");
+            }
+
+            usuario.Ativo = !usuario.Ativo;
+            await usuarioRepositorio.UpdateAsync(usuario);
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace Interface.Service
         Task<IEnumerable<EmprestimoDTO>> GetAtivosAsync();
         Task<IEnumerable<EmprestimoDTO>> GetVencidosAsync();
         Task<IEnumerable<EmprestimoDTO>> GetByStatusAsync(string status);
+        Task<IEnumerable<EmprestimoDTO>> GetDevolvidosAsync();
         
         // Métodos específicos para empréstimos
         Task<bool> DevolverAsync(int idEmprestimo);

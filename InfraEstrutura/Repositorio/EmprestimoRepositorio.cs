@@ -49,7 +49,7 @@ namespace InfraEstrutura.Repositorio
         public async Task<IEnumerable<Emprestimo>> GetAtivosAsync()
         {
             return await _contexto.Emprestimos
-                .Where(e => e.Ativo && e.Status == "Emprestado")
+                .Where(e => e.Ativo && e.DataDevolucao == null)
                 .OrderByDescending(e => e.DataEmprestimo)
                 .ToListAsync();
         }
@@ -70,6 +70,21 @@ namespace InfraEstrutura.Repositorio
             return await _contexto.Emprestimos
                 .Where(e => e.Ativo && e.Status.ToLower() == status.ToLower())
                 .OrderByDescending(e => e.DataEmprestimo)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Emprestimo>> GetDevolvidosAsync()
+        {
+            return await _contexto.Emprestimos
+                .Where(e => e.Ativo && e.Status == "Devolvido" && e.DataDevolucao.HasValue)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Autor)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Editora)
+                .Include(e => e.Usuario)
+                .OrderByDescending(e => e.DataDevolucao)
                 .ToListAsync();
         }
     }

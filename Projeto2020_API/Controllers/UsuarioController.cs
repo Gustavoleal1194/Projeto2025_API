@@ -72,5 +72,12 @@ namespace Projeto2025_API.Controllers
                 return NotFound();
             return Ok(usuario);
         }
+
+        [HttpPut("{id}/toggle-status")]
+        public async Task<ActionResult> ToggleStatusAsync(int id)
+        {
+            await service.ToggleStatusAsync(id);
+            return NoContent();
+        }
     }
 }
