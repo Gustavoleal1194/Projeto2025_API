@@ -35,10 +35,9 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
             '/meus-livros': 'books',
             '/meus-emprestimos': 'loans',
             '/favoritos': 'favorites',
-            '/historico': 'history',
-            '/perfil': 'profile'
+            '/meu-perfil': 'profile'
         };
-        
+
         const currentTab = pathToTab[location.pathname] || 'dashboard';
         setActiveTab(currentTab);
     }, [location.pathname]);
@@ -51,10 +50,9 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
             'books': '/meus-livros',
             'loans': '/meus-emprestimos',
             'favorites': '/favoritos',
-            'history': '/historico',
-            'profile': '/perfil'
+            'profile': '/meu-perfil'
         };
-        
+
         const path = tabToPath[tab];
         if (path) {
             navigate(path);

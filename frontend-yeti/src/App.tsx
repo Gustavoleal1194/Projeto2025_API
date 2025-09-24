@@ -6,6 +6,8 @@ import UsuarioDashboard from './pages/UsuarioDashboard';
 import ExplorarLivros from './pages/ExplorarLivros';
 import MeusLivros from './pages/MeusLivros';
 import MeusEmprestimos from './pages/MeusEmprestimos';
+import Favoritos from './pages/Favoritos';
+import MeuPerfil from './pages/MeuPerfil';
 import GerenciarUsuarios from './pages/GerenciarUsuarios';
 import GerenciarLivros from './pages/GerenciarLivros';
 import GerenciarExemplares from './pages/GerenciarExemplares';
@@ -26,6 +28,8 @@ const App: React.FC = () => {
         <Route path="/explorar-livros" element={<ExplorarLivros />} />
         <Route path="/meus-livros" element={<MeusLivros />} />
         <Route path="/meus-emprestimos" element={<MeusEmprestimos />} />
+        <Route path="/favoritos" element={<Favoritos />} />
+        <Route path="/meu-perfil" element={<MeuPerfil />} />
         <Route path="/gerenciar-usuarios" element={<GerenciarUsuarios />} />
         <Route path="/gerenciar-livros" element={<GerenciarLivros />} />
         <Route path="/gerenciar-exemplares" element={<GerenciarExemplares />} />

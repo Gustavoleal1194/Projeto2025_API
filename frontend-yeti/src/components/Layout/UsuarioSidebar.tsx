@@ -91,7 +91,6 @@ const UsuarioSidebar: React.FC<UsuarioSidebarProps> = ({ activeTab, setActiveTab
                     { id: 'books', label: 'Meus Livros', icon: '📚' },
                     { id: 'loans', label: 'Meus Empréstimos', icon: '📖' },
                     { id: 'favorites', label: 'Favoritos', icon: '❤️' },
-                    { id: 'history', label: 'Histórico', icon: '📜' },
                     { id: 'profile', label: 'Meu Perfil', icon: '👤' }
                 ].map((item) => (
                     <button
