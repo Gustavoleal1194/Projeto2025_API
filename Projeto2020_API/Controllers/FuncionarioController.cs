@@ -99,5 +99,12 @@ namespace Projeto2025_API.Controllers
             var exists = await _service.ExistsAsync(id);
             return Ok(exists);
         }
+
+        [HttpPut("{id}/toggle-status")]
+        public async Task<ActionResult> ToggleStatusAsync(int id)
+        {
+            await _service.ToggleStatusAsync(id);
+            return NoContent();
+        }
     }
 }

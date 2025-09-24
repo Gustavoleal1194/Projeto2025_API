@@ -27,6 +27,9 @@ namespace Service
                 throw new InvalidOperationException("Já existe um funcionário com este email.");
             }
 
+            // Fazer hash da senha antes de salvar
+            funcionarioDTO.Senha = PasswordHashService.HashPassword(funcionarioDTO.Senha);
+
             var funcionario = _mapper.Map<Dominio.Entidades.Funcionario>(funcionarioDTO);
             await _funcionarioRepositorio.AddAsync(funcionario);
             return _mapper.Map<FuncionarioDTO>(funcionario);
@@ -51,6 +54,12 @@ namespace Service
 
         public async Task UpdateAsync(FuncionarioDTO funcionarioDTO)
         {
+            // Fazer hash da senha antes de atualizar (se a senha não estiver vazia)
+            if (!string.IsNullOrEmpty(funcionarioDTO.Senha))
+            {
+                funcionarioDTO.Senha = PasswordHashService.HashPassword(funcionarioDTO.Senha);
+            }
+
             var funcionario = _mapper.Map<Dominio.Entidades.Funcionario>(funcionarioDTO);
             await _funcionarioRepositorio.UpdateAsync(funcionario);
         }
@@ -87,6 +96,18 @@ namespace Service
         public async Task<int> CountAsync()
         {
             return await _funcionarioRepositorio.CountAsync();
+        }
+
+        public async Task ToggleStatusAsync(int id)
+        {
+            var funcionario = await _funcionarioRepositorio.GetByIdAsync(id);
+            if (funcionario == null)
+            {
+                throw new InvalidOperationException("Funcionário não encontrado.");
+            }
+
+            funcionario.Ativo = !funcionario.Ativo;
+            await _funcionarioRepositorio.UpdateAsync(funcionario);
         }
     }
 }

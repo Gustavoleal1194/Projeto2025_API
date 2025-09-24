@@ -77,5 +77,17 @@ namespace Service
             var autores = await autorRepositorio.GetComLivrosAsync();
             return mapper.Map<IEnumerable<AutorDTO>>(autores);
         }
+
+        public async Task ToggleStatusAsync(int id)
+        {
+            var autor = await autorRepositorio.GetByIdAsync(id);
+            if (autor == null)
+            {
+                throw new InvalidOperationException("Autor não encontrado.");
+            }
+
+            autor.Ativo = !autor.Ativo;
+            await autorRepositorio.UpdateAsync(autor);
+        }
     }
 }

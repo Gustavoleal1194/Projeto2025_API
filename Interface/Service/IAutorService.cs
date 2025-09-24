@@ -17,5 +17,6 @@ namespace Interface.Service
         Task<IEnumerable<AutorDTO>> GetByNacionalidadeAsync(string nacionalidade);
         Task<IEnumerable<AutorDTO>> BuscarAsync(string termo);
         Task<IEnumerable<AutorDTO>> GetComLivrosAsync();
+        Task ToggleStatusAsync(int id);
     }
 }

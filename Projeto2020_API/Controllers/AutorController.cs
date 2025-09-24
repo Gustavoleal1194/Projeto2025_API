@@ -77,5 +77,12 @@ namespace Projeto2025_API.Controllers
             var autores = await service.GetComLivrosAsync();
             return Ok(autores);
         }
+
+        [HttpPut("{id}/toggle-status")]
+        public async Task<ActionResult> ToggleStatusAsync(int id)
+        {
+            await service.ToggleStatusAsync(id);
+            return NoContent();
+        }
     }
 }

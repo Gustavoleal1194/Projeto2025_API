@@ -17,5 +17,6 @@ namespace Interface.Service
         Task<FuncionarioDTO?> GetByEmailAsync(string email);
         Task<bool> ExistsAsync(int id);
         Task<int> CountAsync();
+        Task ToggleStatusAsync(int id);
     }
 }

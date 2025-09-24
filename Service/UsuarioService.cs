@@ -69,6 +69,12 @@ namespace Service
 
         public async Task UpdateAsync(UsuarioDTO usuarioDTO)
         {
+            // Fazer hash da senha antes de atualizar (se a senha não estiver vazia)
+            if (!string.IsNullOrEmpty(usuarioDTO.Senha))
+            {
+                usuarioDTO.Senha = PasswordHashService.HashPassword(usuarioDTO.Senha);
+            }
+
             var usuario = mapper.Map<Usuario>(usuarioDTO);
             await usuarioRepositorio.UpdateAsync(usuario);
         }
