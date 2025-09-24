@@ -414,17 +414,10 @@ const MeusEmprestimos: React.FC = () => {
                                         >
                                             <td className="px-6 py-6 whitespace-nowrap">
                                                 <div className="flex items-center">
-<<<<<<< HEAD
                                                     <div className="flex-shrink-0 h-12 w-12">
                                                         {emprestimo.capaUrl ? (
                                                             <img
                                                                 className="h-12 w-12 rounded-lg object-cover"
-=======
-                                                    <div className="flex-shrink-0 h-14 w-14">
-                                                        {emprestimo.capaUrl ? (
-                                                            <img
-                                                                className="h-14 w-14 rounded-lg object-cover shadow-lg"
->>>>>>> 89fed76361d5aabe19adee4d20abe001763e880e
                                                                 src={emprestimo.capaUrl}
                                                                 alt={emprestimo.titulo}
                                                                 onError={(e) => {
@@ -437,11 +430,7 @@ const MeusEmprestimos: React.FC = () => {
                                                             />
                                                         ) : null}
                                                         <div
-<<<<<<< HEAD
                                                             className={`h-12 w-12 rounded-lg flex items-center justify-center text-white font-bold text-lg ${emprestimo.capaUrl ? 'hidden' : 'flex'
-=======
-                                                            className={`h-14 w-14 rounded-lg flex items-center justify-center text-white font-bold text-xl ${emprestimo.capaUrl ? 'hidden' : 'flex'
->>>>>>> 89fed76361d5aabe19adee4d20abe001763e880e
                                                                 }`}
                                                             style={{ backgroundColor: `hsl(${emprestimo.id * 137.5 % 360}, 70%, 50%)` }}
                                                         >
