@@ -360,25 +360,46 @@ const GerenciarLivros: React.FC = () => {
                         <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                             <tr>
                                 <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    📚 Capa
+                                    <span className="flex items-center gap-2">
+                                        <span>📚</span>
+                                        <span>Capa</span>
+                                    </span>
                                 </th>
                                 <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    📖 Título
+                                    <span className="flex items-center gap-2">
+                                        <span>📖</span>
+                                        <span>Título</span>
+                                    </span>
                                 </th>
                                 <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    ✍️ Autor
+                                    <span className="flex items-center gap-2">
+                                        <span>✍️</span>
+                                        <span>Autor</span>
+                                    </span>
                                 </th>
                                 <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    🏷️ Gênero
+                                    <span className="flex items-center gap-2">
+                                        <span>🏷️</span>
+                                        <span>Gênero</span>
+                                    </span>
                                 </th>
                                 <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    🔢 ISBN
+                                    <span className="flex items-center gap-2">
+                                        <span>🔢</span>
+                                        <span>ISBN</span>
+                                    </span>
                                 </th>
                                 <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    ⚡ Status
+                                    <span className="flex items-center gap-2">
+                                        <span>⚡</span>
+                                        <span>Status</span>
+                                    </span>
                                 </th>
                                 <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    ⚙️ Ações
+                                    <span className="flex items-center gap-2">
+                                        <span>⚙️</span>
+                                        <span>Ações</span>
+                                    </span>
                                 </th>
                             </tr>
                         </thead>

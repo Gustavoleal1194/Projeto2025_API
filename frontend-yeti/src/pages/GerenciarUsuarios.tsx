@@ -452,22 +452,40 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                             <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                                 <tr>
                                     <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        👤 Usuário
+                                        <span className="flex items-center gap-2">
+                                            <span>👤</span>
+                                            <span>Usuário</span>
+                                        </span>
                                     </th>
                                     <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        📧 Email
+                                        <span className="flex items-center gap-2">
+                                            <span>📧</span>
+                                            <span>Email</span>
+                                        </span>
                                     </th>
                                     <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        📄 CPF
+                                        <span className="flex items-center gap-2">
+                                            <span>📄</span>
+                                            <span>CPF</span>
+                                        </span>
                                     </th>
                                     <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        📱 Telefone
+                                        <span className="flex items-center gap-2">
+                                            <span>📱</span>
+                                            <span>Telefone</span>
+                                        </span>
                                     </th>
                                     <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        📊 Status
+                                        <span className="flex items-center gap-2">
+                                            <span>📊</span>
+                                            <span>Status</span>
+                                        </span>
                                     </th>
                                     <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        ⚙️ Ações
+                                        <span className="flex items-center gap-2">
+                                            <span>⚙️</span>
+                                            <span>Ações</span>
+                                        </span>
                                     </th>
                                 </tr>
                             </thead>

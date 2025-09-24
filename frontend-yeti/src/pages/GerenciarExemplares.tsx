@@ -349,25 +349,46 @@ const GerenciarExemplares: React.FC = () => {
                             <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                                 <tr>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        📚 Livro
+                                        <span className="flex items-center gap-2">
+                                            <span>📚</span>
+                                            <span>Livro</span>
+                                        </span>
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        🔢 Número
+                                        <span className="flex items-center gap-2">
+                                            <span>🔢</span>
+                                            <span>Número</span>
+                                        </span>
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        📍 Localização
+                                        <span className="flex items-center gap-2">
+                                            <span>📍</span>
+                                            <span>Localização</span>
+                                        </span>
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        🏷️ Condição
+                                        <span className="flex items-center gap-2">
+                                            <span>🏷️</span>
+                                            <span>Condição</span>
+                                        </span>
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        ⚡ Status
+                                        <span className="flex items-center gap-2">
+                                            <span>⚡</span>
+                                            <span>Status</span>
+                                        </span>
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        💰 Valor
+                                        <span className="flex items-center gap-2">
+                                            <span>💰</span>
+                                            <span>Valor</span>
+                                        </span>
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        ⚙️ Ações
+                                        <span className="flex items-center gap-2">
+                                            <span>⚙️</span>
+                                            <span>Ações</span>
+                                        </span>
                                     </th>
                                 </tr>
                             </thead>
