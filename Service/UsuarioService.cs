@@ -103,5 +103,23 @@ namespace Service
             usuario.Ativo = !usuario.Ativo;
             await usuarioRepositorio.UpdateAsync(usuario);
         }
+
+        public async Task<UsuarioDTO?> GetByEmailAsync(string email)
+        {
+            var usuario = await usuarioRepositorio.GetByEmailAsync(email);
+            if (usuario == null)
+                return null;
+
+            return new UsuarioDTO
+            {
+                Id = usuario.Id,
+                Nome = usuario.Nome,
+                Email = usuario.Email,
+                CPF = usuario.CPF,
+                Telefone = usuario.Telefone,
+                DataNascimento = usuario.DataNascimento,
+                Ativo = usuario.Ativo
+            };
+        }
     }
 }

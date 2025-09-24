@@ -34,14 +34,14 @@ namespace Service
             {
                 // Se for administrador, dá role Admin, senão Funcionario
                 var role = funcionario.Cargo?.ToLower() == "administrador" ? "Admin" : "Funcionario";
-                return GerarToken(funcionario.Nome, funcionario.Email, role);
+                return GerarToken(funcionario.Id, funcionario.Nome, funcionario.Email, role);
             }
 
             // Se não for funcionário, tenta como usuário
             var usuario = await _usuarioRepositorio.GetByEmailAsync(loginDTO.Email);
             if (usuario != null && VerificarSenha(loginDTO.Senha, usuario.Senha))
             {
-                return GerarToken(usuario.Nome, usuario.Email, "Usuario");
+                return GerarToken(usuario.Id, usuario.Nome, usuario.Email, "Usuario");
             }
 
             return null;
@@ -102,7 +102,7 @@ namespace Service
             }
         }
 
-        private TokenDTO GerarToken(string nome, string email, string role)
+        private TokenDTO GerarToken(int id, string nome, string email, string role)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
             var expiration = DateTime.UtcNow.AddHours(8);
@@ -131,6 +131,7 @@ namespace Service
             {
                 Token = tokenHandler.WriteToken(token),
                 Expiration = expiration,
+                Id = id,
                 Nome = nome,
                 Email = email,
                 Role = role

@@ -3,6 +3,7 @@ using Interface.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Projeto2025_API.Controllers
@@ -13,10 +14,12 @@ namespace Projeto2025_API.Controllers
     public class EmprestimoController : ControllerBase
     {
         private readonly IEmprestimoService service;
+        private readonly IUsuarioService _usuarioService;
 
-        public EmprestimoController(IEmprestimoService service)
+        public EmprestimoController(IEmprestimoService service, IUsuarioService usuarioService)
         {
             this.service = service;
+            this._usuarioService = usuarioService;
         }
 
         [HttpPost]
@@ -132,5 +135,32 @@ namespace Projeto2025_API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("meus-emprestimos")]
+        public async Task<ActionResult<IEnumerable<EmprestimoDTO>>> GetMeusEmprestimos()
+        {
+            // Obter o ID do usuário do token JWT
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                // Fallback para obter do email
+                var emailClaim = User.FindFirst(ClaimTypes.Email);
+                if (emailClaim == null)
+                    return Unauthorized("Token inválido");
+
+                // Buscar usuário por email para obter o ID
+                var usuario = await _usuarioService.GetByEmailAsync(emailClaim.Value);
+                if (usuario == null)
+                    return Unauthorized("Usuário não encontrado");
+
+                var emprestimosPorEmail = await service.GetByUsuarioAsync(usuario.Id);
+                return Ok(emprestimosPorEmail);
+            }
+
+            var userId = int.Parse(userIdClaim.Value);
+            var emprestimosPorId = await service.GetByUsuarioAsync(userId);
+            return Ok(emprestimosPorId);
+        }
+
     }
 }

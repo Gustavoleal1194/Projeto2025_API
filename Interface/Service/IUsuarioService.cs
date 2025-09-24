@@ -15,6 +15,7 @@ namespace Interface.Service
         // Métodos específicos para consultas
         Task<IEnumerable<UsuarioDTO>> GetByNomeAsync(string nome);
         Task<UsuarioDTO?> GetByCpfAsync(string cpf);
+        Task<UsuarioDTO?> GetByEmailAsync(string email);
         Task ToggleStatusAsync(int id);
     }
 }
