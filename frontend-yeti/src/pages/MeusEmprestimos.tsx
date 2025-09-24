@@ -157,7 +157,7 @@ const MeusEmprestimos: React.FC = () => {
 
     const statsCards = [
         { title: 'Total', value: estatisticas.total.toString(), icon: '📚', color: 'bg-blue-500' },
-        { title: 'Ativos', value: estatisticas.ativos.toString(), icon: '📖', color: 'bg-green-500' },
+        { title: 'Emprestados', value: estatisticas.ativos.toString(), icon: '📖', color: 'bg-green-500' },
         { title: 'Atrasados', value: estatisticas.atrasados.toString(), icon: '⚠️', color: 'bg-red-500' },
         { title: 'Devolvidos', value: estatisticas.devolvidos.toString(), icon: '✅', color: 'bg-gray-500' },
         { title: 'Próximos Vencimentos', value: estatisticas.proximosVencimentos.toString(), icon: '⏰', color: 'bg-yellow-500' }

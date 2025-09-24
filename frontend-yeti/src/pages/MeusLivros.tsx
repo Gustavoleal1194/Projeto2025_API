@@ -16,7 +16,7 @@ const MeusLivros: React.FC = () => {
     const [livrosFiltrados, setLivrosFiltrados] = useState<MeuLivro[]>([]);
     const [estatisticas, setEstatisticas] = useState({
         total: 0,
-        ativos: 0,
+        emprestados: 0,
         atrasados: 0,
         devolvidos: 0,
         proximosVencimentos: 0
@@ -160,7 +160,7 @@ const MeusLivros: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                 {[
                     { title: 'Total', value: estatisticas.total.toString(), icon: '📚', color: 'bg-blue-500' },
-                    { title: 'Ativos', value: estatisticas.ativos.toString(), icon: '📖', color: 'bg-green-500' },
+                    { title: 'Emprestados', value: estatisticas.emprestados.toString(), icon: '📖', color: 'bg-green-500' },
                     { title: 'Atrasados', value: estatisticas.atrasados.toString(), icon: '⚠️', color: 'bg-red-500' },
                     { title: 'Devolvidos', value: estatisticas.devolvidos.toString(), icon: '✅', color: 'bg-gray-500' },
                     { title: 'Próximos Vencimentos', value: estatisticas.proximosVencimentos.toString(), icon: '⏰', color: 'bg-amber-500' }
@@ -448,10 +448,10 @@ const MeusLivros: React.FC = () => {
                                 {/* Status do Empréstimo */}
                                 <div className="text-center">
                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${livro.estaAtrasado
-                                            ? 'bg-red-100 text-red-800'
-                                            : livro.status === 'Emprestado'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-gray-100 text-gray-800'
+                                        ? 'bg-red-100 text-red-800'
+                                        : livro.status === 'Emprestado'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-gray-100 text-gray-800'
                                         }`}>
                                         {livro.estaAtrasado ? '⚠️ Atrasado' :
                                             livro.status === 'Emprestado' ? '📖 Emprestado' :

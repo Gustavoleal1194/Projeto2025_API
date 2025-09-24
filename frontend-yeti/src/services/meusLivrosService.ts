@@ -224,7 +224,7 @@ class MeusLivrosService {
      */
     async obterEstatisticas(): Promise<{
         total: number;
-        ativos: number;
+        emprestados: number;
         atrasados: number;
         devolvidos: number;
         proximosVencimentos: number;
@@ -232,13 +232,13 @@ class MeusLivrosService {
         try {
             const livros = await this.listarMeusLivros();
 
-            const ativos = livros.filter(l => l.status === 'Emprestado');
+            const emprestados = livros.filter(l => l.status === 'Emprestado');
             const atrasados = livros.filter(l => l.estaAtrasado);
             const devolvidos = livros.filter(l => l.status === 'Devolvido');
 
             // Próximos vencimentos (próximos 3 dias)
             const hoje = new Date();
-            const proximosVencimentos = ativos.filter(l => {
+            const proximosVencimentos = emprestados.filter(l => {
                 const dataVencimento = new Date(l.dataPrevistaDevolucao);
                 const diffTime = dataVencimento.getTime() - hoje.getTime();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -247,7 +247,7 @@ class MeusLivrosService {
 
             return {
                 total: livros.length,
-                ativos: ativos.length,
+                emprestados: emprestados.length,
                 atrasados: atrasados.length,
                 devolvidos: devolvidos.length,
                 proximosVencimentos

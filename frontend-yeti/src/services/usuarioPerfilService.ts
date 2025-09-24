@@ -76,7 +76,7 @@ class UsuarioPerfilService {
      */
     async obterEstatisticasUsuario(): Promise<{
         totalEmprestimos: number;
-        emprestimosAtivos: number;
+        emprestimosEmprestados: number;
         emprestimosAtrasados: number;
         totalFavoritos: number;
     }> {
@@ -95,7 +95,7 @@ class UsuarioPerfilService {
 
             // Calcular estatísticas
             const totalEmprestimos = emprestimos.length;
-            const emprestimosAtivos = emprestimos.filter((e: any) => e.status === 'Emprestado').length;
+            const emprestimosEmprestados = emprestimos.filter((e: any) => e.status === 'Emprestado').length;
             const emprestimosAtrasados = emprestimos.filter((e: any) => e.estaAtrasado).length;
 
             // Buscar favoritos do localStorage
@@ -104,7 +104,7 @@ class UsuarioPerfilService {
 
             return {
                 totalEmprestimos,
-                emprestimosAtivos,
+                emprestimosEmprestados,
                 emprestimosAtrasados,
                 totalFavoritos
             };

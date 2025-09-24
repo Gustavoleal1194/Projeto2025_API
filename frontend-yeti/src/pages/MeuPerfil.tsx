@@ -13,7 +13,7 @@ import type { UsuarioDTO } from '../types/entities';
 
 interface EstatisticasUsuario {
     totalEmprestimos: number;
-    emprestimosAtivos: number;
+    emprestimosEmprestados: number;
     emprestimosAtrasados: number;
     totalFavoritos: number;
 }
@@ -238,8 +238,8 @@ const MeuPerfil: React.FC = () => {
                                         </label>
                                         <div className="flex items-center gap-2">
                                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${usuario?.ativo
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
                                                 }`}>
                                                 {usuario?.ativo ? 'Ativa' : 'Inativa'}
                                             </span>
@@ -290,10 +290,10 @@ const MeuPerfil: React.FC = () => {
                                     <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                                         <div className="flex items-center gap-3">
                                             <span className="text-2xl">📖</span>
-                                            <span className="text-sm font-medium text-gray-700">Empréstimos Ativos</span>
+                                            <span className="text-sm font-medium text-gray-700">Empréstimos Emprestados</span>
                                         </div>
                                         <span className="text-2xl font-bold text-green-600">
-                                            {estatisticas.emprestimosAtivos}
+                                            {estatisticas.emprestimosEmprestados}
                                         </span>
                                     </div>
 
