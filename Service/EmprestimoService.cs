@@ -10,19 +10,21 @@ namespace Service
     {
         private readonly IEmprestimoRepositorio _emprestimoRepositorio;
         private readonly IExemplarService _exemplarService;
+        private readonly IUsuarioService _usuarioService;
         private readonly IMapper _mapper;
 
-        public EmprestimoService(IEmprestimoRepositorio emprestimoRepositorio, IExemplarService exemplarService, IMapper mapper)
+        public EmprestimoService(IEmprestimoRepositorio emprestimoRepositorio, IExemplarService exemplarService, IUsuarioService usuarioService, IMapper mapper)
         {
             _emprestimoRepositorio = emprestimoRepositorio;
             _exemplarService = exemplarService;
+            _usuarioService = usuarioService;
             _mapper = mapper;
         }
 
         public async Task<EmprestimoDTO> AddAsync(EmprestimoDTO emprestimoDTO)
         {
             // Log para debug
-            Console.WriteLine($"Tentando criar empréstimo para exemplar ID: {emprestimoDTO.IdExemplar}");
+            Console.WriteLine($"Tentando criar empréstimo para exemplar ID: {emprestimoDTO.IdExemplar}, usuário ID: {emprestimoDTO.IdUsuario}");
             
             // Verificar se o exemplar existe
             var exemplar = await _exemplarService.GetAsync(emprestimoDTO.IdExemplar);
@@ -68,6 +70,15 @@ namespace Service
             }
 
             Console.WriteLine($"Exemplar {emprestimoDTO.IdExemplar} validado com sucesso");
+
+            // Verificar se o usuário existe
+            var usuario = await _usuarioService.GetAsync(emprestimoDTO.IdUsuario);
+            if (usuario == null)
+            {
+                Console.WriteLine($"Usuário com ID {emprestimoDTO.IdUsuario} não encontrado");
+                throw new InvalidOperationException($"Usuário com ID {emprestimoDTO.IdUsuario} não encontrado");
+            }
+            Console.WriteLine($"Usuário {emprestimoDTO.IdUsuario} validado com sucesso");
 
             // Criar o empréstimo primeiro
             var emprestimo = _mapper.Map<Emprestimo>(emprestimoDTO);
