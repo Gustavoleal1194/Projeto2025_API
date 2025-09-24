@@ -10,6 +10,7 @@ import GerenciarFuncionarios from './pages/GerenciarFuncionarios';
 import GerenciarAutores from './pages/GerenciarAutores';
 import GerenciarEditoras from './pages/GerenciarEditoras';
 import GerenciarEmprestimos from './pages/GerenciarEmprestimos';
+import GerenciarRelatorios from './pages/GerenciarRelatorios';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         <Route path="/gerenciar-autores" element={<GerenciarAutores />} />
         <Route path="/gerenciar-editores" element={<GerenciarEditoras />} />
         <Route path="/gerenciar-emprestimos" element={<GerenciarEmprestimos />} />
+        <Route path="/relatorios" element={<GerenciarRelatorios />} />
         {/* Add other React routes here */}
       </Routes>
     </Router>

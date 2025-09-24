@@ -64,6 +64,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                                 navigate('/gerenciar-editores');
                             } else if (item.id === 'loans') {
                                 navigate('/gerenciar-emprestimos');
+                            } else if (item.id === 'reports') {
+                                navigate('/relatorios');
                             } else {
                                 setActiveTab(item.id);
                             }
