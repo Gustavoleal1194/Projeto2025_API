@@ -120,6 +120,29 @@ namespace Projeto2025_API.Controllers
             return Ok(disponivel);
         }
 
+        [HttpGet("{id}/debug")]
+        public async Task<ActionResult<object>> DebugExemplar(int id)
+        {
+            var exemplar = await _exemplarService.GetAsync(id);
+            if (exemplar == null)
+            {
+                return Ok(new { 
+                    existe = false, 
+                    mensagem = "Exemplar não encontrado" 
+                });
+            }
+
+            return Ok(new {
+                existe = true,
+                id = exemplar.Id,
+                ativo = exemplar.Ativo,
+                disponivel = exemplar.Disponivel,
+                numeroExemplar = exemplar.NumeroExemplar,
+                tituloLivro = exemplar.TituloLivro,
+                mensagem = exemplar.Ativo && exemplar.Disponivel ? "Exemplar disponível" : "Exemplar não disponível"
+            });
+        }
+
         [HttpPost("{id}/marcar-indisponivel")]
         public async Task<ActionResult> MarcarComoIndisponivel(int id)
         {
