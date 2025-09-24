@@ -17,5 +17,6 @@ namespace Interface.Service
         Task<IEnumerable<EditoraDTO>> GetByCidadeAsync(string cidade);
         Task<IEnumerable<EditoraDTO>> GetByEstadoAsync(string estado);
         Task<IEnumerable<EditoraDTO>> BuscarAsync(string termo);
+        Task ToggleStatusAsync(int id);
     }
 }

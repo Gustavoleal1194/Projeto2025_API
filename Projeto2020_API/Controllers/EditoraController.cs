@@ -89,5 +89,12 @@ namespace Projeto2025_API.Controllers
             var editoras = await service.BuscarAsync(termo);
             return Ok(editoras);
         }
+
+        [HttpPut("{id}/toggle-status")]
+        public async Task<ActionResult> ToggleStatusAsync(int id)
+        {
+            await service.ToggleStatusAsync(id);
+            return NoContent();
+        }
     }
 }

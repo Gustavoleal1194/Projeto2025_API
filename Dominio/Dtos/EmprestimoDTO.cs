@@ -39,8 +39,8 @@ namespace Dominio.Dtos
         public string? EmailUsuario { get; set; }
         
         // Propriedades calculadas
-        public bool EstaAtrasado => Status == "Emprestado" && DateTime.UtcNow.Date > DataPrevistaDevolucao.Date;
-        public int DiasAtraso => EstaAtrasado ? (DateTime.UtcNow.Date - DataPrevistaDevolucao.Date).Days : 0;
+        public bool EstaAtrasado => Status == "Emprestado" && DateTime.Now.Date > DataPrevistaDevolucao.Date;
+        public int DiasAtraso => EstaAtrasado ? (DateTime.Now.Date - DataPrevistaDevolucao.Date).Days : 0;
         public bool PodeRenovar => Status == "Emprestado" && QuantidadeRenovacoes < MaxRenovacoes;
     }
 }

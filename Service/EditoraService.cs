@@ -93,5 +93,17 @@ namespace Service
             var editoras = await editoraRepositorio.BuscarAsync(termo);
             return mapper.Map<IEnumerable<EditoraDTO>>(editoras);
         }
+
+        public async Task ToggleStatusAsync(int id)
+        {
+            var editora = await editoraRepositorio.GetByIdAsync(id);
+            if (editora == null)
+            {
+                throw new InvalidOperationException("Editora não encontrada.");
+            }
+
+            editora.Ativa = !editora.Ativa;
+            await editoraRepositorio.UpdateAsync(editora);
+        }
     }
 }
