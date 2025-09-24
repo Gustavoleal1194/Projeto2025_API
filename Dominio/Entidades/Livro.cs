@@ -54,5 +54,8 @@ namespace Dominio.Entidades
         public int TotalExemplares => Exemplares?.Count(e => e.Ativo) ?? 0;
         public int ExemplaresDisponiveis => Exemplares?.Count(e => e.Ativo && e.Disponivel) ?? 0;
         public bool TemExemplaresDisponiveis => ExemplaresDisponiveis > 0;
+        
+        // Lógica de disponibilidade: ativo = true quando tem exemplares
+        public bool AtivoCalculado => TotalExemplares > 0;
     }
 }

@@ -12,6 +12,16 @@ namespace InfraEstrutura.Repositorio
         {
         }
 
+        public override async Task<IEnumerable<Livro>> GetAllAsync()
+        {
+            return await _contexto.Livros
+                .Include(l => l.Autor)
+                .Include(l => l.Editora)
+                .Include(l => l.Exemplares)
+                .OrderBy(l => l.Titulo)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Livro>> GetDisponiveisAsync()
         {
             return await _contexto.Livros

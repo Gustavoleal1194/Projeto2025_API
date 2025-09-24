@@ -84,5 +84,15 @@ namespace Service
             var livros = await livroRepositorio.GetEmEstoqueAsync();
             return mapper.Map<IEnumerable<LivroDTO>>(livros);
         }
+
+        public async Task ToggleStatusAsync(int id)
+        {
+            var livro = await livroRepositorio.GetByIdAsync(id);
+            if (livro == null)
+                throw new InvalidOperationException("Livro não encontrado.");
+
+            livro.Ativo = !livro.Ativo;
+            await livroRepositorio.UpdateAsync(livro);
+        }
     }
 }

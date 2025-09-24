@@ -19,5 +19,6 @@ namespace Interface.Service
         Task<IEnumerable<LivroDTO>> GetByEditoraAsync(int idEditora);
         Task<IEnumerable<LivroDTO>> BuscarAsync(string termo);
         Task<IEnumerable<LivroDTO>> GetEmEstoqueAsync();
+        Task ToggleStatusAsync(int id);
     }
 }

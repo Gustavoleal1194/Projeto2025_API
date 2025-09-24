@@ -11,6 +11,7 @@ namespace Projeto2025_API.Mapping
                 .ForMember(dest => dest.TotalExemplares, opt => opt.MapFrom(src => src.TotalExemplares))
                 .ForMember(dest => dest.ExemplaresDisponiveis, opt => opt.MapFrom(src => src.ExemplaresDisponiveis))
                 .ForMember(dest => dest.TemExemplaresDisponiveis, opt => opt.MapFrom(src => src.TemExemplaresDisponiveis))
+                .ForMember(dest => dest.Ativo, opt => opt.MapFrom(src => src.AtivoCalculado))
                 .ForMember(dest => dest.NomeAutor, opt => opt.MapFrom(src => src.Autor != null ? src.Autor.Nome : null))
                 .ForMember(dest => dest.NomeEditora, opt => opt.MapFrom(src => src.Editora != null ? src.Editora.Nome : null));
                 

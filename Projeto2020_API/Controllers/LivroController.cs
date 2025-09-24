@@ -22,8 +22,15 @@ namespace Projeto2025_API.Controllers
         [HttpPost]
         public async Task<ActionResult<LivroDTO>> AddAsync([FromBody] LivroDTO livroDTO)
         {
-            var dto = await service.AddAsync(livroDTO);
-            return Ok(dto);
+            try
+            {
+                var dto = await service.AddAsync(livroDTO);
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message, details = ex.ToString() });
+            }
         }
 
         [HttpGet]
@@ -97,6 +104,13 @@ namespace Projeto2025_API.Controllers
         {
             var livros = await service.GetEmEstoqueAsync();
             return Ok(livros);
+        }
+
+        [HttpPost("{id}/toggle-status")]
+        public async Task<ActionResult> ToggleStatusAsync(int id)
+        {
+            await service.ToggleStatusAsync(id);
+            return NoContent();
         }
     }
 }
