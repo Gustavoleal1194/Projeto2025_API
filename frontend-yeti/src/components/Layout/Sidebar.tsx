@@ -33,6 +33,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                     { id: 'books', label: 'Gerenciar Livros', icon: '📚' },
                     { id: 'exemplares', label: 'Gerenciar Exemplares', icon: '📚' },
                     { id: 'funcionarios', label: 'Gerenciar Funcionários', icon: '👨‍💼' },
+                    { id: 'autores', label: 'Gerenciar Autores', icon: '✍️' },
+                    { id: 'editores', label: 'Gerenciar Editores', icon: '🏢' },
                     { id: 'loans', label: 'Empréstimos', icon: '📖' },
                     { id: 'reports', label: 'Relatórios', icon: '📊' },
                     { id: 'settings', label: 'Configurações', icon: '⚙️' }
@@ -48,6 +50,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                                 navigate('/gerenciar-livros');
                             } else if (item.id === 'exemplares') {
                                 navigate('/gerenciar-exemplares');
+                            } else if (item.id === 'funcionarios') {
+                                navigate('/gerenciar-funcionarios');
+                            } else if (item.id === 'autores') {
+                                navigate('/gerenciar-autores');
+                            } else if (item.id === 'editores') {
+                                navigate('/gerenciar-editores');
                             } else {
                                 setActiveTab(item.id);
                             }

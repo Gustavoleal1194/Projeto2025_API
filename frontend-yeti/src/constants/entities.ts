@@ -306,6 +306,7 @@ export const API_ROUTES = {
     AUTORES_POR_NACIONALIDADE: '/api/autor/por-nacionalidade',
     AUTORES_BUSCAR: '/api/autor/buscar',
     AUTORES_COM_LIVROS: '/api/autor/com-livros',
+    AUTORES_TOGGLE_STATUS: '/api/autor/{id}/toggle-status',
 
     // Editoras
     EDITORAS: '/api/editora',
@@ -335,11 +336,13 @@ export const API_ROUTES = {
     FUNCIONARIOS_POR_EMAIL: '/api/funcionario/email',
     FUNCIONARIOS_COUNT: '/api/funcionario/count',
     FUNCIONARIOS_EXISTS: '/api/funcionario/exists',
+    FUNCIONARIOS_TOGGLE_STATUS: '/api/funcionario/{id}/toggle-status',
 
     // Usuários
     USUARIOS: '/api/usuario',
     USUARIOS_POR_NOME: '/api/usuario/por-nome',
     USUARIOS_POR_CPF: '/api/usuario/por-cpf',
+    USUARIOS_TOGGLE_STATUS: '/api/usuario/{id}/toggle-status',
 
     // Empréstimos
     EMPRESTIMOS: '/api/emprestimo',

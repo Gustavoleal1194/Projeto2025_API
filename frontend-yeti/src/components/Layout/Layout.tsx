@@ -36,6 +36,10 @@ const Layout: React.FC<LayoutProps> = ({
             setActiveTab('exemplares');
         } else if (path === '/gerenciar-funcionarios') {
             setActiveTab('funcionarios');
+        } else if (path === '/gerenciar-autores') {
+            setActiveTab('autores');
+        } else if (path === '/gerenciar-editores') {
+            setActiveTab('editores');
         } else if (path === '/emprestimos') {
             setActiveTab('loans');
         } else if (path === '/relatorios') {

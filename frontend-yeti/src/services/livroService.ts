@@ -1,18 +1,19 @@
 import type { Livro, LivroCreateRequest, LivroUpdateRequest } from '../constants/entities';
 import { API_CONFIG } from '../config/api';
+import { API_ROUTES } from '../constants/entities';
 
 const LIVRO_ENDPOINTS = {
-    LISTAR: '/api/Livro',
-    OBTER: (id: number) => `/api/Livro/${id}`,
-    CRIAR: '/api/Livro',
-    ATUALIZAR: '/api/Livro',
-    EXCLUIR: (id: number) => `/api/Livro/${id}`,
-    DISPONIVEIS: '/api/Livro/disponiveis',
-    POR_GENERO: (genero: string) => `/api/Livro/por-genero/${genero}`,
-    POR_AUTOR: (idAutor: number) => `/api/Livro/por-autor/${idAutor}`,
-    POR_EDITORA: (idEditora: number) => `/api/Livro/por-editora/${idEditora}`,
-    BUSCAR: (termo: string) => `/api/Livro/buscar/${termo}`,
-    EM_ESTOQUE: '/api/Livro/em-estoque',
+    LISTAR: API_ROUTES.LIVROS,
+    OBTER: (id: number) => `${API_ROUTES.LIVROS}/${id}`,
+    CRIAR: API_ROUTES.LIVROS,
+    ATUALIZAR: API_ROUTES.LIVROS,
+    EXCLUIR: (id: number) => `${API_ROUTES.LIVROS}/${id}`,
+    DISPONIVEIS: API_ROUTES.LIVROS_DISPONIVEIS,
+    POR_GENERO: (genero: string) => `${API_ROUTES.LIVROS_POR_GENERO}/${genero}`,
+    POR_AUTOR: (idAutor: number) => `${API_ROUTES.LIVROS_POR_AUTOR}/${idAutor}`,
+    POR_EDITORA: (idEditora: number) => `${API_ROUTES.LIVROS_POR_EDITORA}/${idEditora}`,
+    BUSCAR: (termo: string) => `${API_ROUTES.LIVROS_BUSCAR}/${termo}`,
+    EM_ESTOQUE: API_ROUTES.LIVROS_EM_ESTOQUE,
 } as const;
 
 class LivroService {
