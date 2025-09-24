@@ -168,6 +168,17 @@ export interface Emprestimo {
     numeroExemplar?: string;
     nomeUsuario?: string;
     emailUsuario?: string;
+    
+    // Informações do livro (para exibição)
+    nomeAutor?: string;
+    nomeEditora?: string;
+    genero?: string;
+    ano?: number;
+    sinopse?: string;
+    capaUrl?: string;
+    numeroPaginas?: number;
+    idioma?: string;
+    
     // Propriedades calculadas (somente leitura)
     estaAtrasado: boolean;
     diasAtraso: number;

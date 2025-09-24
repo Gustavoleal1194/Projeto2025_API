@@ -43,7 +43,6 @@ export interface MeuLivro {
 export interface FiltrosMeusLivros {
     status?: 'Emprestado' | 'Devolvido' | 'Atrasado';
     atrasado?: boolean;
-    podeRenovar?: boolean;
     genero?: string;
     autor?: string;
     termo?: string;
@@ -179,9 +178,6 @@ class MeusLivrosService {
                 livros = livros.filter(livro => livro.estaAtrasado === filtros.atrasado);
             }
 
-            if (filtros.podeRenovar !== undefined) {
-                livros = livros.filter(livro => livro.podeRenovar === filtros.podeRenovar);
-            }
 
             if (filtros.genero) {
                 livros = livros.filter(livro =>
@@ -266,14 +262,14 @@ class MeusLivrosService {
                 id: emprestimo.idExemplar || 0, // Usando idExemplar como ID do livro
                 titulo: emprestimo.tituloLivro || 'Título não disponível',
                 subtitulo: undefined, // Não disponível no empréstimo
-                nomeAutor: 'Autor não informado', // Não disponível no empréstimo
-                nomeEditora: 'Editora não informada', // Não disponível no empréstimo
-                genero: 'Gênero não informado', // Não disponível no empréstimo
-                ano: new Date().getFullYear(), // Não disponível no empréstimo
-                sinopse: 'Sinopse não disponível', // Não disponível no empréstimo
-                capaUrl: undefined, // Não disponível no empréstimo
-                numeroPaginas: undefined, // Não disponível no empréstimo
-                idioma: undefined, // Não disponível no empréstimo
+                nomeAutor: emprestimo.nomeAutor || 'Autor não informado',
+                nomeEditora: emprestimo.nomeEditora || 'Editora não informada',
+                genero: emprestimo.genero || 'Gênero não informado',
+                ano: emprestimo.ano || new Date().getFullYear(),
+                sinopse: emprestimo.sinopse || 'Sinopse não disponível',
+                capaUrl: emprestimo.capaUrl,
+                numeroPaginas: emprestimo.numeroPaginas,
+                idioma: emprestimo.idioma,
 
                 // Informações do empréstimo
                 emprestimoId: emprestimo.id,

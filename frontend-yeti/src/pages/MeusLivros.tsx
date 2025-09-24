@@ -27,7 +27,6 @@ const MeusLivros: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [hoveredBookId, setHoveredBookId] = useState<number | null>(null);
     const [showFiltros, setShowFiltros] = useState(false);
-    const [actionLoading, setActionLoading] = useState<number | null>(null);
 
     // Hook de favoritos
     const { isFavorite, toggleFavorite } = useFavorites();
@@ -62,9 +61,6 @@ const MeusLivros: React.FC = () => {
             filtrados = filtrados.filter(livro => livro.estaAtrasado === filtros.atrasado);
         }
 
-        if (filtros.podeRenovar !== undefined) {
-            filtrados = filtrados.filter(livro => livro.podeRenovar === filtros.podeRenovar);
-        }
 
         if (filtros.genero) {
             filtrados = filtrados.filter(livro =>
@@ -111,31 +107,6 @@ const MeusLivros: React.FC = () => {
         setSearchQuery('');
     };
 
-    const handleRenovar = async (emprestimoId: number) => {
-        try {
-            setActionLoading(emprestimoId);
-            await meusLivrosService.renovarEmprestimo(emprestimoId);
-            await loadData(); // Recarregar dados
-            console.log('Empréstimo renovado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao renovar empréstimo:', error);
-        } finally {
-            setActionLoading(null);
-        }
-    };
-
-    const handleDevolver = async (emprestimoId: number) => {
-        try {
-            setActionLoading(emprestimoId);
-            await meusLivrosService.devolverEmprestimo(emprestimoId);
-            await loadData(); // Recarregar dados
-            console.log('Empréstimo devolvido com sucesso!');
-        } catch (error) {
-            console.error('Erro ao devolver empréstimo:', error);
-        } finally {
-            setActionLoading(null);
-        }
-    };
 
     const highlightSearchTerm = (text: string, searchTerm: string) => {
         if (!searchTerm.trim()) return text;
@@ -276,18 +247,6 @@ const MeusLivros: React.FC = () => {
                             </select>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Renovação</label>
-                            <select
-                                value={filtros.podeRenovar === undefined ? '' : filtros.podeRenovar.toString()}
-                                onChange={(e) => handleFiltroChange('podeRenovar', e.target.value === '' ? undefined : e.target.value === 'true')}
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="">Todas</option>
-                                <option value="true">Pode renovar</option>
-                                <option value="false">Não pode renovar</option>
-                            </select>
-                        </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Gênero</label>
@@ -417,8 +376,8 @@ const MeusLivros: React.FC = () => {
                                             </button>
                                             <button
                                                 className={`px-3 py-1 rounded text-sm transition-colors duration-300 ${isFavorite(livro.id)
-                                                        ? 'bg-red-600 hover:bg-red-700 text-white'
-                                                        : 'bg-green-600 hover:bg-green-700 text-white'
+                                                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                                                    : 'bg-green-600 hover:bg-green-700 text-white'
                                                     }`}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -486,33 +445,18 @@ const MeusLivros: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Ações */}
-                                <div className="flex gap-2">
-                                    {livro.status === 'Emprestado' && livro.podeRenovar && (
-                                        <button
-                                            onClick={() => handleRenovar(livro.emprestimoId)}
-                                            disabled={actionLoading === livro.emprestimoId}
-                                            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-3 py-2 rounded text-sm font-semibold transition-colors duration-300"
-                                        >
-                                            {actionLoading === livro.emprestimoId ? '⏳' : '🔄'} Renovar
-                                        </button>
-                                    )}
-
-                                    {livro.status === 'Emprestado' && (
-                                        <button
-                                            onClick={() => handleDevolver(livro.emprestimoId)}
-                                            disabled={actionLoading === livro.emprestimoId}
-                                            className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-3 py-2 rounded text-sm font-semibold transition-colors duration-300"
-                                        >
-                                            {actionLoading === livro.emprestimoId ? '⏳' : '📤'} Devolver
-                                        </button>
-                                    )}
-
-                                    {livro.status === 'Devolvido' && (
-                                        <div className="flex-1 bg-gray-500 text-white px-3 py-2 rounded text-sm font-semibold text-center">
-                                            ✅ Devolvido
-                                        </div>
-                                    )}
+                                {/* Status do Empréstimo */}
+                                <div className="text-center">
+                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${livro.estaAtrasado
+                                            ? 'bg-red-100 text-red-800'
+                                            : livro.status === 'Emprestado'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-gray-100 text-gray-800'
+                                        }`}>
+                                        {livro.estaAtrasado ? '⚠️ Atrasado' :
+                                            livro.status === 'Emprestado' ? '📖 Emprestado' :
+                                                '✅ Devolvido'}
+                                    </span>
                                 </div>
                             </div>
                         </motion.div>
@@ -537,8 +481,8 @@ const MeusLivros: React.FC = () => {
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
                                 className={`px-3 py-2 rounded-lg transition-colors duration-300 ${currentPage === page
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                     }`}
                             >
                                 {page}

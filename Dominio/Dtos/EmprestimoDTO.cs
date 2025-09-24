@@ -38,6 +38,16 @@ namespace Dominio.Dtos
         public string? NomeUsuario { get; set; }
         public string? EmailUsuario { get; set; }
         
+        // Informações do livro (para exibição)
+        public string? NomeAutor { get; set; }
+        public string? NomeEditora { get; set; }
+        public string? Genero { get; set; }
+        public int? Ano { get; set; }
+        public string? Sinopse { get; set; }
+        public string? CapaUrl { get; set; }
+        public int? NumeroPaginas { get; set; }
+        public string? Idioma { get; set; }
+        
         // Propriedades calculadas
         public bool EstaAtrasado => Status == "Emprestado" && DateTime.Now.Date > DataPrevistaDevolucao.Date;
         public int DiasAtraso => EstaAtrasado ? (DateTime.Now.Date - DataPrevistaDevolucao.Date).Days : 0;

@@ -35,7 +35,15 @@ namespace Projeto2025_API.Mapping
                 .ForMember(dest => dest.TituloLivro, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null ? src.Exemplar.Livro.Titulo : null))
                 .ForMember(dest => dest.NumeroExemplar, opt => opt.MapFrom(src => src.Exemplar != null ? src.Exemplar.NumeroExemplar : null))
                 .ForMember(dest => dest.NomeUsuario, opt => opt.MapFrom(src => src.Usuario != null ? src.Usuario.Nome : null))
-                .ForMember(dest => dest.EmailUsuario, opt => opt.MapFrom(src => src.Usuario != null ? src.Usuario.Email : null));
+                .ForMember(dest => dest.EmailUsuario, opt => opt.MapFrom(src => src.Usuario != null ? src.Usuario.Email : null))
+                .ForMember(dest => dest.NomeAutor, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null && src.Exemplar.Livro.Autor != null ? src.Exemplar.Livro.Autor.Nome : null))
+                .ForMember(dest => dest.NomeEditora, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null && src.Exemplar.Livro.Editora != null ? src.Exemplar.Livro.Editora.Nome : null))
+                .ForMember(dest => dest.Genero, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null ? src.Exemplar.Livro.Genero : null))
+                .ForMember(dest => dest.Ano, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null ? src.Exemplar.Livro.Ano : (int?)null))
+                .ForMember(dest => dest.Sinopse, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null ? src.Exemplar.Livro.Sinopse : null))
+                .ForMember(dest => dest.CapaUrl, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null ? src.Exemplar.Livro.CapaUrl : null))
+                .ForMember(dest => dest.NumeroPaginas, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null ? src.Exemplar.Livro.NumeroPaginas : (int?)null))
+                .ForMember(dest => dest.Idioma, opt => opt.MapFrom(src => src.Exemplar != null && src.Exemplar.Livro != null ? src.Exemplar.Livro.Idioma : null));
                 
             CreateMap<EmprestimoDTO, Emprestimo>()
                 .ForMember(dest => dest.Exemplar, opt => opt.Ignore())

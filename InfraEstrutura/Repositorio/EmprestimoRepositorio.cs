@@ -50,6 +50,13 @@ namespace InfraEstrutura.Repositorio
         {
             return await _contexto.Emprestimos
                 .Where(e => e.Ativo && e.DataDevolucao == null)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Autor)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Editora)
+                .Include(e => e.Usuario)
                 .OrderByDescending(e => e.DataEmprestimo)
                 .ToListAsync();
         }
