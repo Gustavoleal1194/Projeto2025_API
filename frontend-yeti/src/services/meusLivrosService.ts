@@ -57,21 +57,32 @@ class MeusLivrosService {
         };
     }
 
+
+
     /**
      * Lista todos os empréstimos do usuário (ativos e históricos)
      */
     async listarMeusLivros(): Promise<MeuLivro[]> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/Emprestimo/ativos`, {
+            console.log('Fazendo requisição para:', `${API_CONFIG.BASE_URL}/api/Emprestimo/meus-emprestimos`);
+
+            // Usar o endpoint que usa o token JWT para identificar o usuário
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/Emprestimo/meus-emprestimos`, {
                 method: 'GET',
                 headers: this.getAuthHeaders()
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             if (!response.ok) {
+                const errorText = await response.text();
+                console.log('Error response:', errorText);
                 throw new Error(`Erro ao buscar meus livros: ${response.status}`);
             }
 
             const emprestimos: Emprestimo[] = await response.json();
+            console.log('Empréstimos recebidos:', emprestimos);
             return this.mapearEmprestimosParaMeusLivros(emprestimos);
         } catch (error) {
             console.error('Erro ao listar meus livros:', error);

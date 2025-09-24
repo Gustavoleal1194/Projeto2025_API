@@ -418,6 +418,7 @@ const LoginPage: React.FC = () => {
 
                 localStorage.setItem('yeti_token', data.token);
                 localStorage.setItem('yeti_user', JSON.stringify({
+                    id: data.id,
                     nome: data.nome,
                     email: data.email,
                     role: data.role
