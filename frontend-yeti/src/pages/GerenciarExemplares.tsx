@@ -338,30 +338,35 @@ const GerenciarExemplares: React.FC = () => {
                 </div>
 
                 {/* Tabela de Exemplares */}
-                <div className="bg-white shadow-2xl border border-blue-100 overflow-hidden">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
+                >
                     <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
                         <table className="min-w-full divide-y divide-blue-100">
                             <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                                 <tr>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         📚 Livro
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         🔢 Número
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         📍 Localização
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         🏷️ Condição
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         ⚡ Status
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         💰 Valor
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         ⚙️ Ações
                                     </th>
                                 </tr>
@@ -457,7 +462,7 @@ const GerenciarExemplares: React.FC = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Modal */}
                 {isModalOpen && (

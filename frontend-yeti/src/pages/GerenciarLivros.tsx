@@ -359,25 +359,25 @@ const GerenciarLivros: React.FC = () => {
                     <table className="min-w-full divide-y divide-blue-100">
                         <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                             <tr>
-                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     📚 Capa
                                 </th>
-                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     📖 Título
                                 </th>
-                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     ✍️ Autor
                                 </th>
-                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     🏷️ Gênero
                                 </th>
-                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     🔢 ISBN
                                 </th>
-                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     ⚡ Status
                                 </th>
-                                <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                     ⚙️ Ações
                                 </th>
                             </tr>
@@ -416,7 +416,7 @@ const GerenciarLivros: React.FC = () => {
                                         <div className="text-gray-900">{livro.nomeAutor || 'N/A'}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
                                             {livro.genero}
                                         </span>
                                     </td>
@@ -424,7 +424,7 @@ const GerenciarLivros: React.FC = () => {
                                         <div className="text-gray-900 font-mono text-sm">{livro.isbn}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${livro.ativo
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${livro.ativo
                                             ? 'bg-green-100 text-green-800'
                                             : 'bg-red-100 text-red-800'
                                             }`}>

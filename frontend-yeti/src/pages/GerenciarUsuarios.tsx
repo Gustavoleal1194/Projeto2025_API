@@ -451,22 +451,22 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                         <table className="min-w-full divide-y divide-blue-100">
                             <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
                                 <tr>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         👤 Usuário
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         📧 Email
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         📄 CPF
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         📱 Telefone
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         📊 Status
                                     </th>
-                                    <th className="px-8 py-4 text-left text-sm font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                    <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
                                         ⚙️ Ações
                                     </th>
                                 </tr>
