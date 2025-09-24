@@ -1,275 +1,409 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import UsuarioLayout from '../components/Layout/UsuarioLayout';
+import usuarioLivroService from '../services/usuarioLivroService';
+import usuarioEmprestimoService from '../services/usuarioEmprestimoService';
+import { useFavorites } from '../hooks/useFavorites';
+import type { Livro } from '../types/entities';
 
 const UsuarioDashboard: React.FC = () => {
-    const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const [livros, setLivros] = useState<Livro[]>([]);
+    const [livrosFiltrados, setLivrosFiltrados] = useState<Livro[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hoveredBookId, setHoveredBookId] = useState<number | null>(null);
+    const [stats, setStats] = useState({
+        emprestimosAtivos: 0,
+        livrosFavoritos: 0,
+        historicoTotal: 0,
+        livrosDisponiveis: 0
+    });
 
-    // Dados mockados para demonstração
-    const books = [
-        {
-            id: 1,
-            title: "O Senhor dos Anéis",
-            author: "J.R.R. Tolkien",
-            status: "available",
-            description: "Uma épica aventura na Terra Média"
-        },
-        {
-            id: 2,
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            status: "borrowed",
-            description: "A magia de Hogwarts"
-        },
-        {
-            id: 3,
-            title: "1984",
-            author: "George Orwell",
-            status: "available",
-            description: "Distopia clássica"
-        },
-        {
-            id: 4,
-            title: "Dom Casmurro",
-            author: "Machado de Assis",
-            status: "reserved",
-            description: "Literatura brasileira"
-        },
-        {
-            id: 5,
-            title: "Cem Anos de Solidão",
-            author: "Gabriel García Márquez",
-            status: "available",
-            description: "Realismo mágico"
-        },
-        {
-            id: 6,
-            title: "O Pequeno Príncipe",
-            author: "Antoine de Saint-Exupéry",
-            status: "available",
-            description: "Fábula atemporal"
+    // Hook de favoritos
+    const { favorites, toggleFavorite, isFavorite, getFavoritesCount } = useFavorites();
+
+    const livrosPerPage = 10;
+
+    // Atualizar estatísticas quando favoritos mudarem
+    useEffect(() => {
+        setStats(prev => ({
+            ...prev,
+            livrosFavoritos: getFavoritesCount()
+        }));
+    }, [favorites, getFavoritesCount]);
+
+    useEffect(() => {
+        loadUserData();
+    }, []);
+
+    // Filtrar livros baseado na busca
+    useEffect(() => {
+        if (searchQuery.trim() === '') {
+            setLivrosFiltrados(livros);
+        } else {
+            const filtrados = livros.filter(livro =>
+                livro.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (livro.nomeAutor && livro.nomeAutor.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                livro.genero.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                livro.sinopse.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setLivrosFiltrados(filtrados);
         }
-    ];
+        setCurrentPage(1); // Reset para primeira página quando busca mudar
+    }, [searchQuery, livros]);
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'available':
-                return 'bg-green-500';
-            case 'borrowed':
-                return 'bg-yellow-500';
-            case 'reserved':
-                return 'bg-blue-500';
-            case 'overdue':
-                return 'bg-red-500';
-            default:
-                return 'bg-gray-500';
-        }
-    };
+    // Calcular livros da página atual
+    const totalPages = Math.ceil(livrosFiltrados.length / livrosPerPage);
+    const startIndex = (currentPage - 1) * livrosPerPage;
+    const endIndex = startIndex + livrosPerPage;
+    const livrosAtuais = livrosFiltrados.slice(startIndex, endIndex);
 
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case 'available':
-                return 'Disponível';
-            case 'borrowed':
-                return 'Emprestado';
-            case 'reserved':
-                return 'Reservado';
-            case 'overdue':
-                return 'Atrasado';
-            default:
-                return 'Indisponível';
+    const loadUserData = async () => {
+        try {
+            // Carregar livros disponíveis
+            const livrosData = await usuarioLivroService.listarLivrosDisponiveis();
+            setLivros(livrosData);
+            setLivrosFiltrados(livrosData);
+
+            // Carregar empréstimos ativos
+            const emprestimosData = await usuarioEmprestimoService.listarEmprestimosAtivos();
+
+                // Calcular estatísticas
+                setStats({
+                    emprestimosAtivos: emprestimosData.length,
+                    livrosFavoritos: getFavoritesCount(),
+                    historicoTotal: 0, // TODO: Implementar histórico
+                    livrosDisponiveis: livrosData.length
+                });
+
+            setLoading(false);
+        } catch (error) {
+            console.error('Erro ao carregar dados do usuário:', error);
+            setLoading(false);
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('yeti_token');
-        localStorage.removeItem('yeti_user');
-        navigate('/');
+
+    const highlightSearchTerm = (text: string, searchTerm: string) => {
+        if (!searchTerm.trim()) return text;
+
+        const regex = new RegExp(`(${searchTerm})`, 'gi');
+        return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
     };
+
+    const getBookCoverColor = (livroId: number, index: number) => {
+        const colors = [
+            'from-amber-600 via-amber-700 to-amber-800',
+            'from-red-600 via-red-700 to-red-800',
+            'from-blue-600 via-blue-700 to-blue-800',
+            'from-green-600 via-green-700 to-green-800',
+            'from-purple-600 via-purple-700 to-purple-800',
+            'from-indigo-600 via-indigo-700 to-indigo-800',
+            'from-pink-600 via-pink-700 to-pink-800',
+            'from-teal-600 via-teal-700 to-teal-800',
+            'from-orange-600 via-orange-700 to-orange-800',
+            'from-cyan-600 via-cyan-700 to-cyan-800',
+            'from-lime-600 via-lime-700 to-lime-800',
+            'from-rose-600 via-rose-700 to-rose-800',
+            'from-violet-600 via-violet-700 to-violet-800',
+            'from-emerald-600 via-emerald-700 to-emerald-800',
+            'from-sky-600 via-sky-700 to-sky-800',
+            'from-fuchsia-600 via-fuchsia-700 to-fuchsia-800'
+        ];
+        // Usar uma semente baseada no ID do livro para cores consistentes mas aleatórias
+        const seed = (livroId || index) * 17 + 31;
+        return colors[seed % colors.length];
+    };
+
+    if (loading) {
+        return (
+            <UsuarioLayout pageTitle="Carregando..." pageSubtitle="Aguarde um momento">
+                <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            </UsuarioLayout>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Sidebar */}
-            <aside className="fixed left-0 top-0 w-70 h-full bg-blue-900 text-white shadow-2xl z-50">
-                {/* Logo Container */}
-                <div className="p-8 text-center border-b border-blue-700">
-                    <div className="w-20 h-20 bg-blue-200 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-blue-400">
-                        <img
-                            src="/images/logo.png"
-                            alt="Yeti Library"
-                            className="w-12 h-12 object-contain"
-                        />
-                    </div>
-                    <h1 className="text-xl font-bold uppercase tracking-wider">
-                        Yeti Library System
-                    </h1>
+        <UsuarioLayout
+            pageTitle="Meu Dashboard"
+            pageSubtitle="Bem-vindo à sua biblioteca pessoal"
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+        >
+            {/* Bookshelf Container */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="bg-amber-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden mb-8"
+            >
+                {/* Wood Texture Overlay */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className="w-full h-full bg-gradient-to-br from-amber-900 to-amber-700"></div>
                 </div>
 
-                {/* Navigation */}
-                <nav className="p-4">
-                    {[
-                        { id: 'dashboard', label: 'Meu Dashboard', icon: '🏠' },
-                        { id: 'explore', label: 'Explorar Livros', icon: '🔍' },
-                        { id: 'books', label: 'Meus Livros', icon: '📚' },
-                        { id: 'loans', label: 'Meus Empréstimos', icon: '📖' },
-                        { id: 'profile', label: 'Meu Perfil', icon: '👤' }
-                    ].map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id)}
-                            className={`w-full flex items-center p-4 mb-2 rounded-lg transition-all duration-300 ${activeTab === item.id
-                                ? 'bg-amber-200 text-amber-900 border-l-4 border-green-600'
-                                : 'hover:bg-blue-800 hover:border-l-4 hover:border-green-400'
-                                }`}
-                        >
-                            <span className="text-2xl mr-3">{item.icon}</span>
-                            <span className="font-medium">{item.label}</span>
-                        </button>
-                    ))}
-                </nav>
-            </aside>
-
-            {/* Top Bar */}
-            <header className="fixed top-0 right-0 left-70 h-18 bg-white border-b border-blue-400 flex items-center justify-between px-8 z-40">
-                {/* Search Container */}
-                <div className="flex-1 max-w-lg relative">
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Buscar na estante..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full h-12 pl-12 pr-4 bg-white border-2 border-blue-400 rounded-full text-gray-700 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
-                    />
-                </div>
-
-                {/* User Profile */}
-                <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        U
-                    </div>
-                    <span className="text-gray-700 font-medium">Usuário</span>
-                </div>
-            </header>
-
-            {/* Main Content */}
-            <main className="ml-70 mt-18 p-8">
-                {/* Bookshelf Container */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="bg-amber-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden"
-                >
-                    {/* Wood Texture Overlay */}
-                    <div className="absolute inset-0 opacity-10 pointer-events-none">
-                        <div className="w-full h-full bg-gradient-to-br from-amber-900 to-amber-700"></div>
-                    </div>
-
-                    {/* Bookshelf Title */}
-                    <h2 className="text-3xl font-bold text-white mb-8 text-center relative z-10 drop-shadow-lg">
+                {/* Bookshelf Title */}
+                <div className="text-center relative z-10 drop-shadow-lg mb-8">
+                    <h2 className="text-3xl font-bold text-white">
                         Minha Estante Virtual
                     </h2>
+                    {searchQuery.trim() !== '' && (
+                        <div className="mt-2">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                                🔍 Buscando: "{searchQuery}"
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="ml-2 text-blue-600 hover:text-blue-800"
+                                >
+                                    ✕
+                                </button>
+                            </span>
+                        </div>
+                    )}
+                </div>
 
-                    {/* Books Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 relative z-10">
-                        {books.map((book) => (
+                {/* Books Grid */}
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 relative z-10">
+                    {livrosFiltrados.length === 0 ? (
+                        <div className="col-span-full text-center py-12">
+                            <div className="text-white text-lg mb-4">
+                                {searchQuery.trim() === '' ? '📚 Sua estante está vazia' : '🔍 Nenhum livro encontrado'}
+                            </div>
+                            <p className="text-amber-200">
+                                {searchQuery.trim() === ''
+                                    ? 'Explore nossa biblioteca para encontrar livros interessantes!'
+                                    : `Tente buscar por outro termo. Buscamos em: título, autor, gênero e sinopse.`
+                                }
+                            </p>
+                        </div>
+                    ) : (
+                        livrosAtuais.map((livro, index) => (
                             <motion.div
-                                key={book.id}
+                                key={livro.id}
                                 whileHover={{
                                     y: -8,
-                                    rotateX: 5,
+                                    rotateY: 5,
                                     transition: { duration: 0.3 }
                                 }}
                                 className="group relative"
+                                style={{ perspective: '1000px', zIndex: hoveredBookId === livro.id ? 1000 : 1 }}
+                                onMouseEnter={() => setHoveredBookId(livro.id)}
+                                onMouseLeave={() => setHoveredBookId(null)}
                             >
-                                {/* Book Card */}
-                                <div className="bg-gradient-to-br from-green-500 to-blue-500 rounded-lg p-6 text-white cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl relative overflow-hidden">
-                                    {/* Top Border */}
-                                    <div className="absolute top-0 left-0 right-0 h-1 bg-blue-200"></div>
-
-                                    {/* Book Content */}
-                                    <div className="text-center">
-                                        <h3 className="text-lg font-semibold mb-2 line-clamp-2">
-                                            {book.title}
-                                        </h3>
-                                        <p className="text-sm opacity-90 mb-3">
-                                            {book.author}
-                                        </p>
-                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(book.status)}`}>
-                                            {getStatusText(book.status)}
-                                        </span>
+                                {/* Book Cover */}
+                                <div
+                                    className="relative w-full rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:shadow-xl transform-gpu overflow-hidden"
+                                    style={{
+                                        transformStyle: 'preserve-3d',
+                                        boxShadow: '0 4px 10px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
+                                        minHeight: '120px',
+                                        maxHeight: '160px'
+                                    }}
+                                >
+                                    {/* Image Container - Adapts to image size */}
+                                    <div className="w-full flex items-center justify-center" style={{ minHeight: '80px' }}>
+                                        {livro.capaUrl ? (
+                                            <img
+                                                src={livro.capaUrl}
+                                                alt={livro.titulo}
+                                                className="w-full h-auto object-contain rounded-lg"
+                                                style={{
+                                                    maxHeight: '140px',
+                                                    width: 'auto'
+                                                }}
+                                                onError={(e) => {
+                                                    // Fallback para cor sólida se a imagem falhar
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.style.display = 'none';
+                                                    const parent = target.parentElement;
+                                                    if (parent) {
+                                                        parent.innerHTML = `
+                                                        <div class="w-full h-24 bg-gradient-to-br ${getBookCoverColor(livro.id, index)} flex items-center justify-center text-white rounded-lg">
+                                                            <div class="text-center p-2">
+                                                                <h3 class="text-xs font-bold mb-1 line-clamp-1">${livro.titulo.length > 15 ? livro.titulo.substring(0, 15) + '...' : livro.titulo}</h3>
+                                                                <p class="text-xs opacity-90 line-clamp-1">${livro.nomeAutor || 'Autor'}</p>
+                                                            </div>
+                                                        </div>
+                                                    `;
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className={`w-full h-24 bg-gradient-to-br ${getBookCoverColor(livro.id, index)} flex items-center justify-center text-white rounded-lg`}>
+                                                <div className="text-center p-2">
+                                                    <h3
+                                                        className="text-xs font-bold mb-1 line-clamp-1"
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: highlightSearchTerm(livro.titulo.length > 15 ? livro.titulo.substring(0, 15) + '...' : livro.titulo, searchQuery)
+                                                        }}
+                                                    />
+                                                    <p
+                                                        className="text-xs opacity-90 line-clamp-1"
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: highlightSearchTerm(livro.nomeAutor || 'Autor', searchQuery)
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
+
+                                    {/* Book Info - Adapts to container */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black to-transparent flex items-end px-2 pb-1 rounded-b-lg">
+                                        <div className="text-white text-xs font-semibold truncate w-full">
+                                            {livro.titulo.length > 20 ? `${livro.titulo.substring(0, 20)}...` : livro.titulo}
+                                        </div>
+                                    </div>
+
+                                    {/* Book Spine */}
+                                    <div className="absolute left-0 top-0 w-2 h-full bg-gradient-to-b from-amber-800 to-amber-900 rounded-l-lg"></div>
+
+                                    {/* Book Pages Effect */}
+                                    <div className="absolute right-0 top-0 w-1 h-full bg-white opacity-20"></div>
+
+                                    {/* Book Shine Effect */}
+                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white from-10% via-transparent to-transparent opacity-10 rounded-lg"></div>
+                                    
+                                    {/* Favorite Indicator */}
+                                    {isFavorite(livro.id) && (
+                                        <div className="absolute top-1 right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+                                            <span className="text-white text-xs">💖</span>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Hover Card */}
+                                {/* Detailed Hover Card */}
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileHover={{ opacity: 1, y: 0 }}
-                                    className="absolute -bottom-32 left-1/2 transform -translate-x-1/2 bg-white border-2 border-green-500 rounded-xl p-6 shadow-2xl min-w-64 text-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-50"
+                                    initial={{ opacity: 0 }}
+                                    animate={{
+                                        opacity: hoveredBookId === livro.id ? 1 : 0
+                                    }}
+                                    className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-90 backdrop-blur-sm rounded-lg p-2 shadow-2xl transition-all duration-300"
+                                    style={{ zIndex: 1000 }}
+                                    onMouseEnter={() => setHoveredBookId(livro.id)}
+                                    onMouseLeave={() => setHoveredBookId(null)}
                                 >
-                                    <h4 className="text-xl font-bold text-amber-900 mb-2">
-                                        {book.title}
-                                    </h4>
-                                    <p className="text-gray-700 mb-2 font-medium">
-                                        {book.author}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                                        {book.description}
-                                    </p>
-                                    <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-300">
-                                        Ver Detalhes
-                                    </button>
+                                    <div className="h-full flex flex-col justify-between">
+                                        <div className="text-left">
+                                            <h4 className="text-xs font-bold text-white mb-1 line-clamp-1">
+                                                {livro.titulo}
+                                            </h4>
+                                            <p className="text-white mb-1 font-medium text-xs opacity-90">
+                                                {livro.nomeAutor || 'Autor não informado'}
+                                            </p>
+                                            <div className="text-xs text-white mb-2 opacity-80">
+                                                <p><strong>Gênero:</strong> {livro.genero}</p>
+                                                <p><strong>Ano:</strong> {livro.ano}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-1">
+                                            <button
+                                                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded font-semibold transition-colors duration-300 text-xs cursor-pointer"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    console.log('Ver detalhes:', livro.titulo);
+                                                }}
+                                            >
+                                                📖 Ver
+                                            </button>
+                                            <button 
+                                                className={`flex-1 px-2 py-1 rounded font-semibold transition-colors duration-300 text-xs cursor-pointer ${
+                                                    isFavorite(livro.id) 
+                                                        ? 'bg-red-600 hover:bg-red-700 text-white' 
+                                                        : 'bg-green-600 hover:bg-green-700 text-white'
+                                                }`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const wasAdded = toggleFavorite(livro.id);
+                                                    console.log(wasAdded ? 'Adicionado aos favoritos:' : 'Removido dos favoritos:', livro.titulo);
+                                                }}
+                                            >
+                                                {isFavorite(livro.id) ? '💖' : '❤️'}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </motion.div>
                             </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
+                        ))
+                    )}
+                </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                    {[
-                        { title: 'Meus Empréstimos', value: '3', icon: '📖', color: 'bg-blue-500' },
-                        { title: 'Livros Favoritos', value: '12', icon: '❤️', color: 'bg-red-500' },
-                        { title: 'Histórico', value: '47', icon: '📚', color: 'bg-green-500' }
-                    ].map((stat, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
-                            className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+                {/* Pagination */}
+                {livrosFiltrados.length > livrosPerPage && (
+                    <div className="flex justify-center items-center mt-8 space-x-2">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-amber-600 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-amber-700 transition-colors duration-300"
                         >
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
-                                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                                </div>
-                                <div className={`w-16 h-16 ${stat.color} rounded-full flex items-center justify-center text-2xl`}>
-                                    {stat.icon}
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                            ← Anterior
+                        </button>
 
-                {/* Logout Button */}
-                <div className="mt-8 text-center">
-                    <button
-                        onClick={handleLogout}
-                        className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300 shadow-lg"
+                        <div className="flex space-x-1">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button
+                                    key={page}
+                                    onClick={() => setCurrentPage(page)}
+                                    className={`px-3 py-2 rounded-lg transition-colors duration-300 ${currentPage === page
+                                        ? 'bg-amber-500 text-white'
+                                        : 'bg-amber-200 text-amber-800 hover:bg-amber-300'
+                                        }`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 bg-amber-600 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-amber-700 transition-colors duration-300"
+                        >
+                            Próxima →
+                        </button>
+                    </div>
+                )}
+
+                {/* Info da Paginação */}
+                {livrosFiltrados.length > 0 && (
+                    <div className="text-center mt-4 text-amber-200 text-sm">
+                        Mostrando {startIndex + 1} a {Math.min(endIndex, livrosFiltrados.length)} de {livrosFiltrados.length} livros
+                    </div>
+                )}
+            </motion.div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {[
+                    { title: 'Empréstimos Ativos', value: stats.emprestimosAtivos.toString(), icon: '📖', color: 'bg-blue-500' },
+                    { title: 'Livros Favoritos', value: stats.livrosFavoritos.toString(), icon: '❤️', color: 'bg-red-500' },
+                    { title: 'Histórico Total', value: stats.historicoTotal.toString(), icon: '📚', color: 'bg-green-500' },
+                    { title: 'Livros Disponíveis', value: stats.livrosDisponiveis.toString(), icon: '📖', color: 'bg-amber-500' }
+                ].map((stat, index) => (
+                    <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
                     >
-                        Fazer Logout
-                    </button>
-                </div>
-            </main>
-        </div>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
+                                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                            </div>
+                            <div className={`w-16 h-16 ${stat.color} rounded-full flex items-center justify-center text-2xl`}>
+                                {stat.icon}
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+        </UsuarioLayout>
     );
 };
 
