@@ -314,6 +314,7 @@ export const API_ROUTES = {
     EDITORAS_POR_CIDADE: '/api/editora/por-cidade',
     EDITORAS_POR_ESTADO: '/api/editora/por-estado',
     EDITORAS_BUSCAR: '/api/editora/buscar',
+    EDITORAS_TOGGLE_STATUS: '/api/editora/{id}/toggle-status',
 
     // Exemplares
     EXEMPLARES: '/api/exemplar',

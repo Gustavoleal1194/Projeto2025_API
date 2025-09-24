@@ -10,7 +10,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     const navigate = useNavigate();
 
     return (
-        <aside className="fixed left-0 top-0 h-full bg-blue-900 text-white shadow-2xl z-50" style={{ width: '17.5rem' }}>
+        <aside className="fixed left-0 top-0 h-full bg-blue-900 text-white shadow-2xl z-50 flex flex-col" style={{ width: '17.5rem' }}>
             {/* Logo Container */}
             <div className="p-8 text-center border-b border-blue-700">
                 <div className="w-20 h-20 bg-blue-200 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-blue-400">
@@ -26,7 +26,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
             </div>
 
             {/* Navigation */}
-            <nav className="p-4">
+            <nav
+                className="p-4 flex-1 overflow-y-auto sidebar-scroll"
+                style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#93c5fd #1e3a8a'
+                }}
+            >
                 {[
                     { id: 'dashboard', label: 'Dashboard Admin', icon: '🏠' },
                     { id: 'users', label: 'Gerenciar Usuários', icon: '👥' },
@@ -34,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                     { id: 'exemplares', label: 'Gerenciar Exemplares', icon: '📚' },
                     { id: 'funcionarios', label: 'Gerenciar Funcionários', icon: '👨‍💼' },
                     { id: 'autores', label: 'Gerenciar Autores', icon: '✍️' },
-                    { id: 'editores', label: 'Gerenciar Editores', icon: '🏢' },
+                    { id: 'editores', label: 'Gerenciar Editoras', icon: '🏢' },
                     { id: 'loans', label: 'Empréstimos', icon: '📖' },
                     { id: 'reports', label: 'Relatórios', icon: '📊' },
                     { id: 'settings', label: 'Configurações', icon: '⚙️' }
@@ -56,6 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                                 navigate('/gerenciar-autores');
                             } else if (item.id === 'editores') {
                                 navigate('/gerenciar-editores');
+                            } else if (item.id === 'loans') {
+                                navigate('/gerenciar-emprestimos');
                             } else {
                                 setActiveTab(item.id);
                             }

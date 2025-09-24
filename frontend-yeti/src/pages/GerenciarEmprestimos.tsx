@@ -1,0 +1,667 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Layout from '../components/Layout/Layout';
+import type { Emprestimo, EmprestimoForm } from '../types/entities';
+import { emprestimoService } from '../services/emprestimoService';
+
+const GerenciarEmprestimos: React.FC = () => {
+    const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [lastUpdate, setLastUpdate] = useState<string>(new Date().toLocaleString('pt-BR'));
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingEmprestimo, setEditingEmprestimo] = useState<Emprestimo | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [tipoFilter, setTipoFilter] = useState('');
+    const [isDevolucaoModalOpen, setIsDevolucaoModalOpen] = useState(false);
+    const [emprestimoIdDevolucao, setEmprestimoIdDevolucao] = useState('');
+
+    // Estados do formulário
+    const [formData, setFormData] = useState<EmprestimoForm>({
+        idUsuario: 0,
+        idExemplar: 0,
+        dataEmprestimo: '',
+        dataPrevistaDevolucao: '',
+        observacoes: ''
+    });
+
+    // Carregar empréstimos
+    const loadEmprestimos = async () => {
+        try {
+            setLoading(true);
+            const data = await emprestimoService.listar();
+            setEmprestimos(data);
+            setLastUpdate(new Date().toLocaleString('pt-BR'));
+        } catch (error) {
+            console.error('Erro ao carregar empréstimos:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadEmprestimos();
+    }, []);
+
+    // Filtrar empréstimos
+    const filteredEmprestimos = emprestimos.filter(emprestimo => {
+        const matchesSearch = emprestimo.nomeUsuario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            emprestimo.tituloLivro?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            emprestimo.status?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = !statusFilter ||
+            (statusFilter === 'Emprestado' && emprestimo.status === 'Emprestado' && !emprestimo.estaAtrasado) ||
+            (statusFilter === 'Devolvido' && emprestimo.status === 'Devolvido') ||
+            (statusFilter === 'Atrasado' && emprestimo.status === 'Emprestado' && emprestimo.estaAtrasado);
+        const matchesTipo = !tipoFilter ||
+            (tipoFilter === 'ativo' && emprestimo.status === 'Emprestado' && !emprestimo.estaAtrasado) ||
+            (tipoFilter === 'devolvido' && emprestimo.status === 'Devolvido') ||
+            (tipoFilter === 'atrasado' && emprestimo.status === 'Emprestado' && emprestimo.estaAtrasado);
+
+        return matchesSearch && matchesStatus && matchesTipo;
+    });
+
+    // Estatísticas
+    const totalEmprestimos = emprestimos.length;
+    const emprestimosAtivos = emprestimos.filter(e => e.status === 'Emprestado' && !e.estaAtrasado).length;
+    const emprestimosDevolvidos = emprestimos.filter(e => e.status === 'Devolvido').length;
+    const emprestimosAtrasados = emprestimos.filter(e => e.status === 'Emprestado' && e.estaAtrasado).length;
+
+    // Modal
+    const openModal = (emprestimo?: Emprestimo) => {
+        if (emprestimo) {
+            setEditingEmprestimo(emprestimo);
+            setFormData({
+                idUsuario: emprestimo.idUsuario,
+                idExemplar: emprestimo.idExemplar,
+                dataEmprestimo: emprestimo.dataEmprestimo.split('T')[0],
+                dataPrevistaDevolucao: emprestimo.dataPrevistaDevolucao.split('T')[0],
+                observacoes: emprestimo.observacoes || ''
+            });
+        } else {
+            setEditingEmprestimo(null);
+            setFormData({
+                idUsuario: 0,
+                idExemplar: 0,
+                dataEmprestimo: '',
+                dataPrevistaDevolucao: '',
+                observacoes: ''
+            });
+        }
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditingEmprestimo(null);
+        setFormData({
+            idUsuario: 0,
+            idExemplar: 0,
+            dataEmprestimo: '',
+            dataPrevistaDevolucao: '',
+            observacoes: ''
+        });
+    };
+
+    // Salvar empréstimo
+    const saveEmprestimo = async () => {
+        try {
+            if (editingEmprestimo) {
+                await emprestimoService.atualizar({ ...formData, id: editingEmprestimo.id } as any);
+            } else {
+                await emprestimoService.criar(formData);
+            }
+            await loadEmprestimos();
+            closeModal();
+        } catch (error) {
+            console.error('Erro ao salvar empréstimo:', error);
+        }
+    };
+
+    // Excluir empréstimo
+    const deleteEmprestimo = async (id: number) => {
+        if (window.confirm('Tem certeza que deseja excluir este empréstimo?')) {
+            try {
+                await emprestimoService.excluir(id);
+                await loadEmprestimos();
+            } catch (error) {
+                console.error('Erro ao excluir empréstimo:', error);
+            }
+        }
+    };
+
+    // Devolver empréstimo
+    const devolverEmprestimo = async (id: number) => {
+        try {
+            await emprestimoService.devolver(id);
+            await loadEmprestimos();
+        } catch (error) {
+            console.error('Erro ao devolver empréstimo:', error);
+        }
+    };
+
+    // Renovar empréstimo
+    const renovarEmprestimo = async (id: number) => {
+        try {
+            await emprestimoService.renovar(id);
+            await loadEmprestimos();
+        } catch (error) {
+            console.error('Erro ao renovar empréstimo:', error);
+        }
+    };
+
+    // Devolver empréstimo por ID
+    const devolverEmprestimoPorId = async () => {
+        if (!emprestimoIdDevolucao || isNaN(parseInt(emprestimoIdDevolucao))) {
+            alert('Por favor, insira um ID de empréstimo válido.');
+            return;
+        }
+
+        try {
+            await emprestimoService.devolverEmprestimoPorId(parseInt(emprestimoIdDevolucao));
+            await loadEmprestimos();
+            setIsDevolucaoModalOpen(false);
+            setEmprestimoIdDevolucao('');
+            alert('Empréstimo devolvido com sucesso!');
+        } catch (error) {
+            console.error('Erro ao devolver empréstimo:', error);
+            alert('Erro ao devolver empréstimo. Verifique se o ID está correto e se o empréstimo está ativo.');
+        }
+    };
+
+    // Copiar ID do empréstimo para área de transferência
+    const copiarIdEmprestimo = (id: number) => {
+        navigator.clipboard.writeText(id.toString()).then(() => {
+            alert(`ID ${id} copiado para a área de transferência!`);
+        }).catch(() => {
+            alert(`ID: ${id}`);
+        });
+    };
+
+    // Copiar número do exemplar para área de transferência
+    const copiarNumeroExemplar = (numero: string) => {
+        navigator.clipboard.writeText(numero).then(() => {
+            alert(`Exemplar ${numero} copiado para a área de transferência!`);
+        }).catch(() => {
+            alert(`Exemplar: ${numero}`);
+        });
+    };
+
+    return (
+        <Layout
+            pageTitle="Gerenciar Empréstimos"
+            pageSubtitle="Administre os empréstimos da biblioteca"
+            loading={loading}
+            onRefresh={loadEmprestimos}
+            lastUpdate={lastUpdate}
+        >
+            <div className="space-y-6">
+                {/* Cards de Estatísticas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-3xl font-bold text-blue-600">{totalEmprestimos}</p>
+                                <p className="text-gray-600 font-medium">Total de Empréstimos</p>
+                            </div>
+                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span className="text-2xl">📖</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-green-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-3xl font-bold text-green-600">{emprestimosAtivos}</p>
+                                <p className="text-gray-600 font-medium">Empréstimos Ativos</p>
+                            </div>
+                            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <span className="text-2xl">✅</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-yellow-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-3xl font-bold text-yellow-600">{emprestimosAtrasados}</p>
+                                <p className="text-gray-600 font-medium">Atrasados</p>
+                            </div>
+                            <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <span className="text-2xl">⚠️</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-purple-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-3xl font-bold text-purple-600">{emprestimosDevolvidos}</p>
+                                <p className="text-gray-600 font-medium">Devolvidos</p>
+                            </div>
+                            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <span className="text-2xl">📚</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filtros e Busca */}
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                        {/* Busca */}
+                        <div className="lg:col-span-2">
+                            <label className="block text-lg font-semibold text-gray-700 mb-3">
+                                🔍 Buscar Empréstimos
+                            </label>
+                            <div className="relative">
+                                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 flex items-center justify-center">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Buscar por usuário, livro ou status..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 text-base transition-all duration-300 bg-blue-50 placeholder-gray-500"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Filtro por Status */}
+                        <div className="flex-1">
+                            <label className="block text-lg font-semibold text-gray-700 mb-3">
+                                ⚡ Filtrar por Status
+                            </label>
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                            >
+                                <option value="">Todos os status</option>
+                                <option value="Emprestado">Emprestado</option>
+                                <option value="Devolvido">Devolvido</option>
+                                <option value="Atrasado">Atrasado</option>
+                            </select>
+                        </div>
+
+                        {/* Filtro por Tipo */}
+                        <div className="flex-1">
+                            <label className="block text-lg font-semibold text-gray-700 mb-3">
+                                📋 Filtrar por Tipo
+                            </label>
+                            <select
+                                value={tipoFilter}
+                                onChange={(e) => setTipoFilter(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                            >
+                                <option value="">Todos os tipos</option>
+                                <option value="ativo">Ativos</option>
+                                <option value="devolvido">Devolvidos</option>
+                                <option value="atrasado">Atrasados</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Botões de Ação */}
+                    <div className="mt-8 flex justify-center gap-4">
+                        <button
+                            onClick={() => openModal()}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-2 border-blue-700 hover:border-blue-800"
+                        >
+                            Criar Novo Empréstimo
+                            <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
+                        </button>
+
+                        <button
+                            onClick={() => setIsDevolucaoModalOpen(true)}
+                            className="!bg-green-700 hover:!bg-green-800 !text-white px-8 py-3 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 !border-2 !border-green-800 hover:!border-green-900"
+                            style={{ backgroundColor: '#15803d', color: 'white', borderColor: '#166534' }}
+                        >
+                            Devolução de Empréstimo
+                            <span className="text-lg bg-white text-green-700 rounded-full w-6 h-6 flex items-center justify-center">📚</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Tabela de Empréstimos */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
+                >
+                    <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
+                        <table className="min-w-full divide-y divide-blue-100">
+                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>🔢</span>
+                                            <span>ID</span>
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>👤</span>
+                                            <span>Usuário</span>
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>📚</span>
+                                            <span>Livro</span>
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>🔢</span>
+                                            <span>Exemplar</span>
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>📅</span>
+                                            <span>Empréstimo</span>
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>⏰</span>
+                                            <span>Devolução</span>
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>⚡</span>
+                                            <span>Status</span>
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <span className="flex items-center gap-2">
+                                            <span>⚙️</span>
+                                            <span>Ações</span>
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-blue-100">
+                                {filteredEmprestimos.map((emprestimo, index) => (
+                                    <motion.tr
+                                        key={emprestimo.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="hover:bg-blue-50 transition-colors duration-200"
+                                    >
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <button
+                                                onClick={() => copiarIdEmprestimo(emprestimo.id)}
+                                                className="text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full inline-block transition-colors duration-200 cursor-pointer border border-blue-200 hover:border-blue-300"
+                                                title="Clique para copiar o ID"
+                                            >
+                                                #{emprestimo.id}
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900">{emprestimo.nomeUsuario || 'N/A'}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900">{emprestimo.tituloLivro || 'N/A'}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <button
+                                                onClick={() => copiarNumeroExemplar(emprestimo.numeroExemplar || 'N/A')}
+                                                className="text-sm font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-1 rounded-full inline-block transition-colors duration-200 cursor-pointer border border-purple-200 hover:border-purple-300"
+                                                title="Clique para copiar o número do exemplar"
+                                            >
+                                                #{emprestimo.numeroExemplar || 'N/A'}
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900">
+                                                {new Date(emprestimo.dataEmprestimo).toLocaleDateString('pt-BR')}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900">
+                                                {new Date(emprestimo.dataPrevistaDevolucao).toLocaleDateString('pt-BR')}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${emprestimo.status === 'Emprestado' && !emprestimo.estaAtrasado ? 'bg-green-100 text-green-800' :
+                                                emprestimo.status === 'Devolvido' ? 'bg-blue-100 text-blue-800' :
+                                                    emprestimo.status === 'Emprestado' && emprestimo.estaAtrasado ? 'bg-red-100 text-red-800' :
+                                                        'bg-gray-100 text-gray-800'
+                                                }`}>
+                                                {emprestimo.status === 'Emprestado' && !emprestimo.estaAtrasado ? '📚 Emprestado' :
+                                                    emprestimo.status === 'Devolvido' ? '✅ Devolvido' :
+                                                        emprestimo.status === 'Emprestado' && emprestimo.estaAtrasado ? '⚠️ Atrasado' :
+                                                            emprestimo.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={() => openModal(emprestimo)}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-blue-700"
+                                                >
+                                                    ✏️ Editar
+                                                </button>
+                                                {emprestimo.status === 'Emprestado' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => devolverEmprestimo(emprestimo.id)}
+                                                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-green-600"
+                                                        >
+                                                            📚 Devolver
+                                                        </button>
+                                                        <button
+                                                            onClick={() => renovarEmprestimo(emprestimo.id)}
+                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-yellow-600"
+                                                        >
+                                                            🔄 Renovar
+                                                        </button>
+                                                    </>
+                                                )}
+                                                <button
+                                                    onClick={() => deleteEmprestimo(emprestimo.id)}
+                                                    className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
+                                                    style={{
+                                                        backgroundColor: '#dc2626',
+                                                        color: 'white',
+                                                        borderColor: '#991b1b'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#b91c1c';
+                                                        e.currentTarget.style.borderColor = '#7f1d1d';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#dc2626';
+                                                        e.currentTarget.style.borderColor = '#991b1b';
+                                                    }}
+                                                >
+                                                    🗑️ Excluir
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </motion.div>
+
+                {/* Modal */}
+                {isModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+                        >
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-gray-900">
+                                    {editingEmprestimo ? 'Editar Empréstimo' : 'Criar Novo Empréstimo'}
+                                </h2>
+                                <button
+                                    onClick={closeModal}
+                                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold bg-red-100 hover:bg-red-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                                >
+                                    ×
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Usuário ID */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">ID do Usuário *</label>
+                                    <input
+                                        type="number"
+                                        value={formData.idUsuario}
+                                        onChange={(e) => setFormData({ ...formData, idUsuario: parseInt(e.target.value) || 0 })}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Exemplar ID */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">ID do Exemplar *</label>
+                                    <input
+                                        type="number"
+                                        value={formData.idExemplar}
+                                        onChange={(e) => setFormData({ ...formData, idExemplar: parseInt(e.target.value) || 0 })}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Data de Empréstimo */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Empréstimo *</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataEmprestimo}
+                                        onChange={(e) => setFormData({ ...formData, dataEmprestimo: e.target.value })}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Data de Devolução Prevista */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Devolução Prevista *</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataPrevistaDevolucao}
+                                        onChange={(e) => setFormData({ ...formData, dataPrevistaDevolucao: e.target.value })}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Observações */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                    <textarea
+                                        value={formData.observacoes}
+                                        onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
+                                        rows={3}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Observações sobre o empréstimo..."
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Botões */}
+                            <div className="flex justify-end gap-4 mt-8">
+                                <button
+                                    onClick={closeModal}
+                                    className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-red-600 hover:border-red-700"
+                                >
+                                    ❌ Cancelar
+                                </button>
+                                <button
+                                    onClick={saveEmprestimo}
+                                    className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-green-600 hover:border-green-700"
+                                >
+                                    {editingEmprestimo ? '💾 Atualizar' : '➕ Criar'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {/* Modal de Devolução de Empréstimo */}
+                {isDevolucaoModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl"
+                        >
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-gray-900">
+                                    📚 Devolução de Empréstimo
+                                </h2>
+                                <button
+                                    onClick={() => {
+                                        setIsDevolucaoModalOpen(false);
+                                        setEmprestimoIdDevolucao('');
+                                    }}
+                                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold bg-red-100 hover:bg-red-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                                >
+                                    ×
+                                </button>
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    ID do Empréstimo *
+                                </label>
+                                <input
+                                    type="number"
+                                    value={emprestimoIdDevolucao}
+                                    onChange={(e) => setEmprestimoIdDevolucao(e.target.value)}
+                                    placeholder="Digite o ID do empréstimo"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    required
+                                />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Digite o ID do empréstimo que deseja devolver
+                                </p>
+                            </div>
+
+                            {/* Botões */}
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    onClick={() => {
+                                        setIsDevolucaoModalOpen(false);
+                                        setEmprestimoIdDevolucao('');
+                                    }}
+                                    className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-red-600 hover:border-red-700"
+                                >
+                                    ❌ Cancelar
+                                </button>
+                                <button
+                                    onClick={devolverEmprestimoPorId}
+                                    className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-green-600 hover:border-green-700"
+                                >
+                                    📚 Devolver
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </div>
+        </Layout>
+    );
+};
+
+export default GerenciarEmprestimos;

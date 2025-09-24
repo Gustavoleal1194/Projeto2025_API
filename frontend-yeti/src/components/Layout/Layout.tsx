@@ -40,6 +40,8 @@ const Layout: React.FC<LayoutProps> = ({
             setActiveTab('autores');
         } else if (path === '/gerenciar-editores') {
             setActiveTab('editores');
+        } else if (path === '/gerenciar-emprestimos') {
+            setActiveTab('loans');
         } else if (path === '/emprestimos') {
             setActiveTab('loans');
         } else if (path === '/relatorios') {
