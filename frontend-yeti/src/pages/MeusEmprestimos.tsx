@@ -395,7 +395,7 @@ const MeusEmprestimos: React.FC = () => {
                                                 <span>Status</span>
                                             </span>
                                         </th>
-                                        <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                                        <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }} colSpan={2}>
                                             <span className="flex items-center gap-2">
                                                 <span>⚙️</span>
                                                 <span>Ações</span>
@@ -483,8 +483,8 @@ const MeusEmprestimos: React.FC = () => {
                                                     {getStatusText(emprestimo)}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <div className="flex items-center gap-2">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" colSpan={2}>
+                                                <div className="flex items-center justify-center gap-2">
                                                     <button
                                                         onClick={() => toggleFavorite(emprestimo.id)}
                                                         className={`p-2 rounded-full transition-colors duration-200 ${isFavorite(emprestimo.id)

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Livro, LivroCreateRequest } from '../constants/entities';
 import livroService from '../services/livroService';
+import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 
 const GerenciarLivros: React.FC = () => {
     // Estados principais
@@ -340,7 +341,7 @@ const GerenciarLivros: React.FC = () => {
                 <div className="flex justify-center">
                     <button
                         onClick={() => openModal()}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 border-2 border-blue-700"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 border border-blue-800"
                     >
                         <span>Criar Novo Livro</span>
                         <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
@@ -456,17 +457,20 @@ const GerenciarLivros: React.FC = () => {
                                         <div className="flex space-x-2">
                                             <button
                                                 onClick={() => openModal(livro)}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-blue-700"
+                                                className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
+                                                style={{ minWidth: '36px' }}
+                                                title="Editar"
                                             >
-                                                ✏️ Editar
+                                                <EditIcon size={16} />
                                             </button>
                                             <button
                                                 onClick={() => deleteLivro(livro.id)}
-                                                className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
+                                                className="text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border"
                                                 style={{
                                                     backgroundColor: '#dc2626',
-                                                    color: 'white',
-                                                    borderColor: '#991b1b'
+                                                    borderColor: '#991b1b',
+                                                    borderWidth: '1px',
+                                                    minWidth: '36px'
                                                 }}
                                                 onMouseEnter={(e) => {
                                                     e.currentTarget.style.backgroundColor = '#b91c1c';
@@ -478,7 +482,7 @@ const GerenciarLivros: React.FC = () => {
                                                 }}
                                                 title="Excluir"
                                             >
-                                                🗑️ Excluir
+                                                <DeleteIcon size={16} className="text-white" />
                                             </button>
                                         </div>
                                     </td>
@@ -503,9 +507,11 @@ const GerenciarLivros: React.FC = () => {
                             </h2>
                             <button
                                 onClick={closeModal}
-                                className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
+                                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                style={{ minWidth: '36px', minHeight: '36px' }}
+                                title="Fechar"
                             >
-                                ✕
+                                <CancelIcon size={16} />
                             </button>
                         </div>
 
@@ -677,15 +683,19 @@ const GerenciarLivros: React.FC = () => {
                         <div className="flex justify-end gap-4 mt-8">
                             <button
                                 onClick={closeModal}
-                                className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-red-500 hover:border-red-600"
+                                className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                style={{ minWidth: '48px', minHeight: '48px' }}
+                                title="Cancelar"
                             >
-                                Cancelar
+                                <CancelIcon size={20} />
                             </button>
                             <button
                                 onClick={saveLivro}
-                                className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-black hover:border-gray-800"
+                                className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                style={{ minWidth: '48px', minHeight: '48px' }}
+                                title={editingLivro ? 'Atualizar' : 'Criar'}
                             >
-                                {editingLivro ? 'Atualizar' : 'Criar'}
+                                {editingLivro ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
                             </button>
                         </div>
                     </motion.div>

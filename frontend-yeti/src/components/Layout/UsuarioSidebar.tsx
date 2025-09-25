@@ -98,7 +98,7 @@ const UsuarioSidebar: React.FC<UsuarioSidebarProps> = ({ activeTab, setActiveTab
                         onClick={() => setActiveTab(item.id)}
                         className={`w-full flex items-center p-4 mb-2 rounded-lg transition-all duration-300 ${activeTab === item.id
                             ? 'bg-amber-200 text-amber-900 border-l-4 border-green-600'
-                            : 'hover:bg-blue-800 hover:border-l-4 hover:border-green-400'
+                            : 'hover:bg-amber-200 hover:text-amber-900 hover:border-l-4 hover:border-green-400'
                             }`}
                     >
                         <span className="text-2xl mr-3">{item.icon}</span>

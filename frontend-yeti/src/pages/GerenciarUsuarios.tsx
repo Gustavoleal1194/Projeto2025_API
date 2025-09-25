@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Usuario, UsuarioDTO } from '../types/entities';
+import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 
 interface GerenciarUsuariosProps { }
 
@@ -413,7 +414,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                     <div className="flex items-end justify-center">
                         <button
                             onClick={() => openModal()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-2 border-blue-700 hover:border-blue-800"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-blue-800"
                         >
                             Criar Novo Usuário
                             <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
@@ -536,26 +537,32 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => openModal(usuario)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-blue-700"
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
+                                                    style={{ minWidth: '36px' }}
+                                                    title="Editar"
                                                 >
-                                                    ✏️ Editar
+                                                    <EditIcon size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => toggleStatus(usuario.id)}
-                                                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 ${usuario.ativo
-                                                        ? 'bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-600'
-                                                        : 'bg-green-500 hover:bg-green-600 text-white border-green-600'
+                                                    className={`p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border ${usuario.ativo
+                                                        ? 'bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-700'
+                                                        : 'bg-green-500 hover:bg-green-600 text-white border-green-700'
                                                         }`}
+                                                    style={{ minWidth: '36px' }}
+                                                    title={usuario.ativo ? 'Desativar' : 'Ativar'}
                                                 >
-                                                    {usuario.ativo ? '⏸️ Desativar' : '▶️ Ativar'}
+                                                    {usuario.ativo ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
                                                 </button>
                                                 <button
                                                     onClick={() => deleteUsuario(usuario.id)}
-                                                    className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
+                                                    className="p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border"
                                                     style={{
                                                         backgroundColor: '#dc2626',
                                                         color: 'white',
-                                                        borderColor: '#991b1b'
+                                                        borderColor: '#991b1b',
+                                                        borderWidth: '1px',
+                                                        minWidth: '36px'
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.currentTarget.style.backgroundColor = '#b91c1c';
@@ -565,8 +572,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                                         e.currentTarget.style.backgroundColor = '#dc2626';
                                                         e.currentTarget.style.borderColor = '#991b1b';
                                                     }}
+                                                    title="Excluir"
                                                 >
-                                                    🗑️ Excluir
+                                                    <DeleteIcon size={16} />
                                                 </button>
                                             </div>
                                         </td>
@@ -594,12 +602,11 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                 </h3>
                                 <button
                                     onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full border-2 border-red-400 hover:border-red-500 transition-all duration-300 transform hover:scale-110 shadow-md hover:shadow-lg"
+                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '36px', minHeight: '36px' }}
                                     title="Fechar"
                                 >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <CancelIcon size={16} />
                                 </button>
                             </div>
 
@@ -699,15 +706,19 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                     <button
                                         type="button"
                                         onClick={closeModal}
-                                        className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-red-500 hover:border-red-600"
+                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title="Cancelar"
                                     >
-                                        Cancelar
+                                        <CancelIcon size={20} />
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-black hover:border-gray-800"
+                                        className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title={editingUsuario ? 'Atualizar' : 'Criar'}
                                     >
-                                        {editingUsuario ? 'Atualizar' : 'Criar'}
+                                        {editingUsuario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
                                     </button>
                                 </div>
                             </form>

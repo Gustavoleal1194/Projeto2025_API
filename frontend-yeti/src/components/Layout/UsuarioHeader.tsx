@@ -1,4 +1,5 @@
 import React from 'react';
+import { LogoutIcon } from '../Icons';
 
 interface UsuarioHeaderProps {
     searchQuery: string;
@@ -37,7 +38,7 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
             <div className="flex items-center gap-4">
                 {/* User Profile */}
                 <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold p-2">
                         {userInitial}
                     </div>
                     <div className="flex flex-col">
@@ -52,12 +53,11 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
                 {/* Logout Button */}
                 <button
                     onClick={onLogout}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg font-semibold transition-colors duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                    style={{ minWidth: '36px' }}
+                    title="Sair"
                 >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Sair
+                    <LogoutIcon size={16} />
                 </button>
             </div>
         </header>

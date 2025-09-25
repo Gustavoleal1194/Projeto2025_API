@@ -4,6 +4,7 @@ import { exemplarService } from '../services/exemplarService';
 import { livroService } from '../services/livroService';
 import type { Exemplar, ExemplarCreateRequest, Livro } from '../constants/entities';
 import Layout from '../components/Layout/Layout';
+import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 
 const GerenciarExemplares: React.FC = () => {
     // Estados principais
@@ -328,7 +329,7 @@ const GerenciarExemplares: React.FC = () => {
                         <div className="flex items-end justify-center">
                             <button
                                 onClick={() => openModal()}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-2 border-blue-700 hover:border-blue-800"
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-blue-800"
                             >
                                 Criar Novo Exemplar
                                 <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
@@ -453,16 +454,20 @@ const GerenciarExemplares: React.FC = () => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => openModal(exemplar)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-blue-700"
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
+                                                    style={{ minWidth: '36px' }}
+                                                    title="Editar"
                                                 >
-                                                    ✏️ Editar
+                                                    <EditIcon size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => deleteExemplar(exemplar.id)}
                                                     style={{
                                                         backgroundColor: '#dc2626',
                                                         color: '#ffffff',
-                                                        borderColor: '#dc2626'
+                                                        borderColor: '#991b1b',
+                                                        borderWidth: '1px',
+                                                        minWidth: '36px'
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.currentTarget.style.backgroundColor = '#b91c1c';
@@ -472,9 +477,10 @@ const GerenciarExemplares: React.FC = () => {
                                                         e.currentTarget.style.backgroundColor = '#dc2626';
                                                         e.currentTarget.style.borderColor = '#dc2626';
                                                     }}
-                                                    className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
+                                                    className="p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border"
+                                                    title="Excluir"
                                                 >
-                                                    🗑️ Excluir
+                                                    <DeleteIcon size={16} />
                                                 </button>
                                             </div>
                                         </td>
@@ -495,9 +501,11 @@ const GerenciarExemplares: React.FC = () => {
                                 </h3>
                                 <button
                                     onClick={closeModal}
-                                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold bg-red-100 hover:bg-red-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '36px', minHeight: '36px' }}
+                                    title="Fechar"
                                 >
-                                    ×
+                                    <CancelIcon size={16} />
                                 </button>
                             </div>
 
@@ -655,15 +663,19 @@ const GerenciarExemplares: React.FC = () => {
                             <div className="flex justify-end gap-4 mt-8">
                                 <button
                                     onClick={closeModal}
-                                    className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-red-500 hover:border-red-600"
+                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title="Cancelar"
                                 >
-                                    Cancelar
+                                    <CancelIcon size={20} />
                                 </button>
                                 <button
                                     onClick={saveExemplar}
-                                    className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-colors duration-200 border-2 border-black hover:border-gray-800"
+                                    className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title={editingExemplar ? 'Atualizar' : 'Criar'}
                                 >
-                                    {editingExemplar ? 'Atualizar' : 'Criar'}
+                                    {editingExemplar ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
                                 </button>
                             </div>
                         </div>

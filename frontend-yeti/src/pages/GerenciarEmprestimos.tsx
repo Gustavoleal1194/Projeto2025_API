@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Emprestimo, EmprestimoForm } from '../types/entities';
 import { emprestimoService } from '../services/emprestimoService';
+import { EditIcon, DeleteIcon, ReturnIcon, RefreshIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 
 const GerenciarEmprestimos: React.FC = () => {
     const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
@@ -310,7 +311,7 @@ const GerenciarEmprestimos: React.FC = () => {
                     <div className="mt-8 flex justify-center gap-4">
                         <button
                             onClick={() => openModal()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-2 border-blue-700 hover:border-blue-800"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-blue-800"
                         >
                             Criar Novo Empréstimo
                             <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
@@ -318,8 +319,8 @@ const GerenciarEmprestimos: React.FC = () => {
 
                         <button
                             onClick={() => setIsDevolucaoModalOpen(true)}
-                            className="!bg-green-700 hover:!bg-green-800 !text-white px-8 py-3 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 !border-2 !border-green-800 hover:!border-green-900"
-                            style={{ backgroundColor: '#15803d', color: 'white', borderColor: '#166534' }}
+                            className="bg-green-700 hover:bg-green-800 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-black"
+                            style={{ backgroundColor: '#15803d', color: 'white', borderColor: '#000000', borderWidth: '1px' }}
                         >
                             Devolução de Empréstimo
                             <span className="text-lg bg-white text-green-700 rounded-full w-6 h-6 flex items-center justify-center">📚</span>
@@ -447,33 +448,40 @@ const GerenciarEmprestimos: React.FC = () => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => openModal(emprestimo)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-blue-700"
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
+                                                    style={{ minWidth: '36px' }}
+                                                    title="Editar"
                                                 >
-                                                    ✏️ Editar
+                                                    <EditIcon size={16} />
                                                 </button>
                                                 {emprestimo.status === 'Emprestado' && (
                                                     <>
                                                         <button
                                                             onClick={() => devolverEmprestimo(emprestimo.id)}
-                                                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-green-600"
+                                                            className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700"
+                                                            style={{ minWidth: '36px' }}
+                                                            title="Devolver"
                                                         >
-                                                            📚 Devolver
+                                                            <ReturnIcon size={16} />
                                                         </button>
                                                         <button
                                                             onClick={() => renovarEmprestimo(emprestimo.id)}
-                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-yellow-600"
+                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-yellow-700"
+                                                            style={{ minWidth: '36px' }}
+                                                            title="Renovar"
                                                         >
-                                                            🔄 Renovar
+                                                            <RefreshIcon size={16} />
                                                         </button>
                                                     </>
                                                 )}
                                                 <button
                                                     onClick={() => deleteEmprestimo(emprestimo.id)}
-                                                    className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
+                                                    className="p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
                                                     style={{
                                                         backgroundColor: '#dc2626',
                                                         color: 'white',
-                                                        borderColor: '#991b1b'
+                                                        borderColor: '#991b1b',
+                                                        minWidth: '36px'
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.currentTarget.style.backgroundColor = '#b91c1c';
@@ -483,8 +491,9 @@ const GerenciarEmprestimos: React.FC = () => {
                                                         e.currentTarget.style.backgroundColor = '#dc2626';
                                                         e.currentTarget.style.borderColor = '#991b1b';
                                                     }}
+                                                    title="Excluir"
                                                 >
-                                                    🗑️ Excluir
+                                                    <DeleteIcon size={16} />
                                                 </button>
                                             </div>
                                         </td>
@@ -510,9 +519,11 @@ const GerenciarEmprestimos: React.FC = () => {
                                 </h2>
                                 <button
                                     onClick={closeModal}
-                                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold bg-red-100 hover:bg-red-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '36px', minHeight: '36px' }}
+                                    title="Fechar"
                                 >
-                                    ×
+                                    <CancelIcon size={16} />
                                 </button>
                             </div>
 
@@ -582,15 +593,19 @@ const GerenciarEmprestimos: React.FC = () => {
                             <div className="flex justify-end gap-4 mt-8">
                                 <button
                                     onClick={closeModal}
-                                    className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-red-600 hover:border-red-700"
+                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title="Cancelar"
                                 >
-                                    ❌ Cancelar
+                                    <CancelIcon size={20} />
                                 </button>
                                 <button
                                     onClick={saveEmprestimo}
-                                    className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-green-600 hover:border-green-700"
+                                    className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title={editingEmprestimo ? 'Atualizar' : 'Criar'}
                                 >
-                                    {editingEmprestimo ? '💾 Atualizar' : '➕ Criar'}
+                                    {editingEmprestimo ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
                                 </button>
                             </div>
                         </motion.div>
@@ -645,15 +660,19 @@ const GerenciarEmprestimos: React.FC = () => {
                                         setIsDevolucaoModalOpen(false);
                                         setEmprestimoIdDevolucao('');
                                     }}
-                                    className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-red-600 hover:border-red-700"
+                                    className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-red-600 hover:border-red-700 flex items-center gap-2"
+                                    style={{ minWidth: '36px' }}
                                 >
-                                    ❌ Cancelar
+                                    <CancelIcon size={16} />
+                                    Cancelar
                                 </button>
                                 <button
                                     onClick={devolverEmprestimoPorId}
-                                    className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-green-600 hover:border-green-700"
+                                    className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-green-600 hover:border-green-700 flex items-center gap-2"
+                                    style={{ minWidth: '36px' }}
                                 >
-                                    📚 Devolver
+                                    <ReturnIcon size={16} />
+                                    Devolver
                                 </button>
                             </div>
                         </motion.div>
