@@ -56,7 +56,7 @@ namespace InfraEstrutura.Repositorio
         public async Task<IEnumerable<Emprestimo>> GetAtivosAsync()
         {
             return await _contexto.Emprestimos
-                .Where(e => e.Ativo && e.DataDevolucao == null)
+                .Where(e => e.Ativo && e.DataDevolucao == null && e.Status == "Emprestado")
                 .Include(e => e.Exemplar)
                 .ThenInclude(ex => ex!.Livro)
                 .ThenInclude(l => l!.Autor)

@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Usuario, UsuarioDTO } from '../types/entities';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { useNotifications } from '../hooks/useNotifications';
 
 interface GerenciarUsuariosProps { }
 
 const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
+    const { showError, handleRequestError, showCrudSuccess } = useNotifications();
 
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [loading, setLoading] = useState(true);
@@ -226,13 +228,33 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || 'Erro ao salvar usuário');
+                const error = new Error(errorText || 'Erro ao salvar usuário');
+                (error as any).status = response.status;
+                (error as any).message = errorText;
+                throw error;
             }
 
             await loadUsuarios();
             closeModal();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess(editingUsuario ? 'update' : 'create', 'usuário');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erro ao salvar usuário');
+            // Usar o sistema de notificações para mostrar erros
+            if (err instanceof Error) {
+                // Se for erro de validação do frontend
+                if (err.message.includes('obrigatório') ||
+                    err.message.includes('inválido') ||
+                    err.message.includes('coincidem') ||
+                    err.message.includes('caracteres')) {
+                    showError('Validação Falhou', err.message);
+                } else {
+                    // Se for erro de requisição
+                    handleRequestError(err, 'Erro ao salvar usuário');
+                }
+            } else {
+                handleRequestError(err, 'Erro ao salvar usuário');
+            }
         }
     };
 
@@ -252,12 +274,26 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao excluir usuário');
+                const errorText = await response.text();
+                console.log('=== ERRO AO EXCLUIR USUÁRIO ===');
+                console.log('Status HTTP:', response.status);
+                console.log('Status Text:', response.statusText);
+                console.log('Mensagem do Backend:', errorText);
+                console.log('ID do Usuário:', id);
+                console.log('================================');
+
+                const error = new Error(errorText || 'Erro ao excluir usuário');
+                (error as any).status = response.status;
+                (error as any).message = errorText;
+                throw error;
             }
 
             await loadUsuarios();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess('delete', 'usuário');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erro ao excluir usuário');
+            handleRequestError(err, 'Erro ao excluir usuário');
         }
     };
 

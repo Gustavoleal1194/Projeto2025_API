@@ -4,8 +4,11 @@ import Layout from '../components/Layout/Layout';
 import type { Livro, LivroCreateRequest } from '../constants/entities';
 import livroService from '../services/livroService';
 import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { useNotifications } from '../hooks/useNotifications';
 
 const GerenciarLivros: React.FC = () => {
+    const { handleRequestError, showCrudSuccess } = useNotifications();
+
     // Estados principais
     const [livros, setLivros] = useState<Livro[]>([]);
     const [loading, setLoading] = useState(true);
@@ -148,8 +151,11 @@ const GerenciarLivros: React.FC = () => {
             }
             await loadLivros();
             closeModal();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess(editingLivro ? 'update' : 'create', 'livro');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erro ao salvar livro');
+            handleRequestError(err, 'Erro ao salvar livro');
         }
     };
 
@@ -159,8 +165,11 @@ const GerenciarLivros: React.FC = () => {
             try {
                 await livroService.excluir(id);
                 await loadLivros();
+
+                // Mostrar notificação de sucesso
+                showCrudSuccess('delete', 'livro');
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Erro ao excluir livro');
+                handleRequestError(err, 'Erro ao excluir livro');
             }
         }
     };

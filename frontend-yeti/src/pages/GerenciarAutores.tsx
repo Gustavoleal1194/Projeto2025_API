@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Autor, AutorForm } from '../types/entities';
 import { autorService } from '../services/autorService';
-import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, SaveIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 
 const GerenciarAutores: React.FC = () => {
     const [autores, setAutores] = useState<Autor[]>([]);

@@ -4,8 +4,11 @@ import Layout from '../components/Layout/Layout';
 import type { Emprestimo, EmprestimoForm } from '../types/entities';
 import { emprestimoService } from '../services/emprestimoService';
 import { EditIcon, DeleteIcon, ReturnIcon, RefreshIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { useNotifications } from '../hooks/useNotifications';
 
 const GerenciarEmprestimos: React.FC = () => {
+    const { showError, handleRequestError, showCrudSuccess } = useNotifications();
+
     const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
     const [loading, setLoading] = useState(true);
     const [lastUpdate, setLastUpdate] = useState<string>(new Date().toLocaleString('pt-BR'));
@@ -114,8 +117,11 @@ const GerenciarEmprestimos: React.FC = () => {
             }
             await loadEmprestimos();
             closeModal();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess(editingEmprestimo ? 'update' : 'create', 'empréstimo');
         } catch (error) {
-            console.error('Erro ao salvar empréstimo:', error);
+            handleRequestError(error, 'Erro ao salvar empréstimo');
         }
     };
 
@@ -125,8 +131,11 @@ const GerenciarEmprestimos: React.FC = () => {
             try {
                 await emprestimoService.excluir(id);
                 await loadEmprestimos();
+
+                // Mostrar notificação de sucesso
+                showCrudSuccess('delete', 'empréstimo');
             } catch (error) {
-                console.error('Erro ao excluir empréstimo:', error);
+                handleRequestError(error, 'Erro ao excluir empréstimo');
             }
         }
     };
@@ -136,8 +145,11 @@ const GerenciarEmprestimos: React.FC = () => {
         try {
             await emprestimoService.devolver(id);
             await loadEmprestimos();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess('update', 'empréstimo');
         } catch (error) {
-            console.error('Erro ao devolver empréstimo:', error);
+            handleRequestError(error, 'Erro ao devolver empréstimo');
         }
     };
 
@@ -146,15 +158,18 @@ const GerenciarEmprestimos: React.FC = () => {
         try {
             await emprestimoService.renovar(id);
             await loadEmprestimos();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess('update', 'empréstimo');
         } catch (error) {
-            console.error('Erro ao renovar empréstimo:', error);
+            handleRequestError(error, 'Erro ao renovar empréstimo');
         }
     };
 
     // Devolver empréstimo por ID
     const devolverEmprestimoPorId = async () => {
         if (!emprestimoIdDevolucao || isNaN(parseInt(emprestimoIdDevolucao))) {
-            alert('Por favor, insira um ID de empréstimo válido.');
+            showError('Validação Falhou', 'Por favor, insira um ID de empréstimo válido.');
             return;
         }
 
@@ -163,10 +178,11 @@ const GerenciarEmprestimos: React.FC = () => {
             await loadEmprestimos();
             setIsDevolucaoModalOpen(false);
             setEmprestimoIdDevolucao('');
-            alert('Empréstimo devolvido com sucesso!');
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess('update', 'empréstimo');
         } catch (error) {
-            console.error('Erro ao devolver empréstimo:', error);
-            alert('Erro ao devolver empréstimo. Verifique se o ID está correto e se o empréstimo está ativo.');
+            handleRequestError(error, 'Erro ao devolver empréstimo');
         }
     };
 

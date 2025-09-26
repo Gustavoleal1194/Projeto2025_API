@@ -4,7 +4,7 @@ import Layout from '../components/Layout/Layout';
 import { funcionarioService } from '../services/funcionarioService';
 import type { Funcionario, FuncionarioForm } from '../types/entities';
 import { CARGO_FUNCIONARIO } from '../constants/entities';
-import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, SaveIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 
 const GerenciarFuncionarios: React.FC = () => {
     const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);

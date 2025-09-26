@@ -47,7 +47,8 @@ namespace Projeto2025_API.Mapping
                 
             CreateMap<EmprestimoDTO, Emprestimo>()
                 .ForMember(dest => dest.Exemplar, opt => opt.Ignore())
-                .ForMember(dest => dest.Usuario, opt => opt.Ignore());
+                .ForMember(dest => dest.Usuario, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Status) ? "Emprestado" : src.Status));
             CreateMap<Autor, AutorDTO>().ReverseMap();
             CreateMap<Funcionario, FuncionarioDTO>().ReverseMap();
         }

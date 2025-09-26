@@ -3,6 +3,7 @@ using Interface.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Projeto2025_API.Controllers
@@ -78,6 +79,35 @@ namespace Projeto2025_API.Controllers
         {
             await service.ToggleStatusAsync(id);
             return NoContent();
+        }
+
+        // Endpoint para obter dados do usuário logado
+        [HttpGet("meus-dados")]
+        public async Task<ActionResult<UsuarioDTO>> GetMeusDados()
+        {
+            // Obter o ID do usuário do token JWT
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                // Fallback para obter do email
+                var emailClaim = User.FindFirst(ClaimTypes.Email);
+                if (emailClaim == null)
+                    return Unauthorized("Token inválido");
+
+                // Buscar usuário por email para obter o ID
+                var usuario = await service.GetByEmailAsync(emailClaim.Value);
+                if (usuario == null)
+                    return Unauthorized("Usuário não encontrado");
+
+                return Ok(usuario);
+            }
+
+            var userId = int.Parse(userIdClaim.Value);
+            var usuarioPorId = await service.GetAsync(userId);
+            if (usuarioPorId == null)
+                return NotFound("Usuário não encontrado");
+
+            return Ok(usuarioPorId);
         }
     }
 }

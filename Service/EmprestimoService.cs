@@ -78,6 +78,14 @@ namespace Service
                 Console.WriteLine($"Usuário com ID {emprestimoDTO.IdUsuario} não encontrado");
                 throw new InvalidOperationException($"Usuário com ID {emprestimoDTO.IdUsuario} não encontrado");
             }
+
+            // Verificar se o usuário está ativo
+            if (!usuario.Ativo)
+            {
+                Console.WriteLine($"Usuário {emprestimoDTO.IdUsuario} está inativo");
+                throw new InvalidOperationException("Usuário inativo não pode receber empréstimos");
+            }
+
             Console.WriteLine($"Usuário {emprestimoDTO.IdUsuario} validado com sucesso");
 
             // Criar o empréstimo primeiro

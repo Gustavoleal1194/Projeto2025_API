@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Editora, EditoraForm } from '../types/entities';
 import { editoraService } from '../services/editoraService';
-import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, SaveIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 
 const GerenciarEditoras: React.FC = () => {
     const [editoras, setEditoras] = useState<Editora[]>([]);
