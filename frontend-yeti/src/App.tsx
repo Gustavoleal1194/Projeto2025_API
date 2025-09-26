@@ -4,7 +4,6 @@ import { NotificationProvider, useNotification } from './contexts/NotificationCo
 import NotificationModal from './components/NotificationModal';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
-import { RegisterPage } from './pages/auth/RegisterPage';
 import Dashboard from './pages/Dashboard';
 import UsuarioDashboard from './pages/UsuarioDashboard';
 import ExplorarLivros from './pages/ExplorarLivros';
@@ -28,9 +27,8 @@ const AppContent: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* Rotas públicas */}
+        {/* Rota pública - Login */}
         <Route path="/" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
 
         {/* Rotas protegidas para ADMIN */}
         <Route path="/dashboard" element={

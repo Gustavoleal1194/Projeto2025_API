@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
-import { RegisterPage } from '../pages/auth/RegisterPage';
 import { useAuth } from '../hooks';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -48,14 +47,6 @@ export const AppRouter: React.FC = () => {
                     element={
                         <PublicRoute>
                             <LoginPage />
-                        </PublicRoute>
-                    }
-                />
-                <Route
-                    path="/register"
-                    element={
-                        <PublicRoute>
-                            <RegisterPage />
                         </PublicRoute>
                     }
                 />
