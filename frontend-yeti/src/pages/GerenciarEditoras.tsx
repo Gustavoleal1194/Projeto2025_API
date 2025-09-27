@@ -4,8 +4,11 @@ import Layout from '../components/Layout/Layout';
 import type { Editora, EditoraForm } from '../types/entities';
 import { editoraService } from '../services/editoraService';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { useNotifications } from '../hooks/useNotifications';
 
 const GerenciarEditoras: React.FC = () => {
+    const { handleRequestError, showCrudSuccess } = useNotifications();
+
     const [editoras, setEditoras] = useState<Editora[]>([]);
     const [loading, setLoading] = useState(true);
     const [lastUpdate, setLastUpdate] = useState<string>(new Date().toLocaleString('pt-BR'));
@@ -136,8 +139,11 @@ const GerenciarEditoras: React.FC = () => {
             }
             await loadEditoras();
             closeModal();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess(editingEditora ? 'update' : 'create', 'editora');
         } catch (error) {
-            console.error('Erro ao salvar editora:', error);
+            handleRequestError(error, 'Erro ao salvar editora');
         }
     };
 
@@ -147,8 +153,11 @@ const GerenciarEditoras: React.FC = () => {
             try {
                 await editoraService.excluir(id);
                 await loadEditoras();
+
+                // Mostrar notificação de sucesso
+                showCrudSuccess('delete', 'editora');
             } catch (error) {
-                console.error('Erro ao excluir editora:', error);
+                handleRequestError(error, 'Erro ao excluir editora');
             }
         }
     };
@@ -158,8 +167,11 @@ const GerenciarEditoras: React.FC = () => {
         try {
             await editoraService.toggleStatus(id);
             await loadEditoras();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess('update', 'editora');
         } catch (error) {
-            console.error('Erro ao alterar status da editora:', error);
+            handleRequestError(error, 'Erro ao alterar status da editora');
         }
     };
 

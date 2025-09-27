@@ -64,18 +64,13 @@ class EditoraService {
     // Criar nova editora
     async criar(editora: EditoraForm): Promise<Editora> {
         try {
-            console.log('Enviando dados para criar editora:', editora);
-            console.log('URL:', `${API_CONFIG.BASE_URL}${EDITORA_ENDPOINTS.CRIAR}`);
-            console.log('Headers:', this.getAuthHeaders());
-            
+
             const response = await fetch(`${API_CONFIG.BASE_URL}${EDITORA_ENDPOINTS.CRIAR}`, {
                 method: 'POST',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(editora)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -84,7 +79,6 @@ class EditoraService {
             }
 
             const result = await response.json();
-            console.log('Editora criada com sucesso:', result);
             return result;
         } catch (error) {
             console.error('Erro ao criar editora:', error);

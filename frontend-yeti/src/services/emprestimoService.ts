@@ -66,27 +66,18 @@ class EmprestimoService {
     // Criar novo empréstimo
     async criar(emprestimo: EmprestimoForm): Promise<Emprestimo> {
         try {
-            console.log('Enviando dados para criar empréstimo:', emprestimo);
-            console.log('URL:', `${API_CONFIG.BASE_URL}${EMPRESTIMO_ENDPOINTS.CRIAR}`);
-            console.log('Headers:', this.getAuthHeaders());
-
             const response = await fetch(`${API_CONFIG.BASE_URL}${EMPRESTIMO_ENDPOINTS.CRIAR}`, {
                 method: 'POST',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(emprestimo)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('Erro response:', errorText);
                 throw new Error(`Erro ao criar empréstimo: ${errorText}`);
             }
 
             const result = await response.json();
-            console.log('Empréstimo criado com sucesso:', result);
             return result;
         } catch (error) {
             console.error('Erro ao criar empréstimo:', error);

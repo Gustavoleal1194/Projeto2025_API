@@ -67,9 +67,6 @@ class FuncionarioService {
     // Criar novo funcionário
     async criar(funcionario: FuncionarioForm): Promise<Funcionario> {
         try {
-            console.log('Enviando dados para criar funcionário:', funcionario);
-            console.log('URL:', `${API_CONFIG.BASE_URL}${FUNCIONARIO_ENDPOINTS.CRIAR}`);
-            console.log('Headers:', this.getAuthHeaders());
 
             const response = await fetch(`${API_CONFIG.BASE_URL}${FUNCIONARIO_ENDPOINTS.CRIAR}`, {
                 method: 'POST',
@@ -77,8 +74,6 @@ class FuncionarioService {
                 body: JSON.stringify(funcionario)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -87,7 +82,6 @@ class FuncionarioService {
             }
 
             const result = await response.json();
-            console.log('Funcionário criado com sucesso:', result);
             return result;
         } catch (error) {
             console.error('Erro ao criar funcionário:', error);

@@ -220,12 +220,13 @@ export interface DashboardData {
 }
 
 export interface Activity {
-    id: number;
+    id: number | string; // Aceita tanto number quanto string para IDs únicos
     user: string;
     action: string;
     time: string;
     type: 'loan' | 'return' | 'renewal' | 'overdue';
     status: 'success' | 'warning' | 'error' | 'info';
+    realDate?: Date; // Data real para ordenação
 }
 
 export interface OverdueBook {

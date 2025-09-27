@@ -45,19 +45,14 @@ export class DashboardService {
      */
     static async getResumoGeral(): Promise<DashboardData> {
         try {
-            console.log('🔍 Buscando resumo geral...');
-            console.log('URL:', `${API_BASE_URL}${API_ROUTES.DASHBOARD_RESUMO}`);
 
             const response = await fetch(`${API_BASE_URL}${API_ROUTES.DASHBOARD_RESUMO}`, {
                 method: 'GET',
                 headers: this.getAuthHeaders()
             });
 
-            console.log('📡 Resposta recebida:', response.status, response.statusText);
 
             const data = await this.handleResponse<any>(response);
-            console.log('📊 Dados brutos da API:', data);
-            console.log('📊 Propriedades disponíveis:', Object.keys(data));
 
             // Mapear dados da API para o formato esperado (camelCase -> camelCase)
             const mappedData = {
@@ -71,7 +66,6 @@ export class DashboardService {
                 livrosDisponiveis: 0 // Não disponível na API atual
             };
 
-            console.log('✅ Dados mapeados:', mappedData);
             return mappedData;
         } catch (error) {
             console.error('❌ Erro ao buscar resumo geral:', error);
@@ -135,52 +129,100 @@ export class DashboardService {
      */
     static async getAtividadesRecentes(): Promise<Activity[]> {
         try {
-            // Buscar empréstimos ativos e devolvidos
-            const [emprestimosAtivos, emprestimosDevolvidos] = await Promise.all([
-                fetch(`${API_BASE_URL}/api/emprestimo/ativos`, {
-                    method: 'GET',
-                    headers: this.getAuthHeaders()
-                }).then(response => this.handleResponse<any[]>(response)),
-                fetch(`${API_BASE_URL}/api/emprestimo/devolvidos`, {
-                    method: 'GET',
-                    headers: this.getAuthHeaders()
-                }).then(response => this.handleResponse<any[]>(response))
-            ]);
+
+            // Buscar empréstimos emprestados e devolvidos
+            const emprestimosEmprestados = await fetch(`${API_BASE_URL}/api/emprestimo/emprestados`, {
+                method: 'GET',
+                headers: this.getAuthHeaders()
+            }).then(response => {
+                return this.handleResponse<any[]>(response);
+            });
+
+            const emprestimosDevolvidos = await fetch(`${API_BASE_URL}/api/emprestimo/devolvidos`, {
+                method: 'GET',
+                headers: this.getAuthHeaders()
+            }).then(response => {
+                return this.handleResponse<any[]>(response);
+            });
+
+
 
             const atividades: Activity[] = [];
 
-            // Adicionar empréstimos ativos
-            emprestimosAtivos.slice(0, 5).forEach((emprestimo, index) => {
+            // Adicionar TODOS os empréstimos emprestados (sem limitação)
+            emprestimosEmprestados.forEach((emprestimo) => {
+                // Parse da data para empréstimos
+                const dataString = emprestimo.dataEmprestimo || emprestimo.DataEmprestimo;
+                let dataEmprestimo: Date;
+                if (dataString.includes('T') && !dataString.includes('Z') && !dataString.includes('+')) {
+                    // Data sem timezone - aplicar correção
+                    dataEmprestimo = new Date(dataString + 'Z');
+                } else {
+                    dataEmprestimo = new Date(dataString);
+                }
+
                 atividades.push({
-                    id: index + 1,
-                    user: emprestimo.nomeUsuario || 'Usuário',
-                    action: `Emprestou "${emprestimo.tituloLivro || 'Livro'}"`,
-                    time: this.calcularTempoRelativo(emprestimo.dataEmprestimo),
+                    id: `loan_${emprestimo.id}_${Date.now()}`, // ID único baseado no ID do empréstimo
+                    user: emprestimo.nomeUsuario || emprestimo.NomeUsuario || 'Usuário',
+                    action: `Emprestou "${emprestimo.tituloLivro || emprestimo.TituloLivro || 'Livro'}"`,
+                    time: this.calcularTempoRelativo(dataString),
                     type: 'loan',
-                    status: 'success'
+                    status: 'success',
+                    realDate: dataEmprestimo // Adicionar data real para ordenação
                 });
             });
 
-            // Adicionar devoluções recentes
-            emprestimosDevolvidos.slice(0, 5).forEach((emprestimo, index) => {
+            // Adicionar TODAS as devoluções recentes (sem limitação)
+            emprestimosDevolvidos.forEach((emprestimo) => {
+                // Parse da data para devoluções - FORÇAR correção de timezone
+                const dataString = emprestimo.dataDevolucao || emprestimo.DataDevolucao;
+
+                // FORÇAR correção de timezone para TODAS as devoluções
+                let dataDevolucao: Date;
+                if (dataString.includes('T')) {
+                    // Se tem T, aplicar correção de timezone
+                    if (!dataString.includes('Z') && !dataString.includes('+')) {
+                        dataDevolucao = new Date(dataString + 'Z');
+                    } else {
+                        // Se já tem timezone, remover e aplicar correção
+                        const dataSemTimezone = dataString.replace(/[Z+].*$/, '');
+                        dataDevolucao = new Date(dataSemTimezone + 'Z');
+                    }
+                } else {
+                    dataDevolucao = new Date(dataString);
+                }
+
                 atividades.push({
-                    id: atividades.length + index + 1,
-                    user: emprestimo.nomeUsuario || 'Usuário',
-                    action: `Devolveu "${emprestimo.tituloLivro || 'Livro'}"`,
-                    time: this.calcularTempoRelativo(emprestimo.dataDevolucao),
+                    id: `return_${emprestimo.id}_${Date.now()}`, // ID único baseado no ID do empréstimo
+                    user: emprestimo.nomeUsuario || emprestimo.NomeUsuario || 'Usuário',
+                    action: `Devolveu "${emprestimo.tituloLivro || emprestimo.TituloLivro || 'Livro'}"`,
+                    time: this.calcularTempoRelativo(dataString),
                     type: 'return',
-                    status: 'success'
+                    status: 'success',
+                    realDate: dataDevolucao // Adicionar data real para ordenação
                 });
             });
 
-            // Ordenar por tempo (mais recente primeiro) e pegar apenas os 10 primeiros
-            return atividades
+
+            // Remover duplicatas baseadas no ID do empréstimo
+            const atividadesUnicas = atividades.filter((atividade, index, self) => {
+                const emprestimoId = (atividade.id as string).split('_')[1]; // Extrair ID do empréstimo
+                return self.findIndex(a => (a.id as string).split('_')[1] === emprestimoId) === index;
+            });
+
+
+            // Ordenar por data real (mais recente primeiro) e pegar apenas os 10 primeiros
+            const atividadesOrdenadas = atividadesUnicas
                 .sort((a, b) => {
-                    const timeA = this.parseTimeToDate(a.time);
-                    const timeB = this.parseTimeToDate(b.time);
-                    return timeB.getTime() - timeA.getTime();
+                    // Usar a data real armazenada na atividade
+                    const dateA = (a as any).realDate || new Date();
+                    const dateB = (b as any).realDate || new Date();
+                    return dateB.getTime() - dateA.getTime();
                 })
                 .slice(0, 10);
+
+
+            return atividadesOrdenadas;
         } catch (error) {
             console.error('Erro ao buscar atividades recentes:', error);
             return [];
@@ -315,7 +357,6 @@ export class DashboardService {
         alertas: SystemAlert[];
     }> {
         try {
-            console.log('🔄 getAllDashboardData: Iniciando busca de todos os dados...');
 
             const [
                 resumo,
@@ -342,7 +383,6 @@ export class DashboardService {
                 alertas
             };
 
-            console.log('✅ getAllDashboardData: Todos os dados carregados:', result);
             return result;
         } catch (error) {
             console.error('❌ getAllDashboardData: Erro ao buscar dados do dashboard:', error);
@@ -355,11 +395,32 @@ export class DashboardService {
      */
     private static calcularTempoRelativo(data: string): string {
         const agora = new Date();
-        const dataEmprestimo = new Date(data);
+
+        // Parse inteligente da data - FORÇAR correção de timezone
+        let dataEmprestimo: Date;
+        if (data.includes('T')) {
+            // Se tem T, aplicar correção de timezone
+            if (!data.includes('Z') && !data.includes('+')) {
+                dataEmprestimo = new Date(data + 'Z');
+            } else {
+                // Se já tem timezone, remover e aplicar correção
+                const dataSemTimezone = data.replace(/[Z+].*$/, '');
+                dataEmprestimo = new Date(dataSemTimezone + 'Z');
+            }
+        } else {
+            dataEmprestimo = new Date(data);
+        }
+
         const diffMs = agora.getTime() - dataEmprestimo.getTime();
         const diffMinutos = Math.floor(diffMs / (1000 * 60));
         const diffHoras = Math.floor(diffMinutos / 60);
         const diffDias = Math.floor(diffHoras / 24);
+
+
+        // Se a data for futura, mostrar como "agora"
+        if (diffMs < 0) {
+            return 'agora';
+        }
 
         if (diffMinutos < 60) {
             return `${diffMinutos} min atrás`;
@@ -370,29 +431,7 @@ export class DashboardService {
         }
     }
 
-    /**
-     * Converte string de tempo relativo para Date para ordenação
-     */
-    private static parseTimeToDate(timeString: string): Date {
-        const agora = new Date();
-        const match = timeString.match(/(\d+)\s*(min|hora|dia)/);
 
-        if (!match) return agora;
-
-        const valor = parseInt(match[1]);
-        const unidade = match[2];
-
-        switch (unidade) {
-            case 'min':
-                return new Date(agora.getTime() - (valor * 60 * 1000));
-            case 'hora':
-                return new Date(agora.getTime() - (valor * 60 * 60 * 1000));
-            case 'dia':
-                return new Date(agora.getTime() - (valor * 24 * 60 * 60 * 1000));
-            default:
-                return agora;
-        }
-    }
 }
 
 export default DashboardService;

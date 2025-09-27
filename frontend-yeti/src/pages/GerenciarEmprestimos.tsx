@@ -84,11 +84,15 @@ const GerenciarEmprestimos: React.FC = () => {
             });
         } else {
             setEditingEmprestimo(null);
+            const hoje = new Date();
+            const dataPrevista = new Date();
+            dataPrevista.setDate(hoje.getDate() + 14); // 14 dias a partir de hoje
+
             setFormData({
                 idUsuario: 0,
                 idExemplar: 0,
-                dataEmprestimo: '',
-                dataPrevistaDevolucao: '',
+                dataEmprestimo: hoje.toISOString().split('T')[0], // Data atual
+                dataPrevistaDevolucao: dataPrevista.toISOString().split('T')[0], // 14 dias a partir de hoje
                 observacoes: ''
             });
         }
@@ -98,11 +102,15 @@ const GerenciarEmprestimos: React.FC = () => {
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingEmprestimo(null);
+        const hoje = new Date();
+        const dataPrevista = new Date();
+        dataPrevista.setDate(hoje.getDate() + 14); // 14 dias a partir de hoje
+
         setFormData({
             idUsuario: 0,
             idExemplar: 0,
-            dataEmprestimo: '',
-            dataPrevistaDevolucao: '',
+            dataEmprestimo: hoje.toISOString().split('T')[0], // Data atual
+            dataPrevistaDevolucao: dataPrevista.toISOString().split('T')[0], // 14 dias a partir de hoje
             observacoes: ''
         });
     };
@@ -110,10 +118,38 @@ const GerenciarEmprestimos: React.FC = () => {
     // Salvar empréstimo
     const saveEmprestimo = async () => {
         try {
-            if (editingEmprestimo) {
-                await emprestimoService.atualizar({ ...formData, id: editingEmprestimo.id } as any);
+            // Preparar dados para envio
+            const dadosParaEnvio = { ...formData };
+
+            // Se for um novo empréstimo, usar a data/hora atual
+            if (!editingEmprestimo) {
+                const agora = new Date();
+                dadosParaEnvio.dataEmprestimo = agora.toISOString();
+
+                // Se a data prevista não foi definida, usar 14 dias a partir de agora
+                if (!dadosParaEnvio.dataPrevistaDevolucao) {
+                    const dataPrevista = new Date();
+                    dataPrevista.setDate(agora.getDate() + 14);
+                    dadosParaEnvio.dataPrevistaDevolucao = dataPrevista.toISOString();
+                } else {
+                    // Converter a data do formulário para ISO string com hora
+                    const dataPrevista = new Date(dadosParaEnvio.dataPrevistaDevolucao + 'T23:59:59');
+                    dadosParaEnvio.dataPrevistaDevolucao = dataPrevista.toISOString();
+                }
             } else {
-                await emprestimoService.criar(formData);
+                // Para edição, manter as datas como estão, mas garantir que sejam ISO strings
+                if (dadosParaEnvio.dataEmprestimo && !dadosParaEnvio.dataEmprestimo.includes('T')) {
+                    dadosParaEnvio.dataEmprestimo = new Date(dadosParaEnvio.dataEmprestimo + 'T00:00:00').toISOString();
+                }
+                if (dadosParaEnvio.dataPrevistaDevolucao && !dadosParaEnvio.dataPrevistaDevolucao.includes('T')) {
+                    dadosParaEnvio.dataPrevistaDevolucao = new Date(dadosParaEnvio.dataPrevistaDevolucao + 'T23:59:59').toISOString();
+                }
+            }
+
+            if (editingEmprestimo) {
+                await emprestimoService.atualizar({ ...dadosParaEnvio, id: editingEmprestimo.id } as any);
+            } else {
+                await emprestimoService.criar(dadosParaEnvio);
             }
             await loadEmprestimos();
             closeModal();

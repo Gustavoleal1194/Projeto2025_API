@@ -275,12 +275,6 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.log('=== ERRO AO EXCLUIR USUÁRIO ===');
-                console.log('Status HTTP:', response.status);
-                console.log('Status Text:', response.statusText);
-                console.log('Mensagem do Backend:', errorText);
-                console.log('ID do Usuário:', id);
-                console.log('================================');
 
                 const error = new Error(errorText || 'Erro ao excluir usuário');
                 (error as any).status = response.status;

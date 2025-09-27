@@ -4,8 +4,11 @@ import Layout from '../components/Layout/Layout';
 import type { Autor, AutorForm } from '../types/entities';
 import { autorService } from '../services/autorService';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { useNotifications } from '../hooks/useNotifications';
 
 const GerenciarAutores: React.FC = () => {
+    const { handleRequestError, showCrudSuccess } = useNotifications();
+
     const [autores, setAutores] = useState<Autor[]>([]);
     const [loading, setLoading] = useState(true);
     const [lastUpdate, setLastUpdate] = useState<string>(new Date().toLocaleString('pt-BR'));
@@ -148,8 +151,11 @@ const GerenciarAutores: React.FC = () => {
             }
             await loadAutores();
             closeModal();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess(editingAutor ? 'update' : 'create', 'autor');
         } catch (error) {
-            console.error('Erro ao salvar autor:', error);
+            handleRequestError(error, 'Erro ao salvar autor');
         }
     };
 
@@ -159,8 +165,11 @@ const GerenciarAutores: React.FC = () => {
             try {
                 await autorService.excluir(id);
                 await loadAutores();
+
+                // Mostrar notificação de sucesso
+                showCrudSuccess('delete', 'autor');
             } catch (error) {
-                console.error('Erro ao excluir autor:', error);
+                handleRequestError(error, 'Erro ao excluir autor');
             }
         }
     };
@@ -170,8 +179,11 @@ const GerenciarAutores: React.FC = () => {
         try {
             await autorService.toggleStatus(id);
             await loadAutores();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess('update', 'autor');
         } catch (error) {
-            console.error('Erro ao alterar status do autor:', error);
+            handleRequestError(error, 'Erro ao alterar status do autor');
         }
     };
 

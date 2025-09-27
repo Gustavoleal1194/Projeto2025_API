@@ -168,7 +168,7 @@ namespace Service
 
             // Marcar como devolvido
             emprestimo.Status = "Devolvido";
-            emprestimo.DataDevolucao = DateTime.Now;
+            emprestimo.DataDevolucao = DateTime.UtcNow; // Usar UTC para evitar problemas de timezone
             await _emprestimoRepositorio.UpdateAsync(emprestimo);
 
             // Marcar exemplar como disponível
@@ -184,8 +184,8 @@ namespace Service
 
             // Renovar empréstimo
             emprestimo.QuantidadeRenovacoes++;
-            emprestimo.DataRenovacao = DateTime.Now;
-            emprestimo.DataPrevistaDevolucao = DateTime.Now.AddDays(14); // 14 dias adicionais
+            emprestimo.DataRenovacao = DateTime.UtcNow; // Usar UTC para evitar problemas de timezone
+            emprestimo.DataPrevistaDevolucao = DateTime.UtcNow.AddDays(14); // 14 dias adicionais
             await _emprestimoRepositorio.UpdateAsync(emprestimo);
 
             return true;

@@ -63,9 +63,6 @@ class AutorService {
     // Criar novo autor
     async criar(autor: AutorForm): Promise<Autor> {
         try {
-            console.log('Enviando dados para criar autor:', autor);
-            console.log('URL:', `${API_CONFIG.BASE_URL}${AUTOR_ENDPOINTS.CRIAR}`);
-            console.log('Headers:', this.getAuthHeaders());
 
             const response = await fetch(`${API_CONFIG.BASE_URL}${AUTOR_ENDPOINTS.CRIAR}`, {
                 method: 'POST',
@@ -73,8 +70,6 @@ class AutorService {
                 body: JSON.stringify(autor)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -83,7 +78,6 @@ class AutorService {
             }
 
             const result = await response.json();
-            console.log('Autor criado com sucesso:', result);
             return result;
         } catch (error) {
             console.error('Erro ao criar autor:', error);

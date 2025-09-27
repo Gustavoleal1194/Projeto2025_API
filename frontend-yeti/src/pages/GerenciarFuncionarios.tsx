@@ -5,8 +5,11 @@ import { funcionarioService } from '../services/funcionarioService';
 import type { Funcionario, FuncionarioForm } from '../types/entities';
 import { CARGO_FUNCIONARIO } from '../constants/entities';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { useNotifications } from '../hooks/useNotifications';
 
 const GerenciarFuncionarios: React.FC = () => {
+    const { handleRequestError, showCrudSuccess } = useNotifications();
+
     const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
     const [filteredFuncionarios, setFilteredFuncionarios] = useState<Funcionario[]>([]);
     const [loading, setLoading] = useState(true);
@@ -130,7 +133,6 @@ const GerenciarFuncionarios: React.FC = () => {
     // Salvar funcionário
     const saveFuncionario = async () => {
         try {
-            console.log('Dados do formulário:', formData);
 
             // Preparar dados para envio no formato PascalCase que o backend espera
             const dadosParaEnvio = {
@@ -146,7 +148,6 @@ const GerenciarFuncionarios: React.FC = () => {
                 Ativo: formData.ativo
             } as any; // Usar any para contornar o problema de tipos
 
-            console.log('Dados preparados para envio:', dadosParaEnvio);
 
             if (editingFuncionario) {
                 console.log('Atualizando funcionário:', editingFuncionario.id);
@@ -157,9 +158,11 @@ const GerenciarFuncionarios: React.FC = () => {
             }
             await loadFuncionarios();
             closeModal();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess(editingFuncionario ? 'update' : 'create', 'funcionário');
         } catch (err) {
-            console.error('Erro ao salvar funcionário:', err);
-            alert(`Erro ao salvar funcionário: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
+            handleRequestError(err, 'Erro ao salvar funcionário');
         }
     };
 
@@ -169,9 +172,11 @@ const GerenciarFuncionarios: React.FC = () => {
             try {
                 await funcionarioService.excluir(id);
                 await loadFuncionarios();
+
+                // Mostrar notificação de sucesso
+                showCrudSuccess('delete', 'funcionário');
             } catch (err) {
-                console.error('Erro ao excluir funcionário:', err);
-                alert('Erro ao excluir funcionário');
+                handleRequestError(err, 'Erro ao excluir funcionário');
             }
         }
     };
@@ -181,9 +186,11 @@ const GerenciarFuncionarios: React.FC = () => {
         try {
             await funcionarioService.toggleStatus(id);
             await loadFuncionarios();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess('update', 'funcionário');
         } catch (err) {
-            console.error('Erro ao alterar status:', err);
-            alert('Erro ao alterar status do funcionário');
+            handleRequestError(err, 'Erro ao alterar status do funcionário');
         }
     };
 

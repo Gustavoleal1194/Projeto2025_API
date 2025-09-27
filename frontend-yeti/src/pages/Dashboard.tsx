@@ -44,7 +44,6 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         const handleStorageChange = (e: StorageEvent) => {
             if (e.key === 'yeti_token' && e.newValue) {
-                console.log('🔄 Token detectado, recarregando dados do dashboard...');
                 loadDashboardData();
             }
         };
@@ -55,17 +54,13 @@ const Dashboard: React.FC = () => {
 
     const loadDashboardData = async () => {
         try {
-            console.log('🚀 Iniciando carregamento dos dados do dashboard...');
             setIsLoading(true);
             setError(null);
 
             // Carregar todos os dados do dashboard usando o serviço
-            console.log('📡 Chamando DashboardService.getAllDashboardData()...');
             const data = await DashboardService.getAllDashboardData();
-            console.log('📊 Dados recebidos do serviço:', data);
 
             // Atualizar estados com dados reais
-            console.log('🔄 Atualizando estados...');
             setDashboardData(data.resumo);
             setRecentActivities(data.atividades);
             setOverdueBooks(data.livrosAtrasados);
@@ -73,17 +68,14 @@ const Dashboard: React.FC = () => {
             setMonthlyStats(data.estatisticasMensais);
             setSystemAlerts(data.alertas);
 
-            console.log('✅ Estados atualizados com sucesso!');
 
         } catch (error) {
             console.error('❌ Erro ao carregar dados do dashboard:', error);
             setError('Erro ao carregar dados do dashboard. Verifique sua conexão com a API.');
 
             // Em caso de erro, manter dados padrão (já inicializados com 0/vazio)
-            console.log('⚠️ Usando dados padrão devido ao erro na API');
         } finally {
             setIsLoading(false);
-            console.log('🏁 Carregamento finalizado');
         }
     };
 

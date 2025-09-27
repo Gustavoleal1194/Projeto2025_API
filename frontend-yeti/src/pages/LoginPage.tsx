@@ -414,7 +414,6 @@ const LoginPage: React.FC = () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Login realizado:', data);
 
                 localStorage.setItem('yeti_token', data.token);
                 localStorage.setItem('yeti_user', JSON.stringify({

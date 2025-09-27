@@ -56,7 +56,7 @@ namespace InfraEstrutura.Repositorio
         public async Task<IEnumerable<Emprestimo>> GetAtivosAsync()
         {
             return await _contexto.Emprestimos
-                .Where(e => e.Ativo && e.DataDevolucao == null && e.Status == "Emprestado")
+                .Where(e => e.DataDevolucao == null && e.Status == "Emprestado")
                 .Include(e => e.Exemplar)
                 .ThenInclude(ex => ex!.Livro)
                 .ThenInclude(l => l!.Autor)
@@ -82,7 +82,14 @@ namespace InfraEstrutura.Repositorio
         public async Task<IEnumerable<Emprestimo>> GetByStatusAsync(string status)
         {
             return await _contexto.Emprestimos
-                .Where(e => e.Ativo && e.Status.ToLower() == status.ToLower())
+                .Where(e => e.Status.ToLower() == status.ToLower())
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Autor)
+                .Include(e => e.Exemplar)
+                .ThenInclude(ex => ex!.Livro)
+                .ThenInclude(l => l!.Editora)
+                .Include(e => e.Usuario)
                 .OrderByDescending(e => e.DataEmprestimo)
                 .ToListAsync();
         }
@@ -90,7 +97,7 @@ namespace InfraEstrutura.Repositorio
         public async Task<IEnumerable<Emprestimo>> GetDevolvidosAsync()
         {
             return await _contexto.Emprestimos
-                .Where(e => e.Ativo && e.Status == "Devolvido" && e.DataDevolucao.HasValue)
+                .Where(e => e.Status == "Devolvido" && e.DataDevolucao.HasValue)
                 .Include(e => e.Exemplar)
                 .ThenInclude(ex => ex!.Livro)
                 .ThenInclude(l => l!.Autor)

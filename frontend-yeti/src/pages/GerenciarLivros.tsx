@@ -533,6 +533,8 @@ const GerenciarLivros: React.FC = () => {
                                     value={formData.titulo}
                                     onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={200}
+                                    placeholder="Máximo 200 caracteres"
                                     required
                                 />
                             </div>
@@ -545,6 +547,8 @@ const GerenciarLivros: React.FC = () => {
                                     value={formData.subtitulo}
                                     onChange={(e) => setFormData({ ...formData, subtitulo: e.target.value })}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={200}
+                                    placeholder="Máximo 200 caracteres"
                                 />
                             </div>
 
@@ -556,6 +560,8 @@ const GerenciarLivros: React.FC = () => {
                                     value={formData.isbn}
                                     onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={20}
+                                    placeholder="Máximo 20 caracteres"
                                     required
                                 />
                             </div>
@@ -603,6 +609,8 @@ const GerenciarLivros: React.FC = () => {
                                     value={formData.idioma}
                                     onChange={(e) => setFormData({ ...formData, idioma: e.target.value })}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={50}
+                                    placeholder="Máximo 50 caracteres"
                                 />
                             </div>
 
@@ -614,6 +622,8 @@ const GerenciarLivros: React.FC = () => {
                                     value={formData.genero}
                                     onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={100}
+                                    placeholder="Máximo 100 caracteres"
                                     required
                                 />
                             </div>
@@ -638,6 +648,8 @@ const GerenciarLivros: React.FC = () => {
                                     value={formData.codigoBarras}
                                     onChange={(e) => setFormData({ ...formData, codigoBarras: e.target.value })}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={50}
+                                    placeholder="Máximo 50 caracteres"
                                 />
                             </div>
 
@@ -649,6 +661,8 @@ const GerenciarLivros: React.FC = () => {
                                     value={formData.capaUrl}
                                     onChange={(e) => setFormData({ ...formData, capaUrl: e.target.value })}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={500}
+                                    placeholder="Máximo 500 caracteres"
                                 />
                             </div>
 
@@ -684,6 +698,8 @@ const GerenciarLivros: React.FC = () => {
                                     onChange={(e) => setFormData({ ...formData, sinopse: e.target.value })}
                                     rows={4}
                                     className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={2000}
+                                    placeholder="Máximo 2000 caracteres"
                                 />
                             </div>
                         </div>

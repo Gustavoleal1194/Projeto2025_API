@@ -5,8 +5,11 @@ import { livroService } from '../services/livroService';
 import type { Exemplar, ExemplarCreateRequest, Livro } from '../constants/entities';
 import Layout from '../components/Layout/Layout';
 import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { useNotifications } from '../hooks/useNotifications';
 
 const GerenciarExemplares: React.FC = () => {
+    const { handleRequestError, showCrudSuccess } = useNotifications();
+
     // Estados principais
     const [exemplares, setExemplares] = useState<Exemplar[]>([]);
     const [livros, setLivros] = useState<Livro[]>([]);
@@ -150,8 +153,11 @@ const GerenciarExemplares: React.FC = () => {
             }
             await loadExemplares();
             closeModal();
+
+            // Mostrar notificação de sucesso
+            showCrudSuccess(editingExemplar ? 'update' : 'create', 'exemplar');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erro ao salvar exemplar');
+            handleRequestError(err, 'Erro ao salvar exemplar');
         }
     };
 
@@ -161,8 +167,11 @@ const GerenciarExemplares: React.FC = () => {
             try {
                 await exemplarService.excluir(id);
                 await loadExemplares();
+
+                // Mostrar notificação de sucesso
+                showCrudSuccess('delete', 'exemplar');
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Erro ao excluir exemplar');
+                handleRequestError(err, 'Erro ao excluir exemplar');
             }
         }
     };
