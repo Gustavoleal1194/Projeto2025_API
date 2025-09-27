@@ -241,10 +241,19 @@ const Bookshelf3D: React.FC<Bookshelf3DProps> = ({
     }, [filteredLivros]);
 
     return (
-        <div className="w-full h-[600px] bg-gradient-to-br from-amber-900 via-amber-800 to-amber-700 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="w-full h-[600px] rounded-2xl overflow-hidden shadow-2xl relative">
+            {/* Imagem de fundo da biblioteca */}
+            <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{
+                    backgroundImage: 'url(/images/biblioteca.jpg)',
+                    filter: 'blur(1px) brightness(0.7)'
+                }}
+            />
+
             <Canvas
                 camera={{ position: [0, 2, 15], fov: 45 }}
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '100%', height: '100%', position: 'relative', zIndex: 1 }}
             >
                 {/* Iluminação profissional */}
                 <ambientLight intensity={0.4} />

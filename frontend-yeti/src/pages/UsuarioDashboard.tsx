@@ -159,8 +159,8 @@ const UsuarioDashboard: React.FC = () => {
                             <button
                                 onClick={() => setView3D(false)}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${!view3D
-                                        ? 'bg-white text-gray-800 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-800'
+                                    ? 'bg-white text-gray-800 shadow-sm'
+                                    : 'text-gray-600 hover:text-gray-800'
                                     }`}
                             >
                                 📚 2D
@@ -168,8 +168,8 @@ const UsuarioDashboard: React.FC = () => {
                             <button
                                 onClick={() => setView3D(true)}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${view3D
-                                        ? 'bg-white text-gray-800 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-800'
+                                    ? 'bg-white text-gray-800 shadow-sm'
+                                    : 'text-gray-600 hover:text-gray-800'
                                     }`}
                             >
                                 🎯 3D
@@ -197,24 +197,48 @@ const UsuarioDashboard: React.FC = () => {
                         isFavorite={isFavorite}
                     />
                 ) : (
-                    <div className="bg-amber-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-                        {/* Wood Texture Overlay */}
-                        <div className="absolute inset-0 opacity-10 pointer-events-none">
-                            <div className="w-full h-full bg-gradient-to-br from-amber-900 to-amber-700"></div>
-                        </div>
+                    <div
+                        className="rounded-2xl p-8 shadow-2xl relative overflow-hidden"
+                        style={{
+                            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)'
+                        }}
+                    >
+                        {/* Yeti Theme Gradient Overlay */}
+                        <div
+                            className="absolute inset-0 pointer-events-none"
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(147, 51, 234, 0.4) 50%, rgba(67, 56, 202, 0.4) 100%)'
+                            }}
+                        />
+
+                        {/* Snow Effect Overlay */}
+                        <div
+                            className="absolute inset-0 pointer-events-none"
+                            style={{
+                                background: 'linear-gradient(to top, rgba(255, 255, 255, 0.2) 0%, transparent 100%)'
+                            }}
+                        />
 
                         {/* Bookshelf Title */}
                         <div className="text-center relative z-10 drop-shadow-lg mb-8">
-                            <h2 className="text-3xl font-bold text-white">
-                                Minha Estante Virtual
+                            <h2 className="text-3xl font-bold text-white drop-shadow-lg">
+                                ❄️ Minha Estante Yeti ❄️
                             </h2>
                             {searchQuery.trim() !== '' && (
                                 <div className="mt-2">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                                    <span
+                                        className="inline-flex items-center px-3 py-1 rounded-full text-sm"
+                                        style={{
+                                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                            color: '#dbeafe',
+                                            border: '1px solid rgba(59, 130, 246, 0.3)'
+                                        }}
+                                    >
                                         🔍 Buscando: "{searchQuery}"
                                         <button
                                             onClick={() => setSearchQuery('')}
-                                            className="ml-2 text-blue-600 hover:text-blue-800"
+                                            className="ml-2 hover:opacity-80"
+                                            style={{ color: '#60a5fa' }}
                                         >
                                             ✕
                                         </button>
@@ -230,10 +254,10 @@ const UsuarioDashboard: React.FC = () => {
                                     <div className="text-white text-lg mb-4">
                                         {searchQuery.trim() === '' ? '📚 Sua estante está vazia' : '🔍 Nenhum livro encontrado'}
                                     </div>
-                                    <p className="text-amber-200">
+                                    <p className="text-blue-200">
                                         {searchQuery.trim() === ''
-                                            ? 'Explore nossa biblioteca para encontrar livros interessantes!'
-                                            : `Tente buscar por outro termo. Buscamos em: título, autor, gênero e sinopse.`
+                                            ? '❄️ Explore nossa biblioteca Yeti para encontrar livros interessantes!'
+                                            : `🔍 Tente buscar por outro termo. Buscamos em: título, autor, gênero e sinopse.`
                                         }
                                     </p>
                                 </div>
@@ -370,8 +394,8 @@ const UsuarioDashboard: React.FC = () => {
                                                     </button>
                                                     <button
                                                         className={`flex-1 px-2 py-1 rounded font-semibold transition-colors duration-300 text-xs cursor-pointer ${isFavorite(livro.id)
-                                                                ? 'bg-red-600 hover:bg-red-700 text-white'
-                                                                : 'bg-green-600 hover:bg-green-700 text-white'
+                                                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                                                            : 'bg-green-600 hover:bg-green-700 text-white'
                                                             }`}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
