@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import UsuarioLayout from '../components/Layout/UsuarioLayout';
 import meusLivrosService, { type MeuLivro, type FiltrosMeusLivros } from '../services/meusLivrosService';
 import { useFavorites } from '../hooks/useFavorites';
+import { BookLoader } from '../components/Loading';
 
 const MeusEmprestimos: React.FC = () => {
     // Estados
@@ -34,6 +35,10 @@ const MeusEmprestimos: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const data = await meusLivrosService.listarMeusLivros();
             setEmprestimos(data);
         } catch (err) {
@@ -181,6 +186,21 @@ const MeusEmprestimos: React.FC = () => {
         return emprestimo.status;
     };
 
+    if (loading) {
+        return (
+            <UsuarioLayout pageTitle="Meus Empréstimos" pageSubtitle="Carregando empréstimos...">
+                <div className="flex items-center justify-center h-64">
+                    <div className="flex flex-col items-center space-y-4">
+                        <BookLoader size="lg" />
+                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            Carregando empréstimos...
+                        </p>
+                    </div>
+                </div>
+            </UsuarioLayout>
+        );
+    }
+
     return (
         <UsuarioLayout
             pageTitle="Meus Empréstimos"
@@ -301,11 +321,7 @@ const MeusEmprestimos: React.FC = () => {
 
                 {/* Tabela de Empréstimos */}
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                    {loading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                        </div>
-                    ) : error ? (
+                    {error ? (
                         <div className="flex items-center justify-center h-64">
                             <div className="text-center">
                                 <p className="text-red-600 text-lg font-medium">{error}</p>

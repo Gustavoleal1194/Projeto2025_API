@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import UsuarioLayout from '../components/Layout/UsuarioLayout';
 import explorarLivrosService, { type FiltrosExploracao, type LivroResumido } from '../services/explorarLivrosService';
 import { useFavorites } from '../hooks/useFavorites';
+import { BookLoader } from '../components/Loading';
 
 const ExplorarLivros: React.FC = () => {
     const [livros, setLivros] = useState<LivroResumido[]>([]);
@@ -38,7 +39,7 @@ const ExplorarLivros: React.FC = () => {
         // Aplicar busca
         if (searchQuery.trim() !== '') {
             const termo = searchQuery.toLowerCase();
-            filtrados = filtrados.filter(livro => 
+            filtrados = filtrados.filter(livro =>
                 livro.titulo.toLowerCase().includes(termo) ||
                 livro.nomeAutor.toLowerCase().includes(termo) ||
                 livro.genero.toLowerCase().includes(termo) ||
@@ -48,19 +49,19 @@ const ExplorarLivros: React.FC = () => {
 
         // Aplicar filtros
         if (filtros.genero) {
-            filtrados = filtrados.filter(livro => 
+            filtrados = filtrados.filter(livro =>
                 livro.genero.toLowerCase().includes(filtros.genero!.toLowerCase())
             );
         }
 
         if (filtros.autor) {
-            filtrados = filtrados.filter(livro => 
+            filtrados = filtrados.filter(livro =>
                 livro.nomeAutor.toLowerCase().includes(filtros.autor!.toLowerCase())
             );
         }
 
         if (filtros.editora) {
-            filtrados = filtrados.filter(livro => 
+            filtrados = filtrados.filter(livro =>
                 livro.nomeEditora.toLowerCase().includes(filtros.editora!.toLowerCase())
             );
         }
@@ -74,7 +75,7 @@ const ExplorarLivros: React.FC = () => {
         }
 
         if (filtros.disponivel !== undefined) {
-            filtrados = filtrados.filter(livro => 
+            filtrados = filtrados.filter(livro =>
                 filtros.disponivel ? livro.temExemplaresDisponiveis : !livro.temExemplaresDisponiveis
             );
         }
@@ -86,11 +87,15 @@ const ExplorarLivros: React.FC = () => {
     const loadData = async () => {
         try {
             setLoading(true);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const [livrosData, generosData] = await Promise.all([
                 explorarLivrosService.listarLivrosDisponiveis(),
                 explorarLivrosService.listarGeneros()
             ]);
-            
+
             setLivros(livrosData);
             setGeneros(generosData);
         } catch (error) {
@@ -114,7 +119,7 @@ const ExplorarLivros: React.FC = () => {
 
     const highlightSearchTerm = (text: string, searchTerm: string) => {
         if (!searchTerm.trim()) return text;
-        
+
         const regex = new RegExp(`(${searchTerm})`, 'gi');
         return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
     };
@@ -129,15 +134,20 @@ const ExplorarLivros: React.FC = () => {
         return (
             <UsuarioLayout pageTitle="Explorar Livros" pageSubtitle="Carregando biblioteca...">
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <div className="flex flex-col items-center space-y-4">
+                        <BookLoader size="lg" />
+                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            Carregando livros...
+                        </p>
+                    </div>
                 </div>
             </UsuarioLayout>
         );
     }
 
     return (
-        <UsuarioLayout 
-            pageTitle="Explorar Livros" 
+        <UsuarioLayout
+            pageTitle="Explorar Livros"
             pageSubtitle="Descubra novos mundos através da leitura"
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -151,7 +161,7 @@ const ExplorarLivros: React.FC = () => {
                             {livrosFiltrados.length} livro{livrosFiltrados.length !== 1 ? 's' : ''} encontrado{livrosFiltrados.length !== 1 ? 's' : ''}
                         </span>
                     </div>
-                    
+
                     <div className="flex gap-3">
                         <button
                             onClick={() => setShowFiltros(!showFiltros)}
@@ -159,7 +169,7 @@ const ExplorarLivros: React.FC = () => {
                         >
                             🔍 {showFiltros ? 'Ocultar' : 'Mostrar'} Filtros
                         </button>
-                        
+
                         <button
                             onClick={limparFiltros}
                             className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-300"
@@ -256,13 +266,13 @@ const ExplorarLivros: React.FC = () => {
                 {livrosFiltrados.length === 0 ? (
                     <div className="col-span-full text-center py-12">
                         <div className="text-gray-500 text-lg mb-4">
-                            {searchQuery.trim() === '' && Object.keys(filtros).length === 0 
+                            {searchQuery.trim() === '' && Object.keys(filtros).length === 0
                                 ? '📚 Nenhum livro encontrado na biblioteca'
                                 : '🔍 Nenhum livro encontrado com os filtros aplicados'
                             }
                         </div>
                         <p className="text-gray-400">
-                            {searchQuery.trim() === '' && Object.keys(filtros).length === 0 
+                            {searchQuery.trim() === '' && Object.keys(filtros).length === 0
                                 ? 'A biblioteca ainda não possui livros cadastrados.'
                                 : 'Tente ajustar os filtros ou termo de busca.'
                             }
@@ -284,8 +294,8 @@ const ExplorarLivros: React.FC = () => {
                             {/* Capa do Livro */}
                             <div className="relative h-64 bg-gray-100 overflow-hidden">
                                 {livro.capaUrl ? (
-                                    <img 
-                                        src={livro.capaUrl} 
+                                    <img
+                                        src={livro.capaUrl}
                                         alt={livro.titulo}
                                         className="w-full h-full object-cover"
                                         onError={(e) => {
@@ -323,18 +333,17 @@ const ExplorarLivros: React.FC = () => {
                                 )}
 
                                 {/* Indicador de Disponibilidade */}
-                                <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${
-                                    livro.temExemplaresDisponiveis 
-                                        ? 'bg-green-500 text-white' 
-                                        : 'bg-red-500 text-white'
-                                }`}>
+                                <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${livro.temExemplaresDisponiveis
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-red-500 text-white'
+                                    }`}>
                                     {livro.temExemplaresDisponiveis ? 'Disponível' : 'Indisponível'}
                                 </div>
 
                                 {/* Hover Overlay */}
                                 <motion.div
                                     initial={{ opacity: 0 }}
-                                    animate={{ 
+                                    animate={{
                                         opacity: hoveredBookId === livro.id ? 1 : 0
                                     }}
                                     className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center"
@@ -347,7 +356,7 @@ const ExplorarLivros: React.FC = () => {
                                             {livro.nomeAutor}
                                         </p>
                                         <div className="flex gap-2 justify-center">
-                                            <button 
+                                            <button
                                                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-300"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -356,12 +365,11 @@ const ExplorarLivros: React.FC = () => {
                                             >
                                                 📖 Ver Detalhes
                                             </button>
-                                            <button 
-                                                className={`px-3 py-1 rounded text-sm transition-colors duration-300 ${
-                                                    isFavorite(livro.id) 
-                                                        ? 'bg-red-600 hover:bg-red-700 text-white' 
-                                                        : 'bg-green-600 hover:bg-green-700 text-white'
-                                                }`}
+                                            <button
+                                                className={`px-3 py-1 rounded text-sm transition-colors duration-300 ${isFavorite(livro.id)
+                                                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                                                    : 'bg-green-600 hover:bg-green-700 text-white'
+                                                    }`}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     const wasAdded = toggleFavorite(livro.id);
@@ -377,29 +385,29 @@ const ExplorarLivros: React.FC = () => {
 
                             {/* Informações do Livro */}
                             <div className="p-4">
-                                <h3 
+                                <h3
                                     className="text-lg font-bold text-gray-800 mb-2 line-clamp-2"
-                                    dangerouslySetInnerHTML={{ 
-                                        __html: highlightSearchTerm(livro.titulo, searchQuery) 
+                                    dangerouslySetInnerHTML={{
+                                        __html: highlightSearchTerm(livro.titulo, searchQuery)
                                     }}
                                 />
-                                
-                                <p 
+
+                                <p
                                     className="text-gray-600 text-sm mb-2"
-                                    dangerouslySetInnerHTML={{ 
-                                        __html: highlightSearchTerm(livro.nomeAutor, searchQuery) 
+                                    dangerouslySetInnerHTML={{
+                                        __html: highlightSearchTerm(livro.nomeAutor, searchQuery)
                                     }}
                                 />
-                                
+
                                 <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
                                     <span>{livro.genero}</span>
                                     <span>{livro.ano}</span>
                                 </div>
-                                
+
                                 <p className="text-gray-700 text-sm line-clamp-3 mb-3">
                                     {livro.sinopse}
                                 </p>
-                                
+
                                 <div className="flex items-center justify-between text-xs text-gray-500">
                                     <span>
                                         {livro.exemplaresDisponiveis}/{livro.totalExemplares} exemplares
@@ -424,23 +432,22 @@ const ExplorarLivros: React.FC = () => {
                     >
                         ← Anterior
                     </button>
-                    
+
                     <div className="flex space-x-1">
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                             <button
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
-                                className={`px-3 py-2 rounded-lg transition-colors duration-300 ${
-                                    currentPage === page
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                }`}
+                                className={`px-3 py-2 rounded-lg transition-colors duration-300 ${currentPage === page
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
                             >
                                 {page}
                             </button>
                         ))}
                     </div>
-                    
+
                     <button
                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={currentPage === totalPages}

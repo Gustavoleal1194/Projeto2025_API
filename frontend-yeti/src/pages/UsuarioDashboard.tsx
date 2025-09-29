@@ -6,6 +6,7 @@ import usuarioLivroService from '../services/usuarioLivroService';
 import usuarioEmprestimoService from '../services/usuarioEmprestimoService';
 import { useFavorites } from '../hooks/useFavorites';
 import type { Livro } from '../types/entities';
+import { BookLoader } from '../components/Loading';
 
 const UsuarioDashboard: React.FC = () => {
     const [livros, setLivros] = useState<Livro[]>([]);
@@ -63,6 +64,11 @@ const UsuarioDashboard: React.FC = () => {
 
     const loadUserData = async () => {
         try {
+            setLoading(true);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             // Carregar livros disponíveis
             const livrosData = await usuarioLivroService.listarLivrosDisponiveis();
             setLivros(livrosData);
@@ -122,7 +128,12 @@ const UsuarioDashboard: React.FC = () => {
         return (
             <UsuarioLayout pageTitle="Carregando..." pageSubtitle="Aguarde um momento">
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <div className="flex flex-col items-center space-y-4">
+                        <BookLoader size="lg" />
+                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            Carregando dashboard...
+                        </p>
+                    </div>
                 </div>
             </UsuarioLayout>
         );

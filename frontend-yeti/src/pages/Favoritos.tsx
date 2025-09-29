@@ -11,6 +11,7 @@ import UsuarioLayout from '../components/Layout/UsuarioLayout';
 import explorarLivrosService, { type LivroResumido } from '../services/explorarLivrosService';
 import FavoritosService from '../services/favoritosService';
 import { useFavorites } from '../hooks/useFavorites';
+import { BookLoader } from '../components/Loading';
 
 const Favoritos: React.FC = () => {
     // Estados
@@ -33,6 +34,9 @@ const Favoritos: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
             // Obter IDs dos favoritos
             const favoritosIds = FavoritosService.getFavoritos();
@@ -171,8 +175,8 @@ const Favoritos: React.FC = () => {
                     title={FavoritosService.isFavorito(livro.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                 >
                     <span className={`text-xl transition-colors duration-300 ${FavoritosService.isFavorito(livro.id)
-                            ? 'text-red-500 group-hover/fav:text-white'
-                            : 'text-gray-400 group-hover/fav:text-white'
+                        ? 'text-red-500 group-hover/fav:text-white'
+                        : 'text-gray-400 group-hover/fav:text-white'
                         }`}>
                         {FavoritosService.isFavorito(livro.id) ? '❤️' : '🤍'}
                     </span>
@@ -247,9 +251,11 @@ const Favoritos: React.FC = () => {
                 {/* Conteúdo Principal */}
                 {loading ? (
                     <div className="flex items-center justify-center h-64">
-                        <div className="text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                            <p className="text-gray-600">Carregando seus favoritos...</p>
+                        <div className="flex flex-col items-center space-y-4">
+                            <BookLoader size="lg" />
+                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                Carregando favoritos...
+                            </p>
                         </div>
                     </div>
                 ) : error ? (
@@ -303,8 +309,8 @@ const Favoritos: React.FC = () => {
                                         key={page}
                                         onClick={() => setCurrentPage(page)}
                                         className={`px-4 py-2 rounded-lg transition-colors duration-300 ${currentPage === page
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                             }`}
                                     >
                                         {page}

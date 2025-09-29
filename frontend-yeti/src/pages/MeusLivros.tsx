@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import UsuarioLayout from '../components/Layout/UsuarioLayout';
 import meusLivrosService, { type FiltrosMeusLivros, type MeuLivro } from '../services/meusLivrosService';
 import { useFavorites } from '../hooks/useFavorites';
+import { BookLoader } from '../components/Loading';
 
 const MeusLivros: React.FC = () => {
     const [livros, setLivros] = useState<MeuLivro[]>([]);
@@ -81,6 +82,10 @@ const MeusLivros: React.FC = () => {
     const loadData = async () => {
         try {
             setLoading(true);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const [livrosData, statsData] = await Promise.all([
                 meusLivrosService.listarMeusLivros(),
                 meusLivrosService.obterEstatisticas()
@@ -143,7 +148,12 @@ const MeusLivros: React.FC = () => {
         return (
             <UsuarioLayout pageTitle="Meus Livros" pageSubtitle="Carregando seus empréstimos...">
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <div className="flex flex-col items-center space-y-4">
+                        <BookLoader size="lg" />
+                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            Carregando meus livros...
+                        </p>
+                    </div>
                 </div>
             </UsuarioLayout>
         );
