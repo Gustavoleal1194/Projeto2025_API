@@ -1,0 +1,47 @@
+[33mcommit d2a9ca0de2f35d44112b44c13e827f98202905a6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Gustavo Leal <guuh.leal@hotmail.com>
+Date:   Mon Sep 29 17:01:11 2025 -0300
+
+    feat: implementar BookLoader animado em todas as páginas
+    
+    - Adicionar componente BookLoader com styled-components
+    - Aplicar loading overlay em todas as páginas de gerenciamento
+    - Configurar tempo de loading de 1.5s para melhor UX
+    - Remover loadings duplicados para consistência
+    - Atualizar documentação técnica e README
+    - Implementar validações FluentValidation no backend
+    - Adicionar validadores frontend sincronizados
+
+DOCUMENTACAO_TECNICA_ATUALIZADA.md
+MAPEAMENTO_COMPLETO_STATUS_PROJETO.md
+Projeto2020_API/Controllers/AutorController.cs
+Projeto2020_API/Controllers/EditoraController.cs
+Projeto2020_API/Controllers/EmprestimoController.cs
+Projeto2020_API/Controllers/ExemplarController.cs
+Projeto2020_API/Controllers/FuncionarioController.cs
+Projeto2020_API/Controllers/LivroController.cs
+Projeto2020_API/Controllers/UsuarioController.cs
+Projeto2020_API/Program.cs
+Projeto2020_API/Validators/AutorValidator.cs
+Projeto2020_API/Validators/EditoraValidator.cs
+Projeto2020_API/Validators/EmprestimoValidator.cs
+Projeto2020_API/Validators/ExemplarValidator.cs
+Projeto2020_API/Validators/FuncionarioValidator.cs
+Projeto2020_API/Validators/LivroValidator.cs
+Projeto2020_API/Validators/UsuarioValidator.cs
+README.md
+frontend-yeti/README.md
+frontend-yeti/package-lock.json
+frontend-yeti/package.json
+frontend-yeti/src/components/Loading/BookLoader.css
+frontend-yeti/src/components/Loading/BookLoader.tsx
+frontend-yeti/src/components/Loading/LoadingSpinner.tsx
+frontend-yeti/src/components/Loading/index.ts
+frontend-yeti/src/pages/Dashboard.tsx
+frontend-yeti/src/pages/GerenciarAutores.tsx
+frontend-yeti/src/pages/GerenciarEditoras.tsx
+frontend-yeti/src/pages/GerenciarEmprestimos.tsx
+frontend-yeti/src/pages/GerenciarExemplares.tsx
+frontend-yeti/src/pages/GerenciarFuncionarios.tsx
+frontend-yeti/src/pages/GerenciarLivros.tsx
+frontend-yeti/src/pages/GerenciarUsuarios.tsx

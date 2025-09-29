@@ -4,10 +4,11 @@ import Layout from '../components/Layout/Layout';
 import { funcionarioService } from '../services/funcionarioService';
 import type { Funcionario, FuncionarioForm } from '../types/entities';
 import { CARGO_FUNCIONARIO } from '../constants/entities';
-import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { FuncionarioValidator } from '../validators/FuncionarioValidator';
 import { BookLoader } from '../components/Loading';
+import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarFuncionarios: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -15,10 +16,9 @@ const GerenciarFuncionarios: React.FC = () => {
     const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
     const [filteredFuncionarios, setFilteredFuncionarios] = useState<Funcionario[]>([]);
     const [loading, setLoading] = useState(true);
-    const [, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingFuncionario, setEditingFuncionario] = useState<Funcionario | null>(null);
-    const [lastUpdate, setLastUpdate] = useState<string>(new Date().toLocaleString('pt-BR'));
 
     // Estados do formulário
     const [formData, setFormData] = useState<FuncionarioForm>({
@@ -96,7 +96,6 @@ const GerenciarFuncionarios: React.FC = () => {
             const data = await funcionarioService.listar();
             setFuncionarios(data);
             setFilteredFuncionarios(data);
-            setLastUpdate(new Date().toLocaleString('pt-BR'));
         } catch (err) {
             setError('Erro ao carregar funcionários');
             console.error('Erro ao carregar funcionários:', err);
@@ -436,147 +435,16 @@ const GerenciarFuncionarios: React.FC = () => {
                     transition={{ delay: 0.7 }}
                     className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
                 >
-                    <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
-                        <table className="min-w-full divide-y divide-blue-100">
-                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>👤</span>
-                                            <span>Nome</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📞</span>
-                                            <span>Telefone</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📧</span>
-                                            <span>Email</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>💼</span>
-                                            <span>Cargo</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>💰</span>
-                                            <span>Salário</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📅</span>
-                                            <span>Admissão</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚡</span>
-                                            <span>Status</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚙️</span>
-                                            <span>Ações</span>
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-blue-100 rounded-b-2xl">
-                                {filteredFuncionarios.map((funcionario, index) => (
-                                    <motion.tr
-                                        key={funcionario.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="hover:bg-blue-50 transition-colors duration-200"
-                                    >
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">{funcionario.nome}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{funcionario.telefone}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{funcionario.email}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {funcionario.cargo}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            R$ {funcionario.salario.toFixed(2)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${funcionario.ativo
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                {funcionario.ativo ? '✅ Ativo' : '❌ Inativo'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div className="flex space-x-2">
-                                                <button
-                                                    onClick={() => openModal(funcionario)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
-                                                    style={{ minWidth: '36px' }}
-                                                    title="Editar"
-                                                >
-                                                    <EditIcon size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => toggleStatus(funcionario.id)}
-                                                    className={`p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border ${funcionario.ativo
-                                                        ? 'bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-700'
-                                                        : 'bg-green-500 hover:bg-green-600 text-white border-green-700'
-                                                        }`}
-                                                    style={{ minWidth: '36px' }}
-                                                    title={funcionario.ativo ? 'Desativar' : 'Ativar'}
-                                                >
-                                                    {funcionario.ativo ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteFuncionario(funcionario.id)}
-                                                    className="p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border"
-                                                    style={{
-                                                        backgroundColor: '#dc2626',
-                                                        color: 'white',
-                                                        borderColor: '#991b1b',
-                                                        borderWidth: '1px',
-                                                        minWidth: '36px'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#b91c1c';
-                                                        e.currentTarget.style.borderColor = '#7f1d1d';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#dc2626';
-                                                        e.currentTarget.style.borderColor = '#991b1b';
-                                                    }}
-                                                    title="Excluir"
-                                                >
-                                                    <DeleteIcon size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </motion.tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    {createSmartTable(
+                        filteredFuncionarios,
+                        'funcionarios',
+                        openModal,
+                        deleteFuncionario,
+                        toggleStatus,
+                        loading,
+                        error,
+                        loadFuncionarios
+                    )}
                 </motion.div>
 
                 {/* Modal */}

@@ -99,6 +99,7 @@ export interface Exemplar {
     isbn?: string;
     nomeAutor?: string;
     nomeEditora?: string;
+    capaUrl?: string;
 }
 
 // ========================================
@@ -555,3 +556,4 @@ export interface ExportacaoResultado {
     erro?: string;
     totalRegistros: number;
 }
+

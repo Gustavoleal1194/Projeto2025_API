@@ -38,5 +38,7 @@ namespace Dominio.Dtos
         public string? ISBN { get; set; }
         public string? NomeAutor { get; set; }
         public string? NomeEditora { get; set; }
+        public string? CapaUrl { get; set; }
     }
 }
+

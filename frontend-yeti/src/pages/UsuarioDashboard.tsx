@@ -476,7 +476,7 @@ const UsuarioDashboard: React.FC = () => {
                     { title: 'Empréstimos Ativos', value: stats.emprestimosAtivos.toString(), icon: '📖', color: 'bg-blue-500' },
                     { title: 'Livros Favoritos', value: stats.livrosFavoritos.toString(), icon: '❤️', color: 'bg-red-500' },
                     { title: 'Histórico Total', value: stats.historicoTotal.toString(), icon: '📚', color: 'bg-green-500' },
-                    { title: 'Livros Disponíveis', value: stats.livrosDisponiveis.toString(), icon: '📖', color: 'bg-amber-500' }
+                    { title: 'Livros Disponíveis', value: stats.livrosDisponiveis.toString(), icon: '📖', color: 'bg-green-500' }
                 ].map((stat, index) => (
                     <motion.div
                         key={index}

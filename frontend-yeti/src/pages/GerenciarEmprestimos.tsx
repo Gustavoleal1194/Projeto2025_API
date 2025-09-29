@@ -3,17 +3,18 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Emprestimo, EmprestimoForm } from '../types/entities';
 import { emprestimoService } from '../services/emprestimoService';
-import { EditIcon, DeleteIcon, ReturnIcon, RefreshIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { EmprestimoValidator } from '../validators/EmprestimoValidator';
 import { BookLoader } from '../components/Loading';
+import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarEmprestimos: React.FC = () => {
-    const { showError, handleRequestError, showCrudSuccess } = useNotifications();
+    const { handleRequestError, showCrudSuccess } = useNotifications();
 
     const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
     const [loading, setLoading] = useState(true);
-    const [lastUpdate, setLastUpdate] = useState<string>(new Date().toLocaleString('pt-BR'));
+    const [error] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEmprestimo, setEditingEmprestimo] = useState<Emprestimo | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -81,7 +82,6 @@ const GerenciarEmprestimos: React.FC = () => {
 
             const data = await emprestimoService.listar();
             setEmprestimos(data);
-            setLastUpdate(new Date().toLocaleString('pt-BR'));
         } catch (error) {
             console.error('Erro ao carregar empréstimos:', error);
         } finally {
@@ -248,57 +248,6 @@ const GerenciarEmprestimos: React.FC = () => {
         }
     };
 
-    // Renovar empréstimo
-    const renovarEmprestimo = async (id: number) => {
-        try {
-            await emprestimoService.renovar(id);
-            await loadEmprestimos();
-
-            // Mostrar notificação de sucesso
-            showCrudSuccess('update', 'empréstimo');
-        } catch (error) {
-            handleRequestError(error, 'Erro ao renovar empréstimo');
-        }
-    };
-
-    // Devolver empréstimo por ID
-    const devolverEmprestimoPorId = async () => {
-        if (!emprestimoIdDevolucao || isNaN(parseInt(emprestimoIdDevolucao))) {
-            showError('Validação Falhou', 'Por favor, insira um ID de empréstimo válido.');
-            return;
-        }
-
-        try {
-            await emprestimoService.devolverEmprestimoPorId(parseInt(emprestimoIdDevolucao));
-            await loadEmprestimos();
-            setIsDevolucaoModalOpen(false);
-            setEmprestimoIdDevolucao('');
-
-            // Mostrar notificação de sucesso
-            showCrudSuccess('update', 'empréstimo');
-        } catch (error) {
-            handleRequestError(error, 'Erro ao devolver empréstimo');
-        }
-    };
-
-    // Copiar ID do empréstimo para área de transferência
-    const copiarIdEmprestimo = (id: number) => {
-        navigator.clipboard.writeText(id.toString()).then(() => {
-            alert(`ID ${id} copiado para a área de transferência!`);
-        }).catch(() => {
-            alert(`ID: ${id}`);
-        });
-    };
-
-    // Copiar número do exemplar para área de transferência
-    const copiarNumeroExemplar = (numero: string) => {
-        navigator.clipboard.writeText(numero).then(() => {
-            alert(`Exemplar ${numero} copiado para a área de transferência!`);
-        }).catch(() => {
-            alert(`Exemplar: ${numero}`);
-        });
-    };
-
     return (
         <Layout
             pageTitle="Gerenciar Empréstimos"
@@ -460,173 +409,16 @@ const GerenciarEmprestimos: React.FC = () => {
                     transition={{ delay: 0.7 }}
                     className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
                 >
-                    <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
-                        <table className="min-w-full divide-y divide-blue-100">
-                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>🔢</span>
-                                            <span>ID</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>👤</span>
-                                            <span>Usuário</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📚</span>
-                                            <span>Livro</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>🔢</span>
-                                            <span>Exemplar</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📅</span>
-                                            <span>Empréstimo</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⏰</span>
-                                            <span>Devolução</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚡</span>
-                                            <span>Status</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚙️</span>
-                                            <span>Ações</span>
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-blue-100">
-                                {filteredEmprestimos.map((emprestimo, index) => (
-                                    <motion.tr
-                                        key={emprestimo.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="hover:bg-blue-50 transition-colors duration-200"
-                                    >
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <button
-                                                onClick={() => copiarIdEmprestimo(emprestimo.id)}
-                                                className="text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full inline-block transition-colors duration-200 cursor-pointer border border-blue-200 hover:border-blue-300"
-                                                title="Clique para copiar o ID"
-                                            >
-                                                #{emprestimo.id}
-                                            </button>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">{emprestimo.nomeUsuario || 'N/A'}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{emprestimo.tituloLivro || 'N/A'}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <button
-                                                onClick={() => copiarNumeroExemplar(emprestimo.numeroExemplar || 'N/A')}
-                                                className="text-sm font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-1 rounded-full inline-block transition-colors duration-200 cursor-pointer border border-purple-200 hover:border-purple-300"
-                                                title="Clique para copiar o número do exemplar"
-                                            >
-                                                #{emprestimo.numeroExemplar || 'N/A'}
-                                            </button>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                {new Date(emprestimo.dataEmprestimo).toLocaleDateString('pt-BR')}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                {new Date(emprestimo.dataPrevistaDevolucao).toLocaleDateString('pt-BR')}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${emprestimo.status === 'Emprestado' && !emprestimo.estaAtrasado ? 'bg-green-100 text-green-800' :
-                                                emprestimo.status === 'Devolvido' ? 'bg-blue-100 text-blue-800' :
-                                                    emprestimo.status === 'Emprestado' && emprestimo.estaAtrasado ? 'bg-red-100 text-red-800' :
-                                                        'bg-gray-100 text-gray-800'
-                                                }`}>
-                                                {emprestimo.status === 'Emprestado' && !emprestimo.estaAtrasado ? '📚 Emprestado' :
-                                                    emprestimo.status === 'Devolvido' ? '✅ Devolvido' :
-                                                        emprestimo.status === 'Emprestado' && emprestimo.estaAtrasado ? '⚠️ Atrasado' :
-                                                            emprestimo.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div className="flex space-x-2">
-                                                <button
-                                                    onClick={() => openModal(emprestimo)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
-                                                    style={{ minWidth: '36px' }}
-                                                    title="Editar"
-                                                >
-                                                    <EditIcon size={16} />
-                                                </button>
-                                                {emprestimo.status === 'Emprestado' && (
-                                                    <>
-                                                        <button
-                                                            onClick={() => devolverEmprestimo(emprestimo.id)}
-                                                            className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700"
-                                                            style={{ minWidth: '36px' }}
-                                                            title="Devolver"
-                                                        >
-                                                            <ReturnIcon size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => renovarEmprestimo(emprestimo.id)}
-                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-yellow-700"
-                                                            style={{ minWidth: '36px' }}
-                                                            title="Renovar"
-                                                        >
-                                                            <RefreshIcon size={16} />
-                                                        </button>
-                                                    </>
-                                                )}
-                                                <button
-                                                    onClick={() => deleteEmprestimo(emprestimo.id)}
-                                                    className="p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border-2"
-                                                    style={{
-                                                        backgroundColor: '#dc2626',
-                                                        color: 'white',
-                                                        borderColor: '#991b1b',
-                                                        minWidth: '36px'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#b91c1c';
-                                                        e.currentTarget.style.borderColor = '#7f1d1d';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#dc2626';
-                                                        e.currentTarget.style.borderColor = '#991b1b';
-                                                    }}
-                                                    title="Excluir"
-                                                >
-                                                    <DeleteIcon size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </motion.tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    {createSmartTable(
+                        filteredEmprestimos,
+                        'emprestimos',
+                        openModal,
+                        deleteEmprestimo,
+                        devolverEmprestimo, // Função de devolução
+                        loading,
+                        error,
+                        loadEmprestimos
+                    )}
                 </motion.div>
 
                 {/* Modal */}
@@ -816,14 +608,6 @@ const GerenciarEmprestimos: React.FC = () => {
                                 >
                                     <CancelIcon size={16} />
                                     Cancelar
-                                </button>
-                                <button
-                                    onClick={devolverEmprestimoPorId}
-                                    className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold transition-all duration-300 border-2 border-green-600 hover:border-green-700 flex items-center gap-2"
-                                    style={{ minWidth: '36px' }}
-                                >
-                                    <ReturnIcon size={16} />
-                                    Devolver
                                 </button>
                             </div>
                         </motion.div>

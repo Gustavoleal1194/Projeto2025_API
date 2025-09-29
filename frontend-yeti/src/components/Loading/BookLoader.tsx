@@ -36,11 +36,11 @@ const StyledWrapper = styled.div<{ $multiplier: number }>`
     animation: cover 5s ease-in-out infinite;
   }
   .book {
-    background-color: hsl(268, 90%, 65%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     border-radius: ${props => 0.25 * props.$multiplier}em;
     box-shadow:
       0 ${props => 0.25 * props.$multiplier}em ${props => 0.5 * props.$multiplier}em hsla(0, 0%, 0%, 0.3),
-      0 0 0 ${props => 0.25 * props.$multiplier}em hsl(278, 100%, 57%) inset;
+      0 0 0 ${props => 0.25 * props.$multiplier}em rgba(59, 130, 246, 0.4) inset;
     padding: ${props => 0.25 * props.$multiplier}em;
     perspective: ${props => 37.5 * props.$multiplier}em;
     position: relative;
@@ -70,11 +70,11 @@ const StyledWrapper = styled.div<{ $multiplier: number }>`
   }
   .book__pg {
     animation-name: pg1;
-    background-color: hsl(223, 10%, 100%);
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);
     background-image: linear-gradient(
       90deg,
-      hsla(223, 10%, 90%, 0) 87.5%,
-      hsl(223, 10%, 90%)
+      hsla(220, 100%, 85%, 0) 87.5%,
+      rgba(59, 130, 246, 0.3)
     );
     height: calc(100% - ${props => 0.5 * props.$multiplier}em);
     transform-origin: 100% 50%;
@@ -83,10 +83,10 @@ const StyledWrapper = styled.div<{ $multiplier: number }>`
   .book__pg--3,
   .book__pg--4 {
     background-image: repeating-linear-gradient(
-        hsl(223, 10%, 10%) 0 ${props => 0.125 * props.$multiplier}em,
-        hsla(223, 10%, 10%, 0) ${props => 0.125 * props.$multiplier}em ${props => 0.5 * props.$multiplier}em
+        rgba(59, 130, 246, 0.6) 0 ${props => 0.125 * props.$multiplier}em,
+        hsla(220, 100%, 85%, 0) ${props => 0.125 * props.$multiplier}em ${props => 0.5 * props.$multiplier}em
       ),
-      linear-gradient(90deg, hsla(223, 10%, 90%, 0) 87.5%, hsl(223, 10%, 90%));
+      linear-gradient(90deg, hsla(220, 100%, 85%, 0) 87.5%, rgba(59, 130, 246, 0.3));
     background-repeat: no-repeat;
     background-position: center;
     background-size:
@@ -123,14 +123,14 @@ const StyledWrapper = styled.div<{ $multiplier: number }>`
     95%,
     to {
       animation-timing-function: ease-out;
-      background-color: hsl(278, 84%, 67%);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(147, 51, 234, 0.4) 50%, rgba(67, 56, 202, 0.4) 100%);
     }
     10%,
     40%,
     60%,
     90% {
       animation-timing-function: ease-in;
-      background-color: hsl(271, 90%, 45%);
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     }
   }
   @keyframes shadow {

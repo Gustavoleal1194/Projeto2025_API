@@ -3,11 +3,12 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Livro, LivroCreateRequest } from '../constants/entities';
 import livroService from '../services/livroService';
-import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { getPlaceholderByFieldName } from '../components/PlaceholderHelper';
 import { LivroValidator } from '../validators/LivroValidator';
 import { BookLoader } from '../components/Loading';
+import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarLivros: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -479,141 +480,16 @@ const GerenciarLivros: React.FC = () => {
                 transition={{ delay: 0.7 }}
                 className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
             >
-                <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
-                    <table className="min-w-full divide-y divide-blue-100">
-                        <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
-                            <tr>
-                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    <span className="flex items-center gap-2">
-                                        <span>📚</span>
-                                        <span>Capa</span>
-                                    </span>
-                                </th>
-                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    <span className="flex items-center gap-2">
-                                        <span>📖</span>
-                                        <span>Título</span>
-                                    </span>
-                                </th>
-                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    <span className="flex items-center gap-2">
-                                        <span>✍️</span>
-                                        <span>Autor</span>
-                                    </span>
-                                </th>
-                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    <span className="flex items-center gap-2">
-                                        <span>🏷️</span>
-                                        <span>Gênero</span>
-                                    </span>
-                                </th>
-                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    <span className="flex items-center gap-2">
-                                        <span>🔢</span>
-                                        <span>ISBN</span>
-                                    </span>
-                                </th>
-                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    <span className="flex items-center gap-2">
-                                        <span>⚡</span>
-                                        <span>Status</span>
-                                    </span>
-                                </th>
-                                <th className="px-8 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                    <span className="flex items-center gap-2">
-                                        <span>⚙️</span>
-                                        <span>Ações</span>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {filteredLivros.map((livro) => (
-                                <motion.tr
-                                    key={livro.id}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="hover:bg-gray-50 transition-colors duration-200"
-                                >
-                                    <td className="px-6 py-4">
-                                        <div className="w-12 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                                            {livro.capaUrl ? (
-                                                <img
-                                                    src={livro.capaUrl}
-                                                    alt={livro.titulo}
-                                                    className="w-full h-full object-cover rounded-lg"
-                                                />
-                                            ) : (
-                                                <span className="text-gray-400 text-xl">📚</span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div>
-                                            <div className="font-semibold text-gray-900">{livro.titulo}</div>
-                                            {livro.subtitulo && (
-                                                <div className="text-sm text-gray-500">{livro.subtitulo}</div>
-                                            )}
-                                            <div className="text-sm text-gray-400">Ano: {livro.ano}</div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-gray-900">{livro.nomeAutor || 'N/A'}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                                            {livro.genero}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-gray-900 font-mono text-sm">{livro.isbn}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${livro.ativo
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
-                                            }`}>
-                                            {livro.ativo ? 'Ativo' : 'Indisponível'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex space-x-2">
-                                            <button
-                                                onClick={() => openModal(livro)}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
-                                                style={{ minWidth: '36px' }}
-                                                title="Editar"
-                                            >
-                                                <EditIcon size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => deleteLivro(livro.id)}
-                                                className="text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border"
-                                                style={{
-                                                    backgroundColor: '#dc2626',
-                                                    borderColor: '#991b1b',
-                                                    borderWidth: '1px',
-                                                    minWidth: '36px'
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#b91c1c';
-                                                    e.currentTarget.style.borderColor = '#7f1d1d';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#dc2626';
-                                                    e.currentTarget.style.borderColor = '#991b1b';
-                                                }}
-                                                title="Excluir"
-                                            >
-                                                <DeleteIcon size={16} className="text-white" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </motion.tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                {createSmartTable(
+                    filteredLivros,
+                    'livros',
+                    openModal,
+                    deleteLivro,
+                    undefined, // Sem toggle para livros
+                    loading,
+                    error,
+                    loadLivros
+                )}
             </motion.div>
 
             {/* Modal de Criação/Edição */}

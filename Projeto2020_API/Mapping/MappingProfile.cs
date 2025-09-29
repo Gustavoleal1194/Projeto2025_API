@@ -24,7 +24,8 @@ namespace Projeto2025_API.Mapping
                 .ForMember(dest => dest.TituloLivro, opt => opt.MapFrom(src => src.Livro != null ? src.Livro.Titulo : null))
                 .ForMember(dest => dest.ISBN, opt => opt.MapFrom(src => src.Livro != null ? src.Livro.ISBN : null))
                 .ForMember(dest => dest.NomeAutor, opt => opt.MapFrom(src => src.Livro != null && src.Livro.Autor != null ? src.Livro.Autor.Nome : null))
-                .ForMember(dest => dest.NomeEditora, opt => opt.MapFrom(src => src.Livro != null && src.Livro.Editora != null ? src.Livro.Editora.Nome : null));
+                .ForMember(dest => dest.NomeEditora, opt => opt.MapFrom(src => src.Livro != null && src.Livro.Editora != null ? src.Livro.Editora.Nome : null))
+                .ForMember(dest => dest.CapaUrl, opt => opt.MapFrom(src => src.Livro != null ? src.Livro.CapaUrl : null));
                 
             CreateMap<ExemplarDTO, Exemplar>()
                 .ForMember(dest => dest.Livro, opt => opt.Ignore());
@@ -56,3 +57,4 @@ namespace Projeto2025_API.Mapping
         }
     }
 }
+

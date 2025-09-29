@@ -3,17 +3,18 @@ import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
 import type { Autor, AutorForm } from '../types/entities';
 import { autorService } from '../services/autorService';
-import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { AutorValidator } from '../validators/AutorValidator';
 import { BookLoader } from '../components/Loading';
+import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarAutores: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
 
     const [autores, setAutores] = useState<Autor[]>([]);
     const [loading, setLoading] = useState(true);
-    const [lastUpdate, setLastUpdate] = useState<string>(new Date().toLocaleString('pt-BR'));
+    const [error] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAutor, setEditingAutor] = useState<Autor | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -95,7 +96,6 @@ const GerenciarAutores: React.FC = () => {
 
             const data = await autorService.listar();
             setAutores(data);
-            setLastUpdate(new Date().toLocaleString('pt-BR'));
         } catch (error) {
             console.error('Erro ao carregar autores:', error);
         } finally {
@@ -254,15 +254,25 @@ const GerenciarAutores: React.FC = () => {
     // Toggle status
     const toggleStatus = async (id: number) => {
         try {
-            await autorService.toggleStatus(id);
-            await loadAutores();
+            const token = localStorage.getItem('yeti_token');
+            const response = await fetch(`http://localhost:5072/api/Autor/${id}/toggle-status`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-            // Mostrar notificação de sucesso
+            if (!response.ok) {
+                throw new Error('Erro ao alterar status');
+            }
+
+            await loadAutores();
             showCrudSuccess('update', 'autor');
-        } catch (error) {
-            handleRequestError(error, 'Erro ao alterar status do autor');
+        } catch (err) {
+            handleRequestError(err, 'Erro ao alterar status do autor');
         }
     };
+
 
     return (
         <Layout
@@ -415,129 +425,16 @@ const GerenciarAutores: React.FC = () => {
                     transition={{ delay: 0.7 }}
                     className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
                 >
-                    <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
-                        <table className="min-w-full divide-y divide-blue-100">
-                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>✍️</span>
-                                            <span>Nome</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📧</span>
-                                            <span>Email</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>🌍</span>
-                                            <span>Nacionalidade</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📅</span>
-                                            <span>Nascimento</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚡</span>
-                                            <span>Status</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚙️</span>
-                                            <span>Ações</span>
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-blue-100">
-                                {filteredAutores.map((autor, index) => (
-                                    <motion.tr
-                                        key={autor.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="hover:bg-blue-50 transition-colors duration-200"
-                                    >
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">{autor.nome}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{autor.email}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{autor.nacionalidade}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                {new Date(autor.dataNascimento).toLocaleDateString('pt-BR')}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${autor.ativo
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                {autor.ativo ? '✅ Ativo' : '❌ Inativo'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div className="flex space-x-2">
-                                                <button
-                                                    onClick={() => openModal(autor)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
-                                                    style={{ minWidth: '36px' }}
-                                                    title="Editar"
-                                                >
-                                                    <EditIcon size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => toggleStatus(autor.id)}
-                                                    className={`p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border ${autor.ativo
-                                                        ? 'bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-700'
-                                                        : 'bg-green-500 hover:bg-green-600 text-white border-green-700'
-                                                        }`}
-                                                    style={{ minWidth: '36px' }}
-                                                    title={autor.ativo ? 'Desativar' : 'Ativar'}
-                                                >
-                                                    {autor.ativo ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteAutor(autor.id)}
-                                                    className="p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border"
-                                                    style={{
-                                                        backgroundColor: '#dc2626',
-                                                        color: 'white',
-                                                        borderColor: '#991b1b',
-                                                        borderWidth: '1px',
-                                                        minWidth: '36px'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#b91c1c';
-                                                        e.currentTarget.style.borderColor = '#7f1d1d';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#dc2626';
-                                                        e.currentTarget.style.borderColor = '#991b1b';
-                                                    }}
-                                                    title="Excluir"
-                                                >
-                                                    <DeleteIcon size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </motion.tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    {createSmartTable(
+                        filteredAutores,
+                        'autores',
+                        openModal,
+                        deleteAutor,
+                        toggleStatus,
+                        loading,
+                        error,
+                        loadAutores
+                    )}
                 </motion.div>
 
                 {/* Modal */}

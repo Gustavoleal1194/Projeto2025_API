@@ -4,10 +4,11 @@ import { exemplarService } from '../services/exemplarService';
 import { livroService } from '../services/livroService';
 import type { Exemplar, ExemplarCreateRequest, Livro } from '../constants/entities';
 import Layout from '../components/Layout/Layout';
-import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
+import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { ExemplarValidator } from '../validators/ExemplarValidator';
 import { BookLoader } from '../components/Loading';
+import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarExemplares: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -440,150 +441,16 @@ const GerenciarExemplares: React.FC = () => {
                     transition={{ delay: 0.7 }}
                     className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
                 >
-                    <div className="overflow-x-auto bg-white shadow-2xl border border-blue-100">
-                        <table className="min-w-full divide-y divide-blue-100">
-                            <thead className="bg-gradient-to-r from-blue-600 to-purple-600" style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)' }}>
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📚</span>
-                                            <span>Livro</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>🔢</span>
-                                            <span>Número</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>📍</span>
-                                            <span>Localização</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>🏷️</span>
-                                            <span>Condição</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚡</span>
-                                            <span>Status</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>💰</span>
-                                            <span>Valor</span>
-                                        </span>
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider" style={{ color: '#ffffff' }}>
-                                        <span className="flex items-center gap-2">
-                                            <span>⚙️</span>
-                                            <span>Ações</span>
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-blue-100 rounded-b-2xl">
-                                {filteredExemplares.map((exemplar, index) => (
-                                    <motion.tr
-                                        key={exemplar.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                                        className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300"
-                                    >
-                                        <td className="px-6 py-6 whitespace-nowrap">
-                                            <div className="flex items-center">
-                                                <div className="flex-shrink-0 h-14 w-14">
-                                                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
-                                                        <span className="text-xl font-bold text-white">📚</span>
-                                                    </div>
-                                                </div>
-                                                <div className="ml-4">
-                                                    <div className="text-lg font-semibold text-gray-900">
-                                                        {exemplar.tituloLivro || 'N/A'}
-                                                    </div>
-                                                    <div className="text-sm text-blue-600 font-medium">
-                                                        {exemplar.nomeAutor || 'N/A'}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-6 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">
-                                                {exemplar.numeroExemplar}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-6 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">
-                                                {exemplar.localizacao || 'N/A'}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-6 whitespace-nowrap">
-                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${exemplar.condicao === 'Excelente' ? 'bg-green-100 text-green-800' :
-                                                exemplar.condicao === 'Bom' ? 'bg-blue-100 text-blue-800' :
-                                                    exemplar.condicao === 'Regular' ? 'bg-yellow-100 text-yellow-800' :
-                                                        exemplar.condicao === 'Ruim' ? 'bg-orange-100 text-orange-800' :
-                                                            'bg-red-100 text-red-800'
-                                                }`}>
-                                                {exemplar.condicao}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-6 whitespace-nowrap">
-                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${exemplar.disponivel ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                {exemplar.disponivel ? '✅ Disponível' : '❌ Indisponível'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-6 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">
-                                                R$ {exemplar.valorAquisicao.toFixed(2)}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-6 whitespace-nowrap text-sm font-medium">
-                                            <div className="flex space-x-2">
-                                                <button
-                                                    onClick={() => openModal(exemplar)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-blue-800"
-                                                    style={{ minWidth: '36px' }}
-                                                    title="Editar"
-                                                >
-                                                    <EditIcon size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteExemplar(exemplar.id)}
-                                                    style={{
-                                                        backgroundColor: '#dc2626',
-                                                        color: '#ffffff',
-                                                        borderColor: '#991b1b',
-                                                        borderWidth: '1px',
-                                                        minWidth: '36px'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#b91c1c';
-                                                        e.currentTarget.style.borderColor = '#b91c1c';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = '#dc2626';
-                                                        e.currentTarget.style.borderColor = '#dc2626';
-                                                    }}
-                                                    className="p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border"
-                                                    title="Excluir"
-                                                >
-                                                    <DeleteIcon size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </motion.tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    {createSmartTable(
+                        filteredExemplares,
+                        'exemplares',
+                        openModal,
+                        deleteExemplar,
+                        undefined, // Sem toggle para exemplares
+                        loading,
+                        error,
+                        loadExemplares
+                    )}
                 </motion.div>
 
                 {/* Modal */}
