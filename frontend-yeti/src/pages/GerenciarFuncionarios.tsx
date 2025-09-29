@@ -6,6 +6,7 @@ import type { Funcionario, FuncionarioForm } from '../types/entities';
 import { CARGO_FUNCIONARIO } from '../constants/entities';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
+import { FuncionarioValidator } from '../validators/FuncionarioValidator';
 
 const GerenciarFuncionarios: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -35,6 +36,52 @@ const GerenciarFuncionarios: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [cargoFilter, setCargoFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
+
+    // Estados de validação
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Funções de validação usando validador centralizado
+    const validateField = (name: string, value: any): string => {
+        switch (name) {
+            case 'nome':
+                return FuncionarioValidator.validateNome(value?.toString() || '');
+            case 'email':
+                return FuncionarioValidator.validateEmail(value?.toString() || '');
+            case 'telefone':
+                return FuncionarioValidator.validateTelefone(value?.toString() || '');
+            case 'senha':
+                return FuncionarioValidator.validateSenha(value?.toString() || '', !!editingFuncionario);
+            case 'cargo':
+                return FuncionarioValidator.validateCargo(value?.toString() || '');
+            case 'salario':
+                return FuncionarioValidator.validateSalario(Number(value) || 0);
+            case 'dataAdmissao':
+                return FuncionarioValidator.validateDataAdmissao(value?.toString() || '');
+            case 'dataDemissao':
+                return FuncionarioValidator.validateDataDemissao(value?.toString() || '', formData.dataAdmissao);
+            default:
+                return '';
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const newErrors = FuncionarioValidator.validateForm(formData, !!editingFuncionario);
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Handler para mudanças nos campos com validação em tempo real
+    const handleFieldChange = (name: string, value: any) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Validar campo em tempo real
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+    };
 
     // Carregar funcionários
     const loadFuncionarios = async () => {
@@ -110,13 +157,32 @@ const GerenciarFuncionarios: React.FC = () => {
                 ativo: true
             });
         }
+        setErrors({}); // Limpar erros ao abrir modal
         setIsModalOpen(true);
+
+        // Limpar campos após um pequeno delay para evitar autofill
+        setTimeout(() => {
+            if (!funcionario) { // Only clear for new funcionario creation
+                setFormData({
+                    nome: '',
+                    email: '',
+                    telefone: '',
+                    senha: '',
+                    cargo: '',
+                    salario: 0,
+                    dataAdmissao: '',
+                    dataDemissao: '',
+                    ativo: true
+                });
+            }
+        }, 100);
     };
 
     // Fechar modal
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingFuncionario(null);
+        setErrors({}); // Limpar erros ao fechar modal
         setFormData({
             nome: '',
             email: '',
@@ -132,28 +198,38 @@ const GerenciarFuncionarios: React.FC = () => {
 
     // Salvar funcionário
     const saveFuncionario = async () => {
+        if (isSubmitting) return;
+
+        // Validar formulário antes de enviar
+        if (!validateForm()) {
+            return;
+        }
+
         try {
+            setIsSubmitting(true);
 
             // Preparar dados para envio no formato PascalCase que o backend espera
-            const dadosParaEnvio = {
-                Id: editingFuncionario?.id || 0,
+            const dadosParaEnvio: any = {
+                Id: editingFuncionario?.id ?? 0,
                 Nome: formData.nome,
                 Email: formData.email,
                 Telefone: formData.telefone,
-                Senha: formData.senha,
                 Cargo: formData.cargo,
                 Salario: Number(formData.salario),
                 DataAdmissao: formData.dataAdmissao,
                 DataDemissao: formData.dataDemissao || null,
                 Ativo: formData.ativo
-            } as any; // Usar any para contornar o problema de tipos
+            };
 
+            // Só incluir senha se estiver preenchida (para edição) ou se for criação
+            if (formData.senha && formData.senha.trim() !== '') {
+                dadosParaEnvio.Senha = formData.senha;
+            }
 
             if (editingFuncionario) {
-                console.log('Atualizando funcionário:', editingFuncionario.id);
-                await funcionarioService.atualizar(dadosParaEnvio);
+                await funcionarioService.atualizar(editingFuncionario.id, dadosParaEnvio);
             } else {
-                console.log('Criando novo funcionário');
+                dadosParaEnvio.Senha = formData.senha;
                 await funcionarioService.criar(dadosParaEnvio);
             }
             await loadFuncionarios();
@@ -163,6 +239,8 @@ const GerenciarFuncionarios: React.FC = () => {
             showCrudSuccess(editingFuncionario ? 'update' : 'create', 'funcionário');
         } catch (err) {
             handleRequestError(err, 'Erro ao salvar funcionário');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -500,130 +578,170 @@ const GerenciarFuncionarios: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nome}
-                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.telefone}
-                                        onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Senha</label>
-                                    <input
-                                        type="password"
-                                        value={formData.senha}
-                                        onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required={!editingFuncionario}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Cargo</label>
-                                    <select
-                                        value={formData.cargo}
-                                        onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    >
-                                        <option value="">Selecione um cargo</option>
-                                        {Object.values(CARGO_FUNCIONARIO).map(cargo => (
-                                            <option key={cargo} value={cargo}>{cargo}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Salário</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.salario}
-                                        onChange={(e) => setFormData({ ...formData, salario: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Admissão</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataAdmissao}
-                                        onChange={(e) => setFormData({ ...formData, dataAdmissao: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Demissão (opcional)</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataDemissao}
-                                        onChange={(e) => setFormData({ ...formData, dataDemissao: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="flex items-center">
+                            <form onSubmit={(e) => { e.preventDefault(); saveFuncionario(); }} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
                                         <input
-                                            type="checkbox"
-                                            checked={formData.ativo}
-                                            onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-                                            className="mr-2"
+                                            type="text"
+                                            value={formData.nome}
+                                            onChange={(e) => handleFieldChange('nome', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
                                         />
-                                        <span className="text-sm font-medium text-gray-700">Funcionário ativo</span>
-                                    </label>
-                                </div>
-                            </div>
+                                        {errors.nome && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
+                                        )}
+                                    </div>
 
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title="Cancelar"
-                                >
-                                    <CancelIcon size={20} />
-                                </button>
-                                <button
-                                    onClick={saveFuncionario}
-                                    className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title={editingFuncionario ? 'Atualizar' : 'Criar'}
-                                >
-                                    {editingFuncionario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
-                                </button>
-                            </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                                        <input
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(e) => handleFieldChange('email', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.email && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Telefone *</label>
+                                        <input
+                                            type="tel"
+                                            value={formData.telefone}
+                                            onChange={(e) => handleFieldChange('telefone', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.telefone && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Senha {!editingFuncionario && '*'}
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={formData.senha}
+                                            onChange={(e) => handleFieldChange('senha', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.senha ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="new-password"
+                                            required={!editingFuncionario}
+                                        />
+                                        {errors.senha && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.senha}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Cargo *</label>
+                                        <select
+                                            value={formData.cargo}
+                                            onChange={(e) => handleFieldChange('cargo', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cargo ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            required
+                                        >
+                                            <option value="">Selecione um cargo</option>
+                                            {Object.values(CARGO_FUNCIONARIO).map(cargo => (
+                                                <option key={cargo} value={cargo}>{cargo}</option>
+                                            ))}
+                                        </select>
+                                        {errors.cargo && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.cargo}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Salário *</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formData.salario}
+                                            onChange={(e) => handleFieldChange('salario', parseFloat(e.target.value) || 0)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.salario ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.salario && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.salario}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Admissão *</label>
+                                        <input
+                                            type="date"
+                                            value={formData.dataAdmissao}
+                                            onChange={(e) => handleFieldChange('dataAdmissao', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataAdmissao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            required
+                                        />
+                                        {errors.dataAdmissao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.dataAdmissao}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Demissão (opcional)</label>
+                                        <input
+                                            type="date"
+                                            value={formData.dataDemissao}
+                                            onChange={(e) => handleFieldChange('dataDemissao', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataDemissao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        />
+                                        {errors.dataDemissao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.dataDemissao}</p>
+                                        )}
+                                    </div>
+
+                                    <div className="md:col-span-2">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.ativo}
+                                                onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                                                className="mr-2"
+                                            />
+                                            <span className="text-sm font-medium text-gray-700">Funcionário ativo</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Botões do Modal */}
+                                <div className="flex justify-end gap-4 mt-8">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title="Cancelar"
+                                    >
+                                        <CancelIcon size={20} />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title={editingFuncionario ? 'Atualizar' : 'Criar'}
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        ) : (
+                                            editingFuncionario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 )}

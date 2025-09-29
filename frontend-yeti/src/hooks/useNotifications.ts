@@ -19,7 +19,7 @@ export const useNotifications = () => {
             type: 'success',
             title,
             message,
-            duration: duration ?? 0 // Não fecha automaticamente - usuário deve fechar manualmente
+            duration: duration ?? 5000 // 5 segundos por padrão
         });
     };
 
@@ -31,7 +31,7 @@ export const useNotifications = () => {
             type: 'error',
             title,
             message,
-            duration: duration ?? 0 // Não fecha automaticamente para erros
+            duration: duration ?? 8000 // 8 segundos para erros (mais tempo para ler)
         });
     };
 

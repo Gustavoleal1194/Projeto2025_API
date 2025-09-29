@@ -5,6 +5,7 @@ import type { Emprestimo, EmprestimoForm } from '../types/entities';
 import { emprestimoService } from '../services/emprestimoService';
 import { EditIcon, DeleteIcon, ReturnIcon, RefreshIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
+import { EmprestimoValidator } from '../validators/EmprestimoValidator';
 
 const GerenciarEmprestimos: React.FC = () => {
     const { showError, handleRequestError, showCrudSuccess } = useNotifications();
@@ -28,6 +29,46 @@ const GerenciarEmprestimos: React.FC = () => {
         dataPrevistaDevolucao: '',
         observacoes: ''
     });
+
+    // Estados de validação
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Funções de validação usando validador centralizado
+    const validateField = (name: string, value: string | number): string => {
+        switch (name) {
+            case 'idUsuario':
+                return EmprestimoValidator.validateIdUsuario(Number(value));
+            case 'idExemplar':
+                return EmprestimoValidator.validateIdExemplar(Number(value));
+            case 'dataEmprestimo':
+                return EmprestimoValidator.validateDataEmprestimo(String(value));
+            case 'dataPrevistaDevolucao':
+                return EmprestimoValidator.validateDataPrevistaDevolucao(String(value), formData.dataEmprestimo);
+            case 'observacoes':
+                return EmprestimoValidator.validateObservacoes(String(value));
+            default:
+                return '';
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const newErrors = EmprestimoValidator.validateForm(formData);
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Handler para mudanças nos campos com validação em tempo real
+    const handleFieldChange = (name: string, value: string | number) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Validar campo em tempo real
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+    };
 
     // Carregar empréstimos
     const loadEmprestimos = async () => {
@@ -96,12 +137,14 @@ const GerenciarEmprestimos: React.FC = () => {
                 observacoes: ''
             });
         }
+        setErrors({}); // Limpar erros ao abrir modal
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingEmprestimo(null);
+        setErrors({}); // Limpar erros ao fechar modal
         const hoje = new Date();
         const dataPrevista = new Date();
         dataPrevista.setDate(hoje.getDate() + 14); // 14 dias a partir de hoje
@@ -117,7 +160,16 @@ const GerenciarEmprestimos: React.FC = () => {
 
     // Salvar empréstimo
     const saveEmprestimo = async () => {
+        if (isSubmitting) return;
+
+        // Validar formulário antes de enviar
+        if (!validateForm()) {
+            return;
+        }
+
         try {
+            setIsSubmitting(true);
+
             // Preparar dados para envio
             const dadosParaEnvio = { ...formData };
 
@@ -158,6 +210,8 @@ const GerenciarEmprestimos: React.FC = () => {
             showCrudSuccess(editingEmprestimo ? 'update' : 'create', 'empréstimo');
         } catch (error) {
             handleRequestError(error, 'Erro ao salvar empréstimo');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -579,87 +633,113 @@ const GerenciarEmprestimos: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Usuário ID */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">ID do Usuário *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.idUsuario}
-                                        onChange={(e) => setFormData({ ...formData, idUsuario: parseInt(e.target.value) || 0 })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
+                            <form onSubmit={(e) => { e.preventDefault(); saveEmprestimo(); }} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Usuário ID */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">ID do Usuário *</label>
+                                        <input
+                                            type="number"
+                                            value={formData.idUsuario || ''}
+                                            onChange={(e) => handleFieldChange('idUsuario', parseInt(e.target.value) || 0)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.idUsuario ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.idUsuario && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.idUsuario}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Exemplar ID */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">ID do Exemplar *</label>
+                                        <input
+                                            type="number"
+                                            value={formData.idExemplar || ''}
+                                            onChange={(e) => handleFieldChange('idExemplar', parseInt(e.target.value) || 0)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.idExemplar ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.idExemplar && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.idExemplar}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Data de Empréstimo */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Empréstimo *</label>
+                                        <input
+                                            type="date"
+                                            value={formData.dataEmprestimo}
+                                            onChange={(e) => handleFieldChange('dataEmprestimo', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataEmprestimo ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            required
+                                        />
+                                        {errors.dataEmprestimo && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.dataEmprestimo}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Data de Devolução Prevista */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Devolução Prevista *</label>
+                                        <input
+                                            type="date"
+                                            value={formData.dataPrevistaDevolucao}
+                                            onChange={(e) => handleFieldChange('dataPrevistaDevolucao', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataPrevistaDevolucao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            required
+                                        />
+                                        {errors.dataPrevistaDevolucao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.dataPrevistaDevolucao}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Observações */}
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                        <textarea
+                                            value={formData.observacoes}
+                                            onChange={(e) => handleFieldChange('observacoes', e.target.value)}
+                                            rows={3}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.observacoes ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            placeholder="Observações sobre o empréstimo..."
+                                            autoComplete="off"
+                                        />
+                                        {errors.observacoes && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.observacoes}</p>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Exemplar ID */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">ID do Exemplar *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.idExemplar}
-                                        onChange={(e) => setFormData({ ...formData, idExemplar: parseInt(e.target.value) || 0 })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
+                                {/* Botões */}
+                                <div className="flex justify-end gap-4 mt-8">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title="Cancelar"
+                                    >
+                                        <CancelIcon size={20} />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title={editingEmprestimo ? 'Atualizar' : 'Criar'}
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        ) : (
+                                            editingEmprestimo ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                        )}
+                                    </button>
                                 </div>
-
-                                {/* Data de Empréstimo */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Empréstimo *</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataEmprestimo}
-                                        onChange={(e) => setFormData({ ...formData, dataEmprestimo: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Data de Devolução Prevista */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Devolução Prevista *</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataPrevistaDevolucao}
-                                        onChange={(e) => setFormData({ ...formData, dataPrevistaDevolucao: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Observações */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
-                                    <textarea
-                                        value={formData.observacoes}
-                                        onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                                        rows={3}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Observações sobre o empréstimo..."
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Botões */}
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title="Cancelar"
-                                >
-                                    <CancelIcon size={20} />
-                                </button>
-                                <button
-                                    onClick={saveEmprestimo}
-                                    className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title={editingEmprestimo ? 'Atualizar' : 'Criar'}
-                                >
-                                    {editingEmprestimo ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
-                                </button>
-                            </div>
+                            </form>
                         </motion.div>
                     </div>
                 )}

@@ -5,6 +5,7 @@ import type { Autor, AutorForm } from '../types/entities';
 import { autorService } from '../services/autorService';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
+import { AutorValidator } from '../validators/AutorValidator';
 
 const GerenciarAutores: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -36,6 +37,52 @@ const GerenciarAutores: React.FC = () => {
         pais: '',
         ativo: true
     });
+
+    // Estados de validação
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Funções de validação usando validador centralizado
+    const validateField = (name: string, value: string): string => {
+        switch (name) {
+            case 'nome':
+                return AutorValidator.validateNome(value);
+            case 'nomeCompleto':
+                return AutorValidator.validateNomeCompleto(value);
+            case 'nomeArtistico':
+                return AutorValidator.validateNomeArtistico(value);
+            case 'nacionalidade':
+                return AutorValidator.validateNacionalidade(value);
+            case 'paisOrigem':
+                return AutorValidator.validatePaisOrigem(value);
+            case 'dataNascimento':
+                return AutorValidator.validateDataNascimento(value);
+            case 'website':
+                return AutorValidator.validateWebsite(value);
+            case 'email':
+                return AutorValidator.validateEmail(value);
+            case 'telefone':
+                return AutorValidator.validateTelefone(value);
+            case 'endereco':
+                return AutorValidator.validateEndereco(value);
+            case 'cidade':
+                return AutorValidator.validateCidade(value);
+            case 'estado':
+                return AutorValidator.validateEstado(value);
+            case 'cep':
+                return AutorValidator.validateCEP(value);
+            case 'pais':
+                return AutorValidator.validatePais(value);
+            default:
+                return '';
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const newErrors = AutorValidator.validateForm(formData);
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     // Carregar autores
     const loadAutores = async () => {
@@ -116,12 +163,14 @@ const GerenciarAutores: React.FC = () => {
                 ativo: true
             });
         }
+        setErrors({}); // Limpar erros ao abrir modal
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingAutor(null);
+        setErrors({});
         setFormData({
             nome: '',
             nomeCompleto: '',
@@ -141,9 +190,30 @@ const GerenciarAutores: React.FC = () => {
         });
     };
 
+    // Handler para mudanças nos campos com validação em tempo real
+    const handleFieldChange = (name: string, value: string) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Validar campo em tempo real
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+    };
+
     // Salvar autor
     const saveAutor = async () => {
+        if (isSubmitting) return;
+
+        // Validar formulário antes de enviar
+        if (!validateForm()) {
+            return;
+        }
+
         try {
+            setIsSubmitting(true);
+
             if (editingAutor) {
                 await autorService.atualizar({ ...formData, id: editingAutor.id } as any);
             } else {
@@ -156,6 +226,8 @@ const GerenciarAutores: React.FC = () => {
             showCrudSuccess(editingAutor ? 'update' : 'create', 'autor');
         } catch (error) {
             handleRequestError(error, 'Erro ao salvar autor');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -472,197 +544,260 @@ const GerenciarAutores: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Nome */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nome}
-                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Nome Completo */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nomeCompleto}
-                                        onChange={(e) => setFormData({ ...formData, nomeCompleto: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Nome Artístico */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome Artístico</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nomeArtistico}
-                                        onChange={(e) => setFormData({ ...formData, nomeArtistico: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Nacionalidade */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nacionalidade *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nacionalidade}
-                                        onChange={(e) => setFormData({ ...formData, nacionalidade: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* País de Origem */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">País de Origem</label>
-                                    <input
-                                        type="text"
-                                        value={formData.paisOrigem}
-                                        onChange={(e) => setFormData({ ...formData, paisOrigem: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Data de Nascimento */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Nascimento</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataNascimento}
-                                        onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Website */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
-                                    <input
-                                        type="url"
-                                        value={formData.website}
-                                        onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Email */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Telefone */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.telefone}
-                                        onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Endereço */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Endereço</label>
-                                    <input
-                                        type="text"
-                                        value={formData.endereco}
-                                        onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Cidade */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Cidade</label>
-                                    <input
-                                        type="text"
-                                        value={formData.cidade}
-                                        onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Estado */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
-                                    <input
-                                        type="text"
-                                        value={formData.estado}
-                                        onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* CEP */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">CEP</label>
-                                    <input
-                                        type="text"
-                                        value={formData.cep}
-                                        onChange={(e) => setFormData({ ...formData, cep: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* País */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
-                                    <input
-                                        type="text"
-                                        value={formData.pais}
-                                        onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Status */}
-                                <div className="md:col-span-2">
-                                    <label className="flex items-center">
+                            <form onSubmit={(e) => { e.preventDefault(); saveAutor(); }} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Nome */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
                                         <input
-                                            type="checkbox"
-                                            checked={formData.ativo}
-                                            onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-                                            className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            type="text"
+                                            value={formData.nome}
+                                            onChange={(e) => handleFieldChange('nome', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
                                         />
-                                        <span className="text-sm font-medium text-gray-700">Ativo</span>
-                                    </label>
-                                </div>
-                            </div>
+                                        {errors.nome && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
+                                        )}
+                                    </div>
 
-                            {/* Botões */}
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title="Cancelar"
-                                >
-                                    <CancelIcon size={20} />
-                                </button>
-                                <button
-                                    onClick={saveAutor}
-                                    className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title={editingAutor ? 'Atualizar' : 'Criar'}
-                                >
-                                    {editingAutor ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
-                                </button>
-                            </div>
+                                    {/* Nome Completo */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
+                                        <input
+                                            type="text"
+                                            value={formData.nomeCompleto}
+                                            onChange={(e) => handleFieldChange('nomeCompleto', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nomeCompleto ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.nomeCompleto && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.nomeCompleto}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Nome Artístico */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome Artístico</label>
+                                        <input
+                                            type="text"
+                                            value={formData.nomeArtistico}
+                                            onChange={(e) => handleFieldChange('nomeArtistico', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nomeArtistico ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.nomeArtistico && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.nomeArtistico}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Nacionalidade */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nacionalidade *</label>
+                                        <input
+                                            type="text"
+                                            value={formData.nacionalidade}
+                                            onChange={(e) => handleFieldChange('nacionalidade', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nacionalidade ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.nacionalidade && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.nacionalidade}</p>
+                                        )}
+                                    </div>
+
+                                    {/* País de Origem */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">País de Origem</label>
+                                        <input
+                                            type="text"
+                                            value={formData.paisOrigem}
+                                            onChange={(e) => handleFieldChange('paisOrigem', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.paisOrigem ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.paisOrigem && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.paisOrigem}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Data de Nascimento */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Nascimento *</label>
+                                        <input
+                                            type="date"
+                                            value={formData.dataNascimento}
+                                            onChange={(e) => handleFieldChange('dataNascimento', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataNascimento ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            required
+                                        />
+                                        {errors.dataNascimento && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.dataNascimento}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Website */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                                        <input
+                                            type="url"
+                                            value={formData.website}
+                                            onChange={(e) => handleFieldChange('website', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.website ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.website && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.website}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Email */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(e) => handleFieldChange('email', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.email && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Telefone */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                                        <input
+                                            type="tel"
+                                            value={formData.telefone}
+                                            onChange={(e) => handleFieldChange('telefone', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.telefone && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Endereço */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Endereço</label>
+                                        <input
+                                            type="text"
+                                            value={formData.endereco}
+                                            onChange={(e) => handleFieldChange('endereco', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.endereco ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.endereco && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.endereco}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Cidade */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Cidade</label>
+                                        <input
+                                            type="text"
+                                            value={formData.cidade}
+                                            onChange={(e) => handleFieldChange('cidade', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cidade ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.cidade && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.cidade}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Estado */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                                        <input
+                                            type="text"
+                                            value={formData.estado}
+                                            onChange={(e) => handleFieldChange('estado', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.estado ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.estado && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.estado}</p>
+                                        )}
+                                    </div>
+
+                                    {/* CEP */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">CEP</label>
+                                        <input
+                                            type="text"
+                                            value={formData.cep}
+                                            onChange={(e) => handleFieldChange('cep', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cep ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.cep && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.cep}</p>
+                                        )}
+                                    </div>
+
+                                    {/* País */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
+                                        <input
+                                            type="text"
+                                            value={formData.pais}
+                                            onChange={(e) => handleFieldChange('pais', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.pais ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.pais && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.pais}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Status */}
+                                    <div className="md:col-span-2">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.ativo}
+                                                onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                                                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            />
+                                            <span className="text-sm font-medium text-gray-700">Ativo</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Botões do Modal */}
+                                <div className="flex justify-end gap-4 mt-8">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title="Cancelar"
+                                    >
+                                        <CancelIcon size={20} />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title={editingAutor ? 'Atualizar' : 'Criar'}
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        ) : (
+                                            editingAutor ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
                         </motion.div>
                     </div>
                 )}

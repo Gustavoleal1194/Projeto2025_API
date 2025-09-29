@@ -4,11 +4,13 @@ import Layout from '../components/Layout/Layout';
 import type { Usuario, UsuarioDTO } from '../types/entities';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
+import { getPlaceholderByFieldName } from '../components/PlaceholderHelper';
+import { UsuarioValidator } from '../validators/UsuarioValidator';
 
 interface GerenciarUsuariosProps { }
 
 const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
-    const { showError, handleRequestError, showCrudSuccess } = useNotifications();
+    const { handleRequestError, showCrudSuccess } = useNotifications();
 
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [loading, setLoading] = useState(true);
@@ -26,6 +28,71 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         senha: ''
     });
     const [confirmarSenha, setConfirmarSenha] = useState('');
+
+    // Estados de validação
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Funções de validação usando validador centralizado
+    const validateField = (name: string, value: string): string => {
+        switch (name) {
+            case 'nome':
+                return UsuarioValidator.validateNome(value);
+            case 'email':
+                return UsuarioValidator.validateEmail(value);
+            case 'cpf':
+                return UsuarioValidator.validateCPF(value);
+            case 'telefone':
+                return UsuarioValidator.validateTelefone(value);
+            case 'dataNascimento':
+                return UsuarioValidator.validateDataNascimento(value);
+            case 'senha':
+                return UsuarioValidator.validateSenha(value, !!editingUsuario);
+            case 'confirmarSenha':
+                return UsuarioValidator.validateConfirmarSenha(formData.senha || '', value, !!editingUsuario);
+            default:
+                return '';
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const formDataWithConfirm = { ...formData, confirmarSenha };
+        const newErrors = UsuarioValidator.validateForm(formDataWithConfirm, !!editingUsuario);
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Handler para mudanças nos campos com validação em tempo real
+    const handleFieldChange = (name: string, value: string) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Validar campo em tempo real
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+
+        // Se mudou a senha, revalidar confirmação de senha
+        if (name === 'senha') {
+            const confirmarSenhaError = UsuarioValidator.validateConfirmarSenha(value, confirmarSenha, !!editingUsuario);
+            setErrors(prev => ({
+                ...prev,
+                confirmarSenha: confirmarSenhaError
+            }));
+        }
+    };
+
+    const handleConfirmarSenhaChange = (value: string) => {
+        setConfirmarSenha(value);
+
+        // Validar confirmação de senha
+        const error = UsuarioValidator.validateConfirmarSenha(formData.senha || '', value, !!editingUsuario);
+        setErrors(prev => ({
+            ...prev,
+            confirmarSenha: error
+        }));
+    };
 
     // Carregar usuários
     const loadUsuarios = async () => {
@@ -94,13 +161,30 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             });
         }
         setConfirmarSenha('');
+        setErrors({}); // Limpar erros ao abrir modal
         setShowModal(true);
+
+        // Limpar campos após um pequeno delay para evitar autofill
+        setTimeout(() => {
+            if (!usuario) {
+                setFormData({
+                    nome: '',
+                    email: '',
+                    cpf: '',
+                    telefone: '',
+                    dataNascimento: '',
+                    senha: ''
+                });
+                setConfirmarSenha('');
+            }
+        }, 100);
     };
 
     // Fechar modal
     const closeModal = () => {
         setShowModal(false);
         setEditingUsuario(null);
+        setErrors({});
         setFormData({
             nome: '',
             email: '',
@@ -112,49 +196,6 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         setConfirmarSenha('');
     };
 
-    // Funções de validação
-    const validarEmail = (email: string): boolean => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
-
-    const validarCPF = (cpf: string): boolean => {
-        // Remove caracteres não numéricos
-        const cpfLimpo = cpf.replace(/\D/g, '');
-
-        // Verifica se tem 11 dígitos
-        if (cpfLimpo.length !== 11) return false;
-
-        // Verifica se não são todos iguais
-        if (/^(\d)\1{10}$/.test(cpfLimpo)) return false;
-
-        // Validação dos dígitos verificadores
-        let soma = 0;
-        for (let i = 0; i < 9; i++) {
-            soma += parseInt(cpfLimpo.charAt(i)) * (10 - i);
-        }
-        let resto = 11 - (soma % 11);
-        if (resto === 10 || resto === 11) resto = 0;
-        if (resto !== parseInt(cpfLimpo.charAt(9))) return false;
-
-        soma = 0;
-        for (let i = 0; i < 10; i++) {
-            soma += parseInt(cpfLimpo.charAt(i)) * (11 - i);
-        }
-        resto = 11 - (soma % 11);
-        if (resto === 10 || resto === 11) resto = 0;
-        if (resto !== parseInt(cpfLimpo.charAt(10))) return false;
-
-        return true;
-    };
-
-    const validarDataNascimento = (data: string): boolean => {
-        if (!data) return true; // Data é opcional
-        const dataNasc = new Date(data);
-        const hoje = new Date();
-        const idade = hoje.getFullYear() - dataNasc.getFullYear();
-        return idade >= 0 && idade <= 120; // Idade válida entre 0 e 120 anos
-    };
 
     // Funções de formatação
     const formatarCPF = (cpf: string): string => {
@@ -173,42 +214,15 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
     // Salvar usuário
     const saveUsuario = async () => {
+        if (isSubmitting) return;
+
+        // Validar formulário antes de enviar
+        if (!validateForm()) {
+            return;
+        }
+
         try {
-            // Validar campos obrigatórios
-            if (!formData.nome?.trim()) {
-                throw new Error('Nome é obrigatório');
-            }
-            if (!formData.email?.trim()) {
-                throw new Error('Email é obrigatório');
-            }
-            if (!formData.cpf?.trim()) {
-                throw new Error('CPF é obrigatório');
-            }
-
-            // Validar formato do email
-            if (!validarEmail(formData.email)) {
-                throw new Error('Email inválido');
-            }
-
-            // Validar CPF
-            if (!validarCPF(formData.cpf)) {
-                throw new Error('CPF inválido');
-            }
-
-            // Validar data de nascimento
-            if (formData.dataNascimento && !validarDataNascimento(formData.dataNascimento)) {
-                throw new Error('Data de nascimento inválida');
-            }
-
-            // Validar senhas se for criação de novo usuário
-            if (!editingUsuario) {
-                if (!formData.senha || formData.senha.length < 6) {
-                    throw new Error('A senha deve ter pelo menos 6 caracteres');
-                }
-                if (formData.senha !== confirmarSenha) {
-                    throw new Error('As senhas não coincidem');
-                }
-            }
+            setIsSubmitting(true);
 
             const token = localStorage.getItem('yeti_token');
             const url = editingUsuario
@@ -241,20 +255,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             showCrudSuccess(editingUsuario ? 'update' : 'create', 'usuário');
         } catch (err) {
             // Usar o sistema de notificações para mostrar erros
-            if (err instanceof Error) {
-                // Se for erro de validação do frontend
-                if (err.message.includes('obrigatório') ||
-                    err.message.includes('inválido') ||
-                    err.message.includes('coincidem') ||
-                    err.message.includes('caracteres')) {
-                    showError('Validação Falhou', err.message);
-                } else {
-                    // Se for erro de requisição
-                    handleRequestError(err, 'Erro ao salvar usuário');
-                }
-            } else {
-                handleRequestError(err, 'Erro ao salvar usuário');
-            }
+            handleRequestError(err, 'Erro ao salvar usuário');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -642,92 +645,129 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
                             <form onSubmit={(e) => { e.preventDefault(); saveUsuario(); }} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nome</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nome *</label>
                                     <input
                                         type="text"
                                         value={formData.nome || ''}
-                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        onChange={(e) => handleFieldChange('nome', e.target.value)}
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                            }`}
+                                        placeholder={getPlaceholderByFieldName('nome')}
+                                        autoComplete="off"
                                         required
                                     />
+                                    {errors.nome && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
+                                    )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
                                     <input
                                         type="email"
                                         value={formData.email || ''}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        onChange={(e) => handleFieldChange('email', e.target.value)}
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.email ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                            }`}
+                                        placeholder={getPlaceholderByFieldName('email')}
+                                        autoComplete="off"
                                         required
                                     />
+                                    {errors.email && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                    )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">CPF</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">CPF *</label>
                                     <input
                                         type="text"
                                         value={formData.cpf || ''}
                                         onChange={(e) => {
                                             const cpfFormatado = formatarCPF(e.target.value);
-                                            setFormData({ ...formData, cpf: cpfFormatado });
+                                            handleFieldChange('cpf', cpfFormatado);
                                         }}
-                                        placeholder="000.000.000-00"
+                                        placeholder={getPlaceholderByFieldName('cpf')}
                                         maxLength={14}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.cpf ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                            }`}
                                         required
                                     />
+                                    {errors.cpf && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.cpf}</p>
+                                    )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone *</label>
                                     <input
                                         type="text"
                                         value={formData.telefone || ''}
                                         onChange={(e) => {
                                             const telefoneFormatado = formatarTelefone(e.target.value);
-                                            setFormData({ ...formData, telefone: telefoneFormatado });
+                                            handleFieldChange('telefone', telefoneFormatado);
                                         }}
-                                        placeholder="(00) 00000-0000"
+                                        placeholder={getPlaceholderByFieldName('telefone')}
                                         maxLength={15}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                            }`}
+                                        required
                                     />
+                                    {errors.telefone && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
+                                    )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Data de Nascimento</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Data de Nascimento *</label>
                                     <input
                                         type="date"
                                         value={formData.dataNascimento || ''}
-                                        onChange={(e) => setFormData({ ...formData, dataNascimento: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                        onChange={(e) => handleFieldChange('dataNascimento', e.target.value)}
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.dataNascimento ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                            }`}
+                                        placeholder={getPlaceholderByFieldName('datanascimento')}
+                                        required
                                     />
+                                    {errors.dataNascimento && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.dataNascimento}</p>
+                                    )}
                                 </div>
 
                                 {!editingUsuario && (
                                     <>
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Senha</label>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Senha *</label>
                                             <input
                                                 type="password"
                                                 value={formData.senha || ''}
-                                                onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                                                className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                                placeholder="Mínimo 6 caracteres"
+                                                onChange={(e) => handleFieldChange('senha', e.target.value)}
+                                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.senha ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                                    }`}
+                                                placeholder={getPlaceholderByFieldName('senha')}
+                                                autoComplete="new-password"
                                                 required
                                             />
+                                            {errors.senha && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.senha}</p>
+                                            )}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha</label>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha *</label>
                                             <input
                                                 type="password"
                                                 value={confirmarSenha}
-                                                onChange={(e) => setConfirmarSenha(e.target.value)}
-                                                className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                                placeholder="Digite a senha novamente"
+                                                onChange={(e) => handleConfirmarSenhaChange(e.target.value)}
+                                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.confirmarSenha ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                                    }`}
+                                                placeholder={getPlaceholderByFieldName('confirmarsenha')}
+                                                autoComplete="new-password"
                                                 required
                                             />
+                                            {errors.confirmarSenha && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.confirmarSenha}</p>
+                                            )}
                                         </div>
                                     </>
                                 )}
@@ -744,11 +784,19 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                        disabled={isSubmitting}
+                                        className={`p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border flex items-center justify-center ${isSubmitting
+                                            ? 'bg-gray-400 cursor-not-allowed'
+                                            : 'bg-green-500 hover:bg-green-600 border-green-700'
+                                            }`}
                                         style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title={editingUsuario ? 'Atualizar' : 'Criar'}
+                                        title={isSubmitting ? 'Salvando...' : (editingUsuario ? 'Atualizar' : 'Criar')}
                                     >
-                                        {editingUsuario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
+                                        {isSubmitting ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        ) : (
+                                            editingUsuario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                        )}
                                     </button>
                                 </div>
                             </form>

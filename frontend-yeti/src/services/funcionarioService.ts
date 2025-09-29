@@ -6,7 +6,7 @@ const FUNCIONARIO_ENDPOINTS = {
     LISTAR: API_ROUTES.FUNCIONARIOS,
     OBTER: (id: number) => `${API_ROUTES.FUNCIONARIOS}/${id}`,
     CRIAR: API_ROUTES.FUNCIONARIOS,
-    ATUALIZAR: API_ROUTES.FUNCIONARIOS,
+    ATUALIZAR: (id: number) => `${API_ROUTES.FUNCIONARIOS}/${id}`,
     EXCLUIR: (id: number) => `${API_ROUTES.FUNCIONARIOS}/${id}`,
     POR_CARGO: (cargo: string) => `${API_ROUTES.FUNCIONARIOS_POR_CARGO}/${cargo}`,
     ATIVOS: API_ROUTES.FUNCIONARIOS_ATIVOS,
@@ -90,12 +90,12 @@ class FuncionarioService {
     }
 
     // Atualizar funcionário
-    async atualizar(funcionario: FuncionarioForm): Promise<void> {
+    async atualizar(id: number, funcionarioData: FuncionarioForm & { Id: number }): Promise<void> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${FUNCIONARIO_ENDPOINTS.ATUALIZAR}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${FUNCIONARIO_ENDPOINTS.ATUALIZAR(id)}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
-                body: JSON.stringify(funcionario)
+                body: JSON.stringify(funcionarioData)
             });
 
             if (!response.ok) {

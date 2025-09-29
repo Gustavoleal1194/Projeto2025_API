@@ -6,7 +6,7 @@ const EXEMPLAR_ENDPOINTS = {
     LISTAR: API_ROUTES.EXEMPLARES,
     OBTER: (id: number) => `${API_ROUTES.EXEMPLARES}/${id}`,
     CRIAR: API_ROUTES.EXEMPLARES,
-    ATUALIZAR: API_ROUTES.EXEMPLARES,
+    ATUALIZAR: (id: number) => `${API_ROUTES.EXEMPLARES}/${id}`,
     EXCLUIR: (id: number) => `${API_ROUTES.EXEMPLARES}/${id}`,
     DISPONIVEIS: API_ROUTES.EXEMPLARES_DISPONIVEIS,
     POR_LIVRO: (idLivro: number) => `${API_ROUTES.EXEMPLARES_POR_LIVRO}/${idLivro}`,
@@ -90,7 +90,7 @@ class ExemplarService {
     // Atualizar exemplar
     async atualizar(exemplar: ExemplarUpdateRequest): Promise<void> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${EXEMPLAR_ENDPOINTS.ATUALIZAR}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${EXEMPLAR_ENDPOINTS.ATUALIZAR(exemplar.id!)}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(exemplar)

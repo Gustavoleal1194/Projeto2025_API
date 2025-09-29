@@ -5,6 +5,7 @@ import type { Editora, EditoraForm } from '../types/entities';
 import { editoraService } from '../services/editoraService';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
+import { EditoraValidator } from '../validators/EditoraValidator';
 
 const GerenciarEditoras: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -22,17 +23,71 @@ const GerenciarEditoras: React.FC = () => {
     const [formData, setFormData] = useState<EditoraForm>({
         nome: '',
         cnpj: '',
-        telefone: '',
+        telefone: null,
         email: '',
-        endereco: '',
-        cidade: '',
-        estado: '',
-        cep: '',
-        pais: '',
-        dataFundacao: '',
-        site: '',
+        endereco: null,
+        cidade: null,
+        estado: null,
+        cep: null,
+        pais: null,
+        dataFundacao: new Date().toISOString().split('T')[0], // Data de hoje por padrão
+        site: null,
         ativa: true
     });
+
+    // Estados de validação
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Funções de validação usando validador centralizado
+    const validateField = (name: string, value: string): string => {
+        switch (name) {
+            case 'nome':
+                return EditoraValidator.validateNome(value);
+            case 'cnpj':
+                return EditoraValidator.validateCNPJ(value);
+            case 'telefone':
+                return EditoraValidator.validateTelefone(value);
+            case 'email':
+                return EditoraValidator.validateEmail(value);
+            case 'endereco':
+                return EditoraValidator.validateEndereco(value);
+            case 'cidade':
+                return EditoraValidator.validateCidade(value);
+            case 'estado':
+                return EditoraValidator.validateEstado(value);
+            case 'cep':
+                return EditoraValidator.validateCEP(value);
+            case 'pais':
+                return EditoraValidator.validatePais(value);
+            case 'dataFundacao':
+                return EditoraValidator.validateDataFundacao(value);
+            case 'site':
+                return EditoraValidator.validateSite(value);
+            default:
+                return '';
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const newErrors = EditoraValidator.validateForm(formData);
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Handler para mudanças nos campos com validação em tempo real
+    const handleFieldChange = (name: string, value: string) => {
+        // Para dataFundacao, sempre manter como string (não converter para null)
+        const processedValue = (name === 'dataFundacao') ? value : (value.trim() === '' ? null : value);
+        setFormData(prev => ({ ...prev, [name]: processedValue }));
+        
+        // Validar campo em tempo real
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+    };
 
     // Carregar editoras
     const loadEditoras = async () => {
@@ -95,43 +150,54 @@ const GerenciarEditoras: React.FC = () => {
             setFormData({
                 nome: '',
                 cnpj: '',
-                telefone: '',
+                telefone: null,
                 email: '',
-                endereco: '',
-                cidade: '',
-                estado: '',
-                cep: '',
-                pais: '',
-                dataFundacao: '',
-                site: '',
+                endereco: null,
+                cidade: null,
+                estado: null,
+                cep: null,
+                pais: null,
+                dataFundacao: new Date().toISOString().split('T')[0], // Data de hoje por padrão
+                site: null,
                 ativa: true
             });
         }
+        setErrors({}); // Limpar erros ao abrir modal
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingEditora(null);
+        setErrors({}); // Limpar erros ao fechar modal
         setFormData({
             nome: '',
             cnpj: '',
-            telefone: '',
+            telefone: null,
             email: '',
-            endereco: '',
-            cidade: '',
-            estado: '',
-            cep: '',
-            pais: '',
-            dataFundacao: '',
-            site: '',
+            endereco: null,
+            cidade: null,
+            estado: null,
+            cep: null,
+            pais: null,
+            dataFundacao: new Date().toISOString().split('T')[0], // Data de hoje por padrão
+            site: null,
             ativa: true
         });
     };
 
     // Salvar editora
     const saveEditora = async () => {
+        if (isSubmitting) return;
+
+        // Validar formulário antes de enviar
+        if (!validateForm()) {
+            return;
+        }
+
         try {
+            setIsSubmitting(true);
+
             if (editingEditora) {
                 await editoraService.atualizar({ ...formData, id: editingEditora.id } as any);
             } else {
@@ -144,6 +210,8 @@ const GerenciarEditoras: React.FC = () => {
             showCrudSuccess(editingEditora ? 'update' : 'create', 'editora');
         } catch (error) {
             handleRequestError(error, 'Erro ao salvar editora');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -460,164 +528,215 @@ const GerenciarEditoras: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Nome */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nome}
-                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* CNPJ */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">CNPJ *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.cnpj}
-                                        onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Telefone */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.telefone}
-                                        onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Email */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Endereço */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Endereço</label>
-                                    <input
-                                        type="text"
-                                        value={formData.endereco}
-                                        onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Cidade */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Cidade</label>
-                                    <input
-                                        type="text"
-                                        value={formData.cidade}
-                                        onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Estado */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
-                                    <input
-                                        type="text"
-                                        value={formData.estado}
-                                        onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* CEP */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">CEP</label>
-                                    <input
-                                        type="text"
-                                        value={formData.cep}
-                                        onChange={(e) => setFormData({ ...formData, cep: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* País */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
-                                    <input
-                                        type="text"
-                                        value={formData.pais}
-                                        onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Data de Fundação */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Fundação</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataFundacao}
-                                        onChange={(e) => setFormData({ ...formData, dataFundacao: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Site */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Site</label>
-                                    <input
-                                        type="url"
-                                        value={formData.site}
-                                        onChange={(e) => setFormData({ ...formData, site: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Status */}
-                                <div className="md:col-span-2">
-                                    <label className="flex items-center">
+                            <form onSubmit={(e) => { e.preventDefault(); saveEditora(); }} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Nome */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
                                         <input
-                                            type="checkbox"
-                                            checked={formData.ativa}
-                                            onChange={(e) => setFormData({ ...formData, ativa: e.target.checked })}
-                                            className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            type="text"
+                                            value={formData.nome}
+                                            onChange={(e) => handleFieldChange('nome', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
                                         />
-                                        <span className="text-sm font-medium text-gray-700">Ativa</span>
-                                    </label>
-                                </div>
-                            </div>
+                                        {errors.nome && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
+                                        )}
+                                    </div>
 
-                            {/* Botões */}
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title="Cancelar"
-                                >
-                                    <CancelIcon size={20} />
-                                </button>
-                                <button
-                                    onClick={saveEditora}
-                                    className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title={editingEditora ? 'Atualizar' : 'Criar'}
-                                >
-                                    {editingEditora ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
-                                </button>
-                            </div>
+                                    {/* CNPJ */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">CNPJ *</label>
+                                        <input
+                                            type="text"
+                                            value={formData.cnpj}
+                                            onChange={(e) => handleFieldChange('cnpj', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cnpj ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.cnpj && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.cnpj}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Telefone */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                                        <input
+                                            type="tel"
+                                            value={formData.telefone || ''}
+                                            onChange={(e) => handleFieldChange('telefone', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.telefone && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Email */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                                        <input
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(e) => handleFieldChange('email', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.email && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Endereço */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Endereço</label>
+                                        <input
+                                            type="text"
+                                            value={formData.endereco || ''}
+                                            onChange={(e) => handleFieldChange('endereco', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.endereco ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.endereco && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.endereco}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Cidade */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Cidade</label>
+                                        <input
+                                            type="text"
+                                            value={formData.cidade || ''}
+                                            onChange={(e) => handleFieldChange('cidade', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cidade ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.cidade && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.cidade}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Estado */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                                        <input
+                                            type="text"
+                                            value={formData.estado || ''}
+                                            onChange={(e) => handleFieldChange('estado', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.estado ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.estado && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.estado}</p>
+                                        )}
+                                    </div>
+
+                                    {/* CEP */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">CEP</label>
+                                        <input
+                                            type="text"
+                                            value={formData.cep || ''}
+                                            onChange={(e) => handleFieldChange('cep', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cep ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.cep && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.cep}</p>
+                                        )}
+                                    </div>
+
+                                    {/* País */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
+                                        <input
+                                            type="text"
+                                            value={formData.pais || ''}
+                                            onChange={(e) => handleFieldChange('pais', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.pais ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.pais && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.pais}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Data de Fundação */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Fundação</label>
+                                        <input
+                                            type="date"
+                                            value={formData.dataFundacao}
+                                            onChange={(e) => handleFieldChange('dataFundacao', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataFundacao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        />
+                                        {errors.dataFundacao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.dataFundacao}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Site */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Site</label>
+                                        <input
+                                            type="url"
+                                            value={formData.site || ''}
+                                            onChange={(e) => handleFieldChange('site', e.target.value)}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.site ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.site && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.site}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Status */}
+                                    <div className="md:col-span-2">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.ativa}
+                                                onChange={(e) => setFormData({ ...formData, ativa: e.target.checked })}
+                                                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            />
+                                            <span className="text-sm font-medium text-gray-700">Ativa</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Botões */}
+                                <div className="flex justify-end gap-4 mt-8">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title="Cancelar"
+                                    >
+                                        <CancelIcon size={20} />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title={editingEditora ? 'Atualizar' : 'Criar'}
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        ) : (
+                                            editingEditora ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
                         </motion.div>
                     </div>
                 )}

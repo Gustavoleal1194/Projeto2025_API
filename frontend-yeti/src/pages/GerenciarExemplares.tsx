@@ -6,6 +6,7 @@ import type { Exemplar, ExemplarCreateRequest, Livro } from '../constants/entiti
 import Layout from '../components/Layout/Layout';
 import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
+import { ExemplarValidator } from '../validators/ExemplarValidator';
 
 const GerenciarExemplares: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -38,6 +39,52 @@ const GerenciarExemplares: React.FC = () => {
     const [filterLivro, setFilterLivro] = useState('');
     const [filterCondicao, setFilterCondicao] = useState('');
     const [filterDisponibilidade, setFilterDisponibilidade] = useState('todos');
+
+    // Estados de validação
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Funções de validação usando validador centralizado
+    const validateField = (name: string, value: any): string => {
+        switch (name) {
+            case 'idLivro':
+                return ExemplarValidator.validateIdLivro(Number(value) || 0);
+            case 'numeroExemplar':
+                return ExemplarValidator.validateNumeroExemplar(value?.toString() || '');
+            case 'localizacao':
+                return ExemplarValidator.validateLocalizacao(value?.toString() || '');
+            case 'condicao':
+                return ExemplarValidator.validateCondicao(value?.toString() || '');
+            case 'dataAquisicao':
+                return ExemplarValidator.validateDataAquisicao(value?.toString() || '');
+            case 'valorAquisicao':
+                return ExemplarValidator.validateValorAquisicao(Number(value) || 0);
+            case 'fornecedor':
+                return ExemplarValidator.validateFornecedor(value?.toString() || '');
+            case 'observacoes':
+                return ExemplarValidator.validateObservacoes(value?.toString() || '');
+            default:
+                return '';
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const newErrors = ExemplarValidator.validateForm(formData);
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Handler para mudanças nos campos com validação em tempo real
+    const handleFieldChange = (name: string, value: any) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Validar campo em tempo real
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+    };
 
     // Carregar dados
     const loadExemplares = async () => {
@@ -123,12 +170,32 @@ const GerenciarExemplares: React.FC = () => {
                 observacoes: ''
             });
         }
+        setErrors({}); // Limpar erros ao abrir modal
         setIsModalOpen(true);
+
+        // Limpar campos após um pequeno delay para evitar autofill
+        setTimeout(() => {
+            if (!exemplar) {
+                setFormData({
+                    idLivro: 0,
+                    numeroExemplar: '',
+                    localizacao: '',
+                    condicao: 'Bom',
+                    disponivel: true,
+                    ativo: true,
+                    dataAquisicao: new Date().toISOString().split('T')[0],
+                    valorAquisicao: 0,
+                    fornecedor: '',
+                    observacoes: ''
+                });
+            }
+        }, 100);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingExemplar(null);
+        setErrors({}); // Limpar erros ao fechar modal
         setFormData({
             idLivro: 0,
             numeroExemplar: '',
@@ -145,7 +212,15 @@ const GerenciarExemplares: React.FC = () => {
 
     // Salvar exemplar
     const saveExemplar = async () => {
+        if (isSubmitting) return;
+
+        // Validar formulário antes de enviar
+        if (!validateForm()) {
+            return;
+        }
+
         try {
+            setIsSubmitting(true);
             if (editingExemplar) {
                 await exemplarService.atualizar({ ...formData, id: editingExemplar.id });
             } else {
@@ -158,6 +233,8 @@ const GerenciarExemplares: React.FC = () => {
             showCrudSuccess(editingExemplar ? 'update' : 'create', 'exemplar');
         } catch (err) {
             handleRequestError(err, 'Erro ao salvar exemplar');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -518,175 +595,211 @@ const GerenciarExemplares: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Livro */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Livro *
-                                    </label>
-                                    <select
-                                        value={formData.idLivro}
-                                        onChange={(e) => setFormData({ ...formData, idLivro: parseInt(e.target.value) })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    >
-                                        <option value={0}>Selecione um livro</option>
-                                        {livros.map(livro => (
-                                            <option key={livro.id} value={livro.id}>
-                                                {livro.titulo}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Número do Exemplar */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Número do Exemplar *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.numeroExemplar}
-                                        onChange={(e) => setFormData({ ...formData, numeroExemplar: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Localização */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Localização
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.localizacao}
-                                        onChange={(e) => setFormData({ ...formData, localizacao: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Ex: Estante A, Prateleira 3"
-                                    />
-                                </div>
-
-                                {/* Condição */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Condição
-                                    </label>
-                                    <select
-                                        value={formData.condicao}
-                                        onChange={(e) => setFormData({ ...formData, condicao: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    >
-                                        <option value="Excelente">Excelente</option>
-                                        <option value="Bom">Bom</option>
-                                        <option value="Regular">Regular</option>
-                                        <option value="Ruim">Ruim</option>
-                                        <option value="Danificado">Danificado</option>
-                                    </select>
-                                </div>
-
-                                {/* Data de Aquisição */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Data de Aquisição
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataAquisicao}
-                                        onChange={(e) => setFormData({ ...formData, dataAquisicao: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Valor de Aquisição */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Valor de Aquisição (R$)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.valorAquisicao}
-                                        onChange={(e) => setFormData({ ...formData, valorAquisicao: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-
-                                {/* Fornecedor */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Fornecedor
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.fornecedor}
-                                        onChange={(e) => setFormData({ ...formData, fornecedor: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Nome do fornecedor"
-                                    />
-                                </div>
-
-                                {/* Status */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Status
-                                    </label>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.disponivel}
-                                                onChange={(e) => setFormData({ ...formData, disponivel: e.target.checked })}
-                                                className="mr-2"
-                                            />
-                                            Disponível
+                            <form onSubmit={(e) => { e.preventDefault(); saveExemplar(); }} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Livro */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Livro *
                                         </label>
-                                        <label className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.ativo}
-                                                onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-                                                className="mr-2"
-                                            />
-                                            Ativo
+                                        <select
+                                            value={formData.idLivro}
+                                            onChange={(e) => handleFieldChange('idLivro', parseInt(e.target.value))}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.idLivro ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            required
+                                        >
+                                            <option value={0}>Selecione um livro</option>
+                                            {livros.map(livro => (
+                                                <option key={livro.id} value={livro.id}>
+                                                    {livro.titulo}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.idLivro && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.idLivro}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Número do Exemplar */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Número do Exemplar *
                                         </label>
+                                        <input
+                                            type="text"
+                                            value={formData.numeroExemplar}
+                                            onChange={(e) => handleFieldChange('numeroExemplar', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.numeroExemplar ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                            required
+                                        />
+                                        {errors.numeroExemplar && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.numeroExemplar}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Localização */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Localização
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={formData.localizacao}
+                                            onChange={(e) => handleFieldChange('localizacao', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.localizacao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            placeholder="Ex: Estante A, Prateleira 3"
+                                            autoComplete="off"
+                                        />
+                                        {errors.localizacao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.localizacao}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Condição */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Condição
+                                        </label>
+                                        <select
+                                            value={formData.condicao}
+                                            onChange={(e) => handleFieldChange('condicao', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.condicao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        >
+                                            <option value="Excelente">Excelente</option>
+                                            <option value="Bom">Bom</option>
+                                            <option value="Regular">Regular</option>
+                                            <option value="Ruim">Ruim</option>
+                                            <option value="Danificado">Danificado</option>
+                                        </select>
+                                        {errors.condicao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.condicao}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Data de Aquisição */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Data de Aquisição
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={formData.dataAquisicao}
+                                            onChange={(e) => handleFieldChange('dataAquisicao', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataAquisicao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        />
+                                        {errors.dataAquisicao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.dataAquisicao}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Valor de Aquisição */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Valor de Aquisição (R$)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={formData.valorAquisicao}
+                                            onChange={(e) => handleFieldChange('valorAquisicao', parseFloat(e.target.value) || 0)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.valorAquisicao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            autoComplete="off"
+                                        />
+                                        {errors.valorAquisicao && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.valorAquisicao}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Fornecedor */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Fornecedor
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={formData.fornecedor}
+                                            onChange={(e) => handleFieldChange('fornecedor', e.target.value)}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.fornecedor ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            placeholder="Nome do fornecedor"
+                                            autoComplete="off"
+                                        />
+                                        {errors.fornecedor && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.fornecedor}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Status */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Status
+                                        </label>
+                                        <div className="space-y-2">
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.disponivel}
+                                                    onChange={(e) => setFormData({ ...formData, disponivel: e.target.checked })}
+                                                    className="mr-2"
+                                                />
+                                                Disponível
+                                            </label>
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.ativo}
+                                                    onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                                                    className="mr-2"
+                                                />
+                                                Ativo
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Observações */}
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Observações
+                                        </label>
+                                        <textarea
+                                            value={formData.observacoes}
+                                            onChange={(e) => handleFieldChange('observacoes', e.target.value)}
+                                            rows={3}
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.observacoes ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                            placeholder="Observações sobre o exemplar..."
+                                        />
+                                        {errors.observacoes && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.observacoes}</p>
+                                        )}
                                     </div>
                                 </div>
 
-                                {/* Observações */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Observações
-                                    </label>
-                                    <textarea
-                                        value={formData.observacoes}
-                                        onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                                        rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Observações sobre o exemplar..."
-                                    />
+                                {/* Botões do Modal */}
+                                <div className="flex justify-end gap-4 mt-8">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title="Cancelar"
+                                    >
+                                        <CancelIcon size={20} />
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                        style={{ minWidth: '48px', minHeight: '48px' }}
+                                        title={editingExemplar ? 'Atualizar' : 'Criar'}
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        ) : (
+                                            editingExemplar ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                        )}
+                                    </button>
                                 </div>
-                            </div>
-
-                            {/* Botões do Modal */}
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title="Cancelar"
-                                >
-                                    <CancelIcon size={20} />
-                                </button>
-                                <button
-                                    onClick={saveExemplar}
-                                    className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title={editingExemplar ? 'Atualizar' : 'Criar'}
-                                >
-                                    {editingExemplar ? <UpdateIcon size={20} /> : <CreateIcon size={20} />}
-                                </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 )}

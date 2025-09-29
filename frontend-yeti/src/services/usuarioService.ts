@@ -6,7 +6,7 @@ const USUARIO_ENDPOINTS = {
     LISTAR: API_ROUTES.USUARIOS,
     OBTER: (id: number) => `${API_ROUTES.USUARIOS}/${id}`,
     CRIAR: API_ROUTES.USUARIOS,
-    ATUALIZAR: API_ROUTES.USUARIOS,
+    ATUALIZAR: (id: number) => `${API_ROUTES.USUARIOS}/${id}`,
     EXCLUIR: (id: number) => `${API_ROUTES.USUARIOS}/${id}`,
     POR_NOME: (nome: string) => `${API_ROUTES.USUARIOS_POR_NOME}/${nome}`,
     POR_CPF: (cpf: string) => `${API_ROUTES.USUARIOS_POR_CPF}/${cpf}`,
@@ -84,7 +84,7 @@ class UsuarioService {
     // Atualizar usuário
     async atualizar(usuario: UsuarioDTO): Promise<void> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${USUARIO_ENDPOINTS.ATUALIZAR}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${USUARIO_ENDPOINTS.ATUALIZAR(usuario.id!)}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(usuario)

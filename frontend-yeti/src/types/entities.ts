@@ -310,15 +310,15 @@ export interface AutorForm {
 export interface EditoraForm {
     nome: string;
     cnpj: string;
-    telefone: string;
+    telefone: string | null;
     email: string;
-    endereco: string;
-    cidade: string;
-    estado: string;
-    cep: string;
-    pais: string;
-    dataFundacao: string;
-    site: string;
+    endereco: string | null;
+    cidade: string | null;
+    estado: string | null;
+    cep: string | null;
+    pais: string | null;
+    dataFundacao: string; // Obrigatório, sempre preenchido com data de hoje por padrão
+    site: string | null;
     ativa: boolean;
 }
 

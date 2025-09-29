@@ -6,7 +6,7 @@ const AUTOR_ENDPOINTS = {
     LISTAR: API_ROUTES.AUTORES,
     OBTER: (id: number) => `${API_ROUTES.AUTORES}/${id}`,
     CRIAR: API_ROUTES.AUTORES,
-    ATUALIZAR: API_ROUTES.AUTORES,
+    ATUALIZAR: (id: number) => `${API_ROUTES.AUTORES}/${id}`,
     EXCLUIR: (id: number) => `${API_ROUTES.AUTORES}/${id}`,
     POR_NACIONALIDADE: (nacionalidade: string) => `${API_ROUTES.AUTORES_POR_NACIONALIDADE}/${nacionalidade}`,
     BUSCAR: API_ROUTES.AUTORES_BUSCAR,
@@ -86,9 +86,9 @@ class AutorService {
     }
 
     // Atualizar autor
-    async atualizar(autor: AutorForm): Promise<void> {
+    async atualizar(autor: AutorForm & { id: number }): Promise<void> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${AUTOR_ENDPOINTS.ATUALIZAR}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${AUTOR_ENDPOINTS.ATUALIZAR(autor.id)}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(autor)

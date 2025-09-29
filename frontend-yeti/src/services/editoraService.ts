@@ -6,7 +6,7 @@ const EDITORA_ENDPOINTS = {
     LISTAR: API_ROUTES.EDITORAS,
     OBTER: (id: number) => `${API_ROUTES.EDITORAS}/${id}`,
     CRIAR: API_ROUTES.EDITORAS,
-    ATUALIZAR: API_ROUTES.EDITORAS,
+    ATUALIZAR: (id: number) => `${API_ROUTES.EDITORAS}/${id}`,
     EXCLUIR: (id: number) => `${API_ROUTES.EDITORAS}/${id}`,
     ATIVAS: API_ROUTES.EDITORAS_ATIVAS,
     POR_CIDADE: (cidade: string) => `${API_ROUTES.EDITORAS_POR_CIDADE}/${cidade}`,
@@ -87,9 +87,9 @@ class EditoraService {
     }
 
     // Atualizar editora
-    async atualizar(editora: EditoraForm): Promise<void> {
+    async atualizar(editora: EditoraForm & { id: number }): Promise<void> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${EDITORA_ENDPOINTS.ATUALIZAR}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${EDITORA_ENDPOINTS.ATUALIZAR(editora.id)}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(editora)

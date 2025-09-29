@@ -172,7 +172,7 @@ const UsuarioDashboard: React.FC = () => {
                                     : 'text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                🎯 3D
+                                🎯 3D (BETA)
                             </button>
                         </div>
 

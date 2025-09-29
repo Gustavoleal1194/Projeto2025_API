@@ -6,7 +6,7 @@ const LIVRO_ENDPOINTS = {
     LISTAR: API_ROUTES.LIVROS,
     OBTER: (id: number) => `${API_ROUTES.LIVROS}/${id}`,
     CRIAR: API_ROUTES.LIVROS,
-    ATUALIZAR: API_ROUTES.LIVROS,
+    ATUALIZAR: (id: number) => `${API_ROUTES.LIVROS}/${id}`,
     EXCLUIR: (id: number) => `${API_ROUTES.LIVROS}/${id}`,
     DISPONIVEIS: API_ROUTES.LIVROS_DISPONIVEIS,
     POR_GENERO: (genero: string) => `${API_ROUTES.LIVROS_POR_GENERO}/${genero}`,
@@ -89,7 +89,7 @@ class LivroService {
     // Atualizar livro
     async atualizar(livro: LivroUpdateRequest): Promise<void> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${LIVRO_ENDPOINTS.ATUALIZAR}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${LIVRO_ENDPOINTS.ATUALIZAR(livro.id)}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(livro)

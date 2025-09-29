@@ -6,7 +6,7 @@ const EMPRESTIMO_ENDPOINTS = {
     LISTAR: API_ROUTES.EMPRESTIMOS,
     OBTER: (id: number) => `${API_ROUTES.EMPRESTIMOS}/${id}`,
     CRIAR: API_ROUTES.EMPRESTIMOS,
-    ATUALIZAR: API_ROUTES.EMPRESTIMOS,
+    ATUALIZAR: (id: number) => `${API_ROUTES.EMPRESTIMOS}/${id}`,
     EXCLUIR: (id: number) => `${API_ROUTES.EMPRESTIMOS}/${id}`,
     ATIVOS: API_ROUTES.EMPRESTIMOS_ATIVOS,
     POR_USUARIO: (usuarioId: number) => `${API_ROUTES.EMPRESTIMOS_POR_USUARIO}/${usuarioId}`,
@@ -86,9 +86,9 @@ class EmprestimoService {
     }
 
     // Atualizar empréstimo
-    async atualizar(emprestimo: EmprestimoForm): Promise<void> {
+    async atualizar(emprestimo: EmprestimoForm & { id: number }): Promise<void> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${EMPRESTIMO_ENDPOINTS.ATUALIZAR}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${EMPRESTIMO_ENDPOINTS.ATUALIZAR(emprestimo.id)}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(emprestimo)
