@@ -7,6 +7,7 @@ import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../com
 import { useNotifications } from '../hooks/useNotifications';
 import { getPlaceholderByFieldName } from '../components/PlaceholderHelper';
 import { LivroValidator } from '../validators/LivroValidator';
+import { BookLoader } from '../components/Loading';
 
 const GerenciarLivros: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -107,6 +108,10 @@ const GerenciarLivros: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const data = await livroService.listar();
             setLivros(data);
             setLastUpdate(new Date().toLocaleString('pt-BR'));
@@ -284,6 +289,20 @@ const GerenciarLivros: React.FC = () => {
             loading={loading}
             lastUpdate={lastUpdate}
         >
+            {/* Loading State */}
+            {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
+                        <div className="flex flex-col items-center space-y-4">
+                            <BookLoader size="lg" />
+                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                Carregando livros...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Error Alert */}
             {error && (
                 <motion.div

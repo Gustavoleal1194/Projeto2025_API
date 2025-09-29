@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import DashboardService from '../services/dashboardService';
+import { BookLoader } from '../components/Loading';
 import type {
     DashboardData,
     Activity,
@@ -56,6 +57,9 @@ const Dashboard: React.FC = () => {
         try {
             setIsLoading(true);
             setError(null);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
             // Carregar todos os dados do dashboard usando o serviço
             const data = await DashboardService.getAllDashboardData();
@@ -118,9 +122,13 @@ const Dashboard: React.FC = () => {
             {/* Loading State */}
             {isLoading && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 flex items-center space-x-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <span className="text-lg font-medium text-gray-700">Carregando dados...</span>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
+                        <div className="flex flex-col items-center space-y-4">
+                            <BookLoader size="lg" />
+                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                Carregando dados do dashboard...
+                            </p>
+                        </div>
                     </div>
                 </div>
             )}

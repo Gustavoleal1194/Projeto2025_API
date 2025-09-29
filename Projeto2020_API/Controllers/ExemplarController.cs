@@ -44,12 +44,13 @@ namespace Projeto2025_API.Controllers
             return CreatedAtAction(nameof(Get), new { id = exemplar.Id }, exemplar);
         }
 
-        [HttpPut]
-        public async Task<ActionResult> Update([FromBody] ExemplarDTO exemplarDTO)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Update(int id, [FromBody] ExemplarDTO exemplarDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            exemplarDTO.Id = id; // Garantir que o ID seja o correto
             await _exemplarService.UpdateAsync(exemplarDTO);
             return NoContent();
         }

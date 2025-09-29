@@ -7,6 +7,7 @@ import Layout from '../components/Layout/Layout';
 import { EditIcon, DeleteIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { ExemplarValidator } from '../validators/ExemplarValidator';
+import { BookLoader } from '../components/Loading';
 
 const GerenciarExemplares: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -91,6 +92,10 @@ const GerenciarExemplares: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const data = await exemplarService.listar();
             setExemplares(data);
             setLastUpdate(new Date().toLocaleString('pt-BR'));
@@ -261,10 +266,14 @@ const GerenciarExemplares: React.FC = () => {
                 pageSubtitle="Carregando exemplares..."
                 loading={true}
             >
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                        <p className="text-gray-600">Carregando exemplares...</p>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
+                        <div className="flex flex-col items-center space-y-4">
+                            <BookLoader size="lg" />
+                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                Carregando exemplares...
+                            </p>
+                        </div>
                     </div>
                 </div>
             </Layout>

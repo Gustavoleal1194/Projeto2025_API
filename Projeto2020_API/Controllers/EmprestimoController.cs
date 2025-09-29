@@ -45,9 +45,10 @@ namespace Projeto2025_API.Controllers
             return Ok(emprestimo);
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateAsync([FromBody] EmprestimoDTO emprestimoDTO)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] EmprestimoDTO emprestimoDTO)
         {
+            emprestimoDTO.Id = id; // Garantir que o ID seja o correto
             await service.UpdateAsync(emprestimoDTO);
             return NoContent();
         }

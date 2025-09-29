@@ -6,6 +6,7 @@ import { editoraService } from '../services/editoraService';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { EditoraValidator } from '../validators/EditoraValidator';
+import { BookLoader } from '../components/Loading';
 
 const GerenciarEditoras: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -80,7 +81,7 @@ const GerenciarEditoras: React.FC = () => {
         // Para dataFundacao, sempre manter como string (não converter para null)
         const processedValue = (name === 'dataFundacao') ? value : (value.trim() === '' ? null : value);
         setFormData(prev => ({ ...prev, [name]: processedValue }));
-        
+
         // Validar campo em tempo real
         const error = validateField(name, value);
         setErrors(prev => ({
@@ -93,6 +94,10 @@ const GerenciarEditoras: React.FC = () => {
     const loadEditoras = async () => {
         try {
             setLoading(true);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const data = await editoraService.listar();
             setEditoras(data);
             setLastUpdate(new Date().toLocaleString('pt-BR'));
@@ -249,8 +254,22 @@ const GerenciarEditoras: React.FC = () => {
             pageSubtitle="Administre as editoras da biblioteca"
             loading={loading}
             onRefresh={loadEditoras}
-            lastUpdate={lastUpdate}
         >
+            {/* Loading State */}
+            {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
+                        <div className="flex flex-col items-center space-y-4">
+                            <BookLoader size="lg" />
+                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                Carregando editoras...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Page Content */}
             <div className="space-y-6">
                 {/* Cards de Estatísticas */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -6,6 +6,7 @@ import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, Upda
 import { useNotifications } from '../hooks/useNotifications';
 import { getPlaceholderByFieldName } from '../components/PlaceholderHelper';
 import { UsuarioValidator } from '../validators/UsuarioValidator';
+import { BookLoader } from '../components/Loading';
 
 interface GerenciarUsuariosProps { }
 
@@ -98,6 +99,10 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
     const loadUsuarios = async () => {
         try {
             setLoading(true);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const token = localStorage.getItem('yeti_token');
             const response = await fetch('http://localhost:5072/api/Usuario', {
                 headers: {
@@ -327,9 +332,13 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             {/* Loading State */}
             {loading && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 flex items-center space-x-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <span className="text-lg font-medium text-gray-700">Carregando usuários...</span>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
+                        <div className="flex flex-col items-center space-y-4">
+                            <BookLoader size="lg" />
+                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                Carregando usuários...
+                            </p>
+                        </div>
                     </div>
                 </div>
             )}
@@ -463,14 +472,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="bg-white shadow-2xl border border-blue-100 overflow-hidden"
             >
-                {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <div className="flex flex-col items-center">
-                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
-                            <p className="mt-4 text-lg text-gray-600">Carregando usuários...</p>
-                        </div>
-                    </div>
-                ) : error ? (
+                {error ? (
                     <div className="flex flex-col items-center justify-center py-20">
                         <div className="text-red-500 text-xl mb-4">❌ {error}</div>
                         <button

@@ -8,6 +8,8 @@ using Interface.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using FluentValidation;
+using Projeto2025_API.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +99,9 @@ builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 
 // Configurar autenticação JWT
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Configurar FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
 
 // Configurar JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "MinhaChaveSecretaSuperSeguraParaJWT2025!@#";

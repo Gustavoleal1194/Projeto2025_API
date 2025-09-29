@@ -7,6 +7,7 @@ import { CARGO_FUNCIONARIO } from '../constants/entities';
 import { EditIcon, DeleteIcon, PlayIcon, PauseIcon, CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { FuncionarioValidator } from '../validators/FuncionarioValidator';
+import { BookLoader } from '../components/Loading';
 
 const GerenciarFuncionarios: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -88,6 +89,10 @@ const GerenciarFuncionarios: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
+
+            // Loading mínimo de 1.5s para melhor UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const data = await funcionarioService.listar();
             setFuncionarios(data);
             setFilteredFuncionarios(data);
@@ -286,8 +291,22 @@ const GerenciarFuncionarios: React.FC = () => {
             pageSubtitle="Administre os funcionários da biblioteca"
             loading={loading}
             onRefresh={loadFuncionarios}
-            lastUpdate={lastUpdate}
         >
+            {/* Loading State */}
+            {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
+                        <div className="flex flex-col items-center space-y-4">
+                            <BookLoader size="lg" />
+                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                Carregando funcionários...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Page Content */}
             <div className="space-y-6">
                 {/* Cards de Estatísticas */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

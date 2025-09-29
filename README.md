@@ -1,20 +1,36 @@
-# 📚 Sistema de Biblioteca - API REST
+# 📚 Yeti Library System - Sistema Completo de Biblioteca
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download)
+[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0.2-blue.svg)](https://www.typescriptlang.org/)
 [![Entity Framework](https://img.shields.io/badge/Entity%20Framework-Core-green.svg)](https://docs.microsoft.com/en-us/ef/core/)
 [![JWT](https://img.shields.io/badge/JWT-Authentication-orange.svg)](https://jwt.io/)
 [![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-brightgreen.svg)](https://swagger.io/)
+[![Status](https://img.shields.io/badge/Status-85%25%20Complete-success.svg)](https://github.com/Gustavoleal1194/Projeto2025_API)
 
 ## 🎯 Visão Geral
 
-Sistema completo de gerenciamento de biblioteca desenvolvido em ASP.NET Core 8.0 com arquitetura DDD (Domain-Driven Design) e frontend React moderno. A API oferece 95+ endpoints funcionais para gestão completa de livros, exemplares, empréstimos, usuários, funcionários e relatórios, integrada com uma interface web interativa.
+Sistema completo de gerenciamento de biblioteca desenvolvido com **arquitetura moderna full-stack**:
+- **Backend:** ASP.NET Core 8.0 com DDD (Domain-Driven Design)
+- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS
+- **Validação:** FluentValidation (Backend) + Validators centralizados (Frontend)
+- **Autenticação:** JWT com sistema de roles
+- **Interface:** Design interativo com tema Yeti personalizado
 
-### 🎨 Frontend React
-- **Interface moderna** com animações interativas do Yeti
-- **Sistema de login** com animações personalizadas
-- **Dashboards** específicos por tipo de usuário
-- **Integração completa** com API backend
-- **Tecnologias:** React 18, TypeScript, Tailwind CSS, GSAP
+### ✨ Status do Projeto
+- **Backend:** 95% Completo ✅ (95+ endpoints funcionais)
+- **Frontend:** 75% Completo 🚧 (17 páginas implementadas)
+- **Integração:** 100% Funcional ✅
+- **Validações:** 100% Sincronizadas ✅
+- **Documentação:** 100% Atualizada ✅
+
+### 🎨 Frontend React Moderno
+- **Interface interativa** com animações do Yeti
+- **Sistema de login** com feedback visual em tempo real
+- **Dashboards** específicos por tipo de usuário (Admin/Funcionario/Usuario)
+- **Validação em tempo real** com feedback visual
+- **Design responsivo** mobile-first
+- **Tecnologias:** React 18, TypeScript, Vite, Tailwind CSS, Framer Motion
 
 ## ✨ Funcionalidades Principais
 
@@ -85,19 +101,31 @@ Projeto2025_API/
     └── Program.cs             # Configuração da aplicação
 ```
 
-## 🚀 Tecnologias Utilizadas
+## 🚀 Stack Tecnológica Completa
 
-- **.NET 8.0** - Framework principal
-- **ASP.NET Core Web API** - API REST
-- **Entity Framework Core 9.0.8** - ORM
-- **SQL Server** - Banco de dados
-- **JWT Bearer 8.0.1** - Autenticação
-- **AutoMapper 15.0.1** - Mapeamento de objetos
-- **Swagger/OpenAPI 6.4.0** - Documentação da API
+### 🔧 Backend (.NET 8.0)
+- **ASP.NET Core Web API** - API REST com 95+ endpoints
+- **Entity Framework Core 9.0.8** - ORM com migrações automáticas
+- **SQL Server** - Banco de dados relacional
+- **JWT Bearer 8.0.1** - Autenticação e autorização
+- **FluentValidation 11.3.1** - Validação robusta de dados
+- **AutoMapper 15.0.1** - Mapeamento de objetos DTOs
+- **Swagger/OpenAPI 6.4.0** - Documentação interativa da API
 - **Serilog 9.0.0** - Sistema de logging estruturado
-- **FluentValidation 11.3.1** - Validação avançada
 - **CORS 2.3.0** - Cross-Origin Resource Sharing
 - **Health Checks 2.2.0** - Monitoramento de saúde
+
+### 🎨 Frontend (React 18 + TypeScript)
+- **React 18.2.0** - Framework de interface
+- **TypeScript 5.0.2** - Tipagem estática
+- **Vite 4.4.5** - Build tool e dev server
+- **Tailwind CSS 3.3.0** - Framework CSS utilitário
+- **Framer Motion 10.16.4** - Animações avançadas
+- **React Router DOM 6.8.1** - Roteamento SPA
+- **Zustand 4.3.6** - Gerenciamento de estado
+- **Axios 1.6.0** - Cliente HTTP
+- **React Query 4.24.6** - Cache e sincronização de dados
+- **ESLint + Prettier** - Qualidade e formatação de código
 
 ## 📋 Pré-requisitos
 
@@ -115,7 +143,7 @@ cd Projeto2025_API
 ```
 
 ### 2. Configure a string de conexão
-Edite o arquivo `appsettings.json`:
+Edite o arquivo `Projeto2020_API/appsettings.json`:
 ```json
 {
   "ConnectionStrings": {
@@ -124,18 +152,30 @@ Edite o arquivo `appsettings.json`:
 }
 ```
 
-### 3. Execute as migrações
+### 3. Execute as migrações do banco
 ```bash
 dotnet ef database update --project Projeto2020_API
 ```
 
-### 4. Execute a aplicação
+### 4. Execute o Backend (API)
 ```bash
-dotnet run --project Projeto2020_API
+cd Projeto2020_API
+dotnet run
+# API rodando em: http://localhost:5072
 ```
 
-### 5. Acesse a documentação
-Abra o navegador em: `https://localhost:5072/swagger`
+### 5. Execute o Frontend (React)
+```bash
+cd frontend-yeti
+npm install
+npm run dev
+# Frontend rodando em: http://localhost:5173
+```
+
+### 6. Acesse o sistema
+- **Frontend:** http://localhost:5173
+- **API Swagger:** http://localhost:5072/swagger
+- **Login de teste:** admin@biblioteca.com / 123456
 
 ## 🔑 Autenticação
 
@@ -294,36 +334,58 @@ Authorization: Bearer {seu-token-jwt}
 - `GET /api/Configuracao/backup` - Informações de backup
 - `POST /api/Configuracao/backup` - Criar backup
 
-## 📋 DTOs e Validações
+## 🔒 Sistema de Validações Sincronizadas
 
-### Data Transfer Objects (DTOs)
-O sistema utiliza DTOs para transferência de dados entre camadas, com validações robustas:
+### ✅ Validação Dupla (Backend + Frontend)
+O sistema implementa **validação sincronizada** entre backend e frontend:
 
-#### 🔐 Autenticação
-- **LoginDTO**: Email e senha com validações `[Required]` e `[EmailAddress]`
-- **TokenDTO**: Token JWT com informações do usuário e expiração
+#### 🔧 Backend - FluentValidation
+- **7 Validators** implementados com regras robustas
+- **Validação de negócio** com mensagens personalizadas
+- **Validação de integridade** de dados e relacionamentos
+- **Validação condicional** baseada no contexto
 
-#### 👤 Usuários e Funcionários
-- **UsuarioDTO**: Dados pessoais com validação de CPF único
-- **FuncionarioDTO**: Dados profissionais com cargo e salário
+#### 🎨 Frontend - Validators Centralizados
+- **7 Validators** espelhando regras do backend
+- **Validação em tempo real** com feedback visual
+- **Validação HTML5** nativa (required, maxLength, type)
+- **UX otimizada** com mensagens claras e específicas
 
-#### 📚 Livros e Exemplares
-- **LivroDTO**: Informações bibliográficas com validações de tamanho
-- **ExemplarDTO**: Cópia física com localização e condição
-- **AutorDTO**: Dados do autor com validação de email único
-- **EditoraDTO**: Dados da editora com CNPJ opcional
+### 📋 Validators Implementados
 
-#### 📋 Empréstimos
-- **EmprestimoDTO**: Controle de empréstimos com propriedades calculadas
-- **Propriedades calculadas**: `EstaAtrasado`, `DiasAtraso`, `PodeRenovar`
-
-### Validações de DTOs
+#### **Backend (FluentValidation)**
 ```csharp
-[Required(ErrorMessage = "Campo obrigatório")]
-[StringLength(200, ErrorMessage = "Máximo 200 caracteres")]
-[EmailAddress(ErrorMessage = "Email inválido")]
-[MinLength(6, ErrorMessage = "Mínimo 6 caracteres")]
+// Exemplo: UsuarioValidator.cs
+RuleFor(x => x.Nome)
+    .NotEmpty().WithMessage("Nome é obrigatório")
+    .Length(2, 100).WithMessage("Nome deve ter entre 2 e 100 caracteres")
+    .Matches(@"^[a-zA-ZÀ-ÿ\s]+$").WithMessage("Nome deve conter apenas letras e espaços");
+
+RuleFor(x => x.Email)
+    .NotEmpty().WithMessage("Email é obrigatório")
+    .EmailAddress().WithMessage("Email inválido")
+    .MaximumLength(255).WithMessage("Email deve ter no máximo 255 caracteres");
 ```
+
+#### **Frontend (TypeScript)**
+```typescript
+// Exemplo: UsuarioValidator.ts
+static validateNome(nome: string): string {
+    if (!nome || !nome.trim()) return 'Nome é obrigatório';
+    if (nome.trim().length < 2) return 'Nome deve ter pelo menos 2 caracteres';
+    if (nome.trim().length > 100) return 'Nome deve ter no máximo 100 caracteres';
+    if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) return 'Nome deve conter apenas letras e espaços';
+    return '';
+}
+```
+
+### 🎯 Características das Validações
+- **Consistência total** entre backend e frontend
+- **Mensagens idênticas** em ambos os lados
+- **Validação em tempo real** no frontend
+- **Feedback visual** com bordas vermelhas e mensagens
+- **Validação HTML5** para experiência nativa do navegador
+- **Validação condicional** (ex: senha apenas para novos registros)
 
 ## 🔒 Segurança
 
@@ -424,15 +486,36 @@ npm run dev
 - **API Swagger:** http://localhost:5072/swagger
 - **Login de teste:** admin@biblioteca.com / 123456
 
-## 📚 Documentação
+## 📚 Documentação Completa
 
-- [Documentação Técnica](DOCUMENTACAO_TECNICA.md) - Arquitetura e implementação detalhada
-- [Estrutura Frontend Atual](FRONTEND_ESTRUTURA_ATUAL.md) - Estrutura e funcionalidades do frontend React
-- [Guia de Testes no Swagger](GUIA_TESTES_SWAGGER.md) - Como testar todos os endpoints
-- [Guia de Contribuição](CONTRIBUTING.md) - Como contribuir com o projeto
-- [Changelog](CHANGELOG.md) - Histórico de versões
-- [Autenticação JWT](AUTENTICACAO_JWT.md) - Guia de autenticação
-- [Frontend 3D](FUTURA_IMPLEMENTACAO_FRONTEND.md) - Especificação do frontend interativo
+### 📊 Status e Mapeamento
+- **[Mapeamento Completo do Status](MAPEAMENTO_COMPLETO_STATUS_PROJETO.md)** - Status detalhado de todo o projeto
+- **[Documentação Técnica](DOCUMENTACAO_TECNICA.md)** - Arquitetura e implementação detalhada
+- **[Estrutura Frontend Atual](FRONTEND_ESTRUTURA_ATUAL.md)** - Estrutura e funcionalidades do frontend React
+
+### 🧪 Guias de Testes
+- **[Guia de Testes no Swagger](GUIA_TESTES_SWAGGER.md)** - Como testar todos os endpoints
+- **[Guia de Testes de Autenticação](GUIA_TESTES_AUTENTICACAO.md)** - Testes de login e JWT
+- **[Guia de Testes de Usuários](GUIA_TESTES_USUARIOS.md)** - Testes de CRUD de usuários
+- **[Guia de Testes de Livros](GUIA_TESTES_LIVROS.md)** - Testes de CRUD de livros
+- **[Guia de Testes de Empréstimos](GUIA_TESTES_EMPRESTIMOS.md)** - Testes de sistema de empréstimos
+
+### 🎨 Design e Interface
+- **[Tema Yeti Library System](TEMA_YETI_LIBRARY_SYSTEM.md)** - Especificação do tema visual
+- **[Paleta de Cores](PALETA_CORES_YETI_LIBRARY_SYSTEM.md)** - Paleta de cores do sistema
+- **[Homepage Yeti](HOMEPAGE_YETI_LIBRARY_SYSTEM.md)** - Especificação da homepage
+- **[Frontend 3D](FUTURA_IMPLEMENTACAO_FRONTEND.md)** - Especificação do frontend interativo
+
+### 🔧 Configuração e Desenvolvimento
+- **[Configuração de Ambiente](CONFIGURACAO_AMBIENTE_COMPLETA.md)** - Setup completo do ambiente
+- **[Configuração de Testes](CONFIGURACAO_TESTES_COMPLETA.md)** - Setup de testes automatizados
+- **[Hooks Utilitários](HOOKS_UTILITARIOS_COMPLETOS.md)** - Hooks personalizados do React
+- **[Contextos e Providers](CONTEXTOS_PROVIDERS_COMPLETOS.md)** - Contextos do React
+
+### 📋 Contribuição e Histórico
+- **[Guia de Contribuição](CONTRIBUTING.md)** - Como contribuir com o projeto
+- **[Changelog](CHANGELOG.md)** - Histórico de versões
+- **[Autenticação JWT](AUTENTICACAO_JWT.md)** - Guia de autenticação
 
 ## 🤝 Contribuição
 

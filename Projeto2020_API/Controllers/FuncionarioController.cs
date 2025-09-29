@@ -42,9 +42,10 @@ namespace Projeto2025_API.Controllers
             return Ok(funcionario);
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateAsync([FromBody] FuncionarioDTO funcionarioDTO)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] FuncionarioDTO funcionarioDTO)
         {
+            funcionarioDTO.Id = id; // Garantir que o ID seja o correto
             await _service.UpdateAsync(funcionarioDTO);
             return NoContent();
         }
