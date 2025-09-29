@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogoutIcon } from '../Icons';
+import LogoutButton from '../LogoutButton';
 
 interface HeaderProps {
     onLogout?: () => void;
@@ -33,14 +33,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
                 </div>
 
                 {/* Logout Button */}
-                <button
-                    onClick={handleLogout}
-                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg font-semibold transition-colors duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-                    style={{ minWidth: '36px' }}
-                    title="Sair"
-                >
-                    <LogoutIcon size={16} />
-                </button>
+                <LogoutButton onClick={handleLogout} />
             </div>
         </header>
     );

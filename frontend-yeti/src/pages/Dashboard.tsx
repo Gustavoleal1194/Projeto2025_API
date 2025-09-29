@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import DashboardService from '../services/dashboardService';
 import { BookLoader } from '../components/Loading';
+import LogoutButton from '../components/LogoutButton';
 import type {
     DashboardData,
     Activity,
@@ -473,12 +474,7 @@ const Dashboard: React.FC = () => {
 
             {/* Logout Button */}
             <div className="mt-8 text-center">
-                <button
-                    onClick={handleLogout}
-                    className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300 shadow-lg"
-                >
-                    Fazer Logout
-                </button>
+                <LogoutButton onClick={handleLogout} />
             </div>
         </Layout>
     );
