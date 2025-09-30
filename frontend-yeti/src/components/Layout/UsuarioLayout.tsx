@@ -60,8 +60,8 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
     };
 
     // Mock user data - será substituído por dados reais da API
-    const userName = "Usuário";
-    const userInitial = "U";
+    const userName = "Gustavo Leal";
+    const userInitial = "G";
 
     const handleLogout = () => {
         localStorage.removeItem('yeti_token');
@@ -82,7 +82,6 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 userName={userName}
-                userInitial={userInitial}
                 onLogout={handleLogout}
             />
 
