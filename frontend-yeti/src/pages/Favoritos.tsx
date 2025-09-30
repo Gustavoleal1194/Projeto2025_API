@@ -12,6 +12,8 @@ import explorarLivrosService, { type LivroResumido } from '../services/explorarL
 import FavoritosService from '../services/favoritosService';
 import { useFavorites } from '../hooks/useFavorites';
 import { BookLoader } from '../components/Loading';
+import BookCardYeti from '../components/BookCardYeti';
+import BookDetailsCard from '../components/BookDetailsCard';
 
 const Favoritos: React.FC = () => {
     // Estados
@@ -22,6 +24,8 @@ const Favoritos: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [sortField, setSortField] = useState<'titulo' | 'autor' | 'ano'>('titulo');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+    const [selectedBook, setSelectedBook] = useState<LivroResumido | null>(null);
+    const [showBookDetails, setShowBookDetails] = useState(false);
 
     // Hook de favoritos
     const { favorites, toggleFavorite } = useFavorites();
@@ -124,11 +128,16 @@ const Favoritos: React.FC = () => {
         }
     };
 
-    // Função para destacar termo de busca
-    const highlightSearchTerm = (text: string, term: string) => {
-        if (!term) return text;
-        const regex = new RegExp(`(${term})`, 'gi');
-        return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+    // Função para abrir detalhes do livro
+    const handleVerDetalhes = (livro: LivroResumido) => {
+        setSelectedBook(livro);
+        setShowBookDetails(true);
+    };
+
+    // Função para fechar detalhes do livro
+    const handleCloseDetails = () => {
+        setShowBookDetails(false);
+        setSelectedBook(null);
     };
 
     // Renderizar card de livro
@@ -138,83 +147,33 @@ const Favoritos: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
-            className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
+            whileHover={{ y: -5 }}
         >
-            <div className="relative">
-                {/* Imagem do livro */}
-                <div className="aspect-[3/4] rounded-t-xl overflow-hidden">
-                    {livro.capaUrl ? (
-                        <img
-                            src={livro.capaUrl}
-                            alt={livro.titulo}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                    parent.innerHTML = `
-                                        <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                                            <span class="text-white font-bold text-4xl">📚</span>
-                                        </div>
-                                    `;
-                                }
-                            }}
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                            <span className="text-white font-bold text-4xl">📚</span>
-                        </div>
-                    )}
-                </div>
-
-                {/* Botão de favorito */}
-                <button
-                    onClick={() => toggleFavorite(livro.id)}
-                    className="absolute top-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition-all duration-300 group/fav"
-                    title={FavoritosService.isFavorito(livro.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-                >
-                    <span className={`text-xl transition-colors duration-300 ${FavoritosService.isFavorito(livro.id)
-                        ? 'text-red-500 group-hover/fav:text-white'
-                        : 'text-gray-400 group-hover/fav:text-white'
-                        }`}>
-                        {FavoritosService.isFavorito(livro.id) ? '❤️' : '🤍'}
-                    </span>
-                </button>
-            </div>
-
-            {/* Informações do livro */}
-            <div className="p-4">
-                <h3
-                    className="font-bold text-lg text-gray-900 mb-2 line-clamp-2"
-                    dangerouslySetInnerHTML={{
-                        __html: highlightSearchTerm(livro.titulo, searchQuery)
-                    }}
-                />
-                <p
-                    className="text-gray-600 text-sm mb-1"
-                    dangerouslySetInnerHTML={{
-                        __html: highlightSearchTerm(`por ${livro.nomeAutor}`, searchQuery)
-                    }}
-                />
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{livro.ano}</span>
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
-                        {livro.genero}
-                    </span>
-                </div>
-            </div>
+            <BookCardYeti
+                livro={livro}
+                isFavorite={FavoritosService.isFavorito(livro.id)}
+                onToggleFavorite={(id) => {
+                    const wasAdded = toggleFavorite(id);
+                    console.log(wasAdded ? 'Adicionado aos favoritos:' : 'Removido dos favoritos:', livro.titulo);
+                }}
+                onVerDetalhes={handleVerDetalhes}
+                searchQuery={searchQuery}
+            />
         </motion.div>
     );
 
     return (
-        <UsuarioLayout searchQuery={searchQuery} onSearchChange={setSearchQuery}>
+        <UsuarioLayout
+            pageTitle="Meus Favoritos"
+            pageSubtitle="Livros que você adicionou aos favoritos"
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+        >
             <div className="p-6 space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Meus Favoritos</h1>
-                        <p className="text-gray-600">
+                {/* Contador de Favoritos */}
+                <div className="flex justify-end">
+                    <div className="bg-blue-50 px-4 py-2 rounded-lg">
+                        <p className="text-blue-700 font-medium">
                             {livrosFiltrados.length} livro{livrosFiltrados.length !== 1 ? 's' : ''} favorito{livrosFiltrados.length !== 1 ? 's' : ''}
                         </p>
                     </div>
@@ -327,6 +286,15 @@ const Favoritos: React.FC = () => {
                             </div>
                         )}
                     </>
+                )}
+
+                {/* Modal de Detalhes do Livro */}
+                {selectedBook && (
+                    <BookDetailsCard
+                        livro={selectedBook}
+                        isVisible={showBookDetails}
+                        onClose={handleCloseDetails}
+                    />
                 )}
             </div>
         </UsuarioLayout>

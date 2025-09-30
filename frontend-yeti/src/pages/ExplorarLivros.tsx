@@ -11,6 +11,8 @@ import UsuarioLayout from '../components/Layout/UsuarioLayout';
 import explorarLivrosService, { type FiltrosExploracao, type LivroResumido } from '../services/explorarLivrosService';
 import { useFavorites } from '../hooks/useFavorites';
 import { BookLoader } from '../components/Loading';
+import BookDetailsCard from '../components/BookDetailsCard';
+import BookCardYeti from '../components/BookCardYeti';
 
 const ExplorarLivros: React.FC = () => {
     const [livros, setLivros] = useState<LivroResumido[]>([]);
@@ -20,8 +22,9 @@ const ExplorarLivros: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filtros, setFiltros] = useState<FiltrosExploracao>({});
     const [currentPage, setCurrentPage] = useState(1);
-    const [hoveredBookId, setHoveredBookId] = useState<number | null>(null);
     const [showFiltros, setShowFiltros] = useState(false);
+    const [selectedBook, setSelectedBook] = useState<LivroResumido | null>(null);
+    const [showBookDetails, setShowBookDetails] = useState(false);
 
     // Hook de favoritos
     const { isFavorite, toggleFavorite } = useFavorites();
@@ -117,12 +120,16 @@ const ExplorarLivros: React.FC = () => {
         setSearchQuery('');
     };
 
-    const highlightSearchTerm = (text: string, searchTerm: string) => {
-        if (!searchTerm.trim()) return text;
-
-        const regex = new RegExp(`(${searchTerm})`, 'gi');
-        return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+    const handleVerDetalhes = (livro: LivroResumido) => {
+        setSelectedBook(livro);
+        setShowBookDetails(true);
     };
+
+    const handleCloseDetails = () => {
+        setShowBookDetails(false);
+        setSelectedBook(null);
+    };
+
 
     // Calcular livros da página atual
     const totalPages = Math.ceil(livrosFiltrados.length / livrosPerPage);
@@ -262,7 +269,7 @@ const ExplorarLivros: React.FC = () => {
             </div>
 
             {/* Grid de Livros */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
                 {livrosFiltrados.length === 0 ? (
                     <div className="col-span-full text-center py-12">
                         <div className="text-gray-500 text-lg mb-4">
@@ -286,137 +293,17 @@ const ExplorarLivros: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: index * 0.1 }}
                             whileHover={{ y: -5 }}
-                            className="group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
-                            style={{ zIndex: hoveredBookId === livro.id ? 1000 : 1 }}
-                            onMouseEnter={() => setHoveredBookId(livro.id)}
-                            onMouseLeave={() => setHoveredBookId(null)}
                         >
-                            {/* Capa do Livro */}
-                            <div className="relative h-64 bg-gray-100 overflow-hidden">
-                                {livro.capaUrl ? (
-                                    <img
-                                        src={livro.capaUrl}
-                                        alt={livro.titulo}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            target.style.display = 'none';
-                                            const parent = target.parentElement;
-                                            if (parent) {
-                                                parent.innerHTML = `
-                                                    <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
-                                                        <div class="text-center p-4">
-                                                            <h3 class="text-lg font-bold mb-2">${livro.titulo.length > 30 ? livro.titulo.substring(0, 30) + '...' : livro.titulo}</h3>
-                                                            <p class="text-sm opacity-90">${livro.nomeAutor}</p>
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            }
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
-                                        <div className="text-center p-4">
-                                            <h3 className="text-lg font-bold mb-2">
-                                                {livro.titulo.length > 30 ? livro.titulo.substring(0, 30) + '...' : livro.titulo}
-                                            </h3>
-                                            <p className="text-sm opacity-90">{livro.nomeAutor}</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Indicador de Favorito */}
-                                {isFavorite(livro.id) && (
-                                    <div className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
-                                        <span className="text-white text-sm">💖</span>
-                                    </div>
-                                )}
-
-                                {/* Indicador de Disponibilidade */}
-                                <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${livro.temExemplaresDisponiveis
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-red-500 text-white'
-                                    }`}>
-                                    {livro.temExemplaresDisponiveis ? 'Disponível' : 'Indisponível'}
-                                </div>
-
-                                {/* Hover Overlay */}
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{
-                                        opacity: hoveredBookId === livro.id ? 1 : 0
-                                    }}
-                                    className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center"
-                                >
-                                    <div className="text-center text-white p-4">
-                                        <h4 className="text-lg font-bold mb-2 line-clamp-2">
-                                            {livro.titulo}
-                                        </h4>
-                                        <p className="text-sm mb-3 opacity-90">
-                                            {livro.nomeAutor}
-                                        </p>
-                                        <div className="flex gap-2 justify-center">
-                                            <button
-                                                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-300"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    console.log('Ver detalhes:', livro.titulo);
-                                                }}
-                                            >
-                                                📖 Ver Detalhes
-                                            </button>
-                                            <button
-                                                className={`px-3 py-1 rounded text-sm transition-colors duration-300 ${isFavorite(livro.id)
-                                                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                                                    : 'bg-green-600 hover:bg-green-700 text-white'
-                                                    }`}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const wasAdded = toggleFavorite(livro.id);
-                                                    console.log(wasAdded ? 'Adicionado aos favoritos:' : 'Removido dos favoritos:', livro.titulo);
-                                                }}
-                                            >
-                                                {isFavorite(livro.id) ? '💖 Favorito' : '❤️ Favoritar'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </div>
-
-                            {/* Informações do Livro */}
-                            <div className="p-4">
-                                <h3
-                                    className="text-lg font-bold text-gray-800 mb-2 line-clamp-2"
-                                    dangerouslySetInnerHTML={{
-                                        __html: highlightSearchTerm(livro.titulo, searchQuery)
-                                    }}
-                                />
-
-                                <p
-                                    className="text-gray-600 text-sm mb-2"
-                                    dangerouslySetInnerHTML={{
-                                        __html: highlightSearchTerm(livro.nomeAutor, searchQuery)
-                                    }}
-                                />
-
-                                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                                    <span>{livro.genero}</span>
-                                    <span>{livro.ano}</span>
-                                </div>
-
-                                <p className="text-gray-700 text-sm line-clamp-3 mb-3">
-                                    {livro.sinopse}
-                                </p>
-
-                                <div className="flex items-center justify-between text-xs text-gray-500">
-                                    <span>
-                                        {livro.exemplaresDisponiveis}/{livro.totalExemplares} exemplares
-                                    </span>
-                                    {livro.numeroPaginas && (
-                                        <span>{livro.numeroPaginas} páginas</span>
-                                    )}
-                                </div>
-                            </div>
+                            <BookCardYeti
+                                livro={livro}
+                                isFavorite={isFavorite(livro.id)}
+                                onToggleFavorite={(id) => {
+                                    const wasAdded = toggleFavorite(id);
+                                    console.log(wasAdded ? 'Adicionado aos favoritos:' : 'Removido dos favoritos:', livro.titulo);
+                                }}
+                                onVerDetalhes={handleVerDetalhes}
+                                searchQuery={searchQuery}
+                            />
                         </motion.div>
                     ))
                 )}
@@ -463,6 +350,15 @@ const ExplorarLivros: React.FC = () => {
                 <div className="text-center mt-4 text-gray-600 text-sm">
                     Mostrando {startIndex + 1} a {Math.min(endIndex, livrosFiltrados.length)} de {livrosFiltrados.length} livros
                 </div>
+            )}
+
+            {/* Modal de Detalhes do Livro */}
+            {selectedBook && (
+                <BookDetailsCard
+                    livro={selectedBook}
+                    isVisible={showBookDetails}
+                    onClose={handleCloseDetails}
+                />
             )}
         </UsuarioLayout>
     );

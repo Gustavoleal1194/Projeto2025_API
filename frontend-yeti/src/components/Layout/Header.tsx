@@ -3,9 +3,10 @@ import LogoutButton from '../LogoutButton';
 
 interface HeaderProps {
     onLogout?: () => void;
+    isSidebarCollapsed?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ onLogout, isSidebarCollapsed = false }) => {
     const handleLogout = () => {
         if (onLogout) {
             onLogout();
@@ -18,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
     };
 
     return (
-        <header className="fixed top-0 right-0 h-18 bg-white border-b border-blue-400 flex items-center justify-between px-8 z-40" style={{ left: '17.5rem' }}>
+        <header className="fixed top-0 right-0 h-18 bg-white border-b border-blue-400 flex items-center justify-between px-8 z-40 transition-all duration-300" style={{ left: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
             {/* Empty space for balance */}
             <div></div>
 

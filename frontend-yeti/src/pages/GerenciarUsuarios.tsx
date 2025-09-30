@@ -6,7 +6,8 @@ import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { getPlaceholderByFieldName } from '../components/PlaceholderHelper';
 import { UsuarioValidator } from '../validators/UsuarioValidator';
-import { BookLoader } from '../components/Loading';
+import { LoadingOverlay } from '../components/Loading';
+import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
 
 interface GerenciarUsuariosProps { }
@@ -331,18 +332,11 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             lastUpdate={new Date().toLocaleString('pt-BR')}
         >
             {/* Loading State */}
-            {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
-                        <div className="flex flex-col items-center space-y-4">
-                            <BookLoader size="lg" />
-                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                                Carregando usuários...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <LoadingOverlay
+                isVisible={loading}
+                text="Carregando usuários..."
+                size="lg"
+            />
 
             {/* Error Alert */}
             {error && (
@@ -486,190 +480,185 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             </motion.div>
 
             {/* Modal de Criação/Edição */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4" style={{ left: '17.5rem' }}>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md"
-                    >
-                        <div className="p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-2xl font-bold text-gray-900">
-                                    {editingUsuario ? '✏️ Editar Usuário' : '➕ Novo Usuário'}
-                                </h3>
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '36px', minHeight: '36px' }}
-                                    title="Fechar"
-                                >
-                                    <CancelIcon size={16} />
-                                </button>
-                            </div>
+            <ModalOverlay
+                isVisible={showModal}
+                onClose={closeModal}
+                size="md"
+            >
+                <div className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-2xl font-bold text-gray-900">
+                            {editingUsuario ? '✏️ Editar Usuário' : '➕ Novo Usuário'}
+                        </h3>
+                        <button
+                            onClick={closeModal}
+                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                            style={{ minWidth: '36px', minHeight: '36px' }}
+                            title="Fechar"
+                        >
+                            <CancelIcon size={16} />
+                        </button>
+                    </div>
 
-                            <form onSubmit={(e) => { e.preventDefault(); saveUsuario(); }} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nome *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nome || ''}
-                                        onChange={(e) => handleFieldChange('nome', e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        placeholder={getPlaceholderByFieldName('nome')}
-                                        autoComplete="off"
-                                        required
-                                    />
-                                    {errors.nome && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email || ''}
-                                        onChange={(e) => handleFieldChange('email', e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.email ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        placeholder={getPlaceholderByFieldName('email')}
-                                        autoComplete="off"
-                                        required
-                                    />
-                                    {errors.email && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">CPF *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.cpf || ''}
-                                        onChange={(e) => {
-                                            const cpfFormatado = formatarCPF(e.target.value);
-                                            handleFieldChange('cpf', cpfFormatado);
-                                        }}
-                                        placeholder={getPlaceholderByFieldName('cpf')}
-                                        maxLength={14}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.cpf ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        required
-                                    />
-                                    {errors.cpf && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.cpf}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.telefone || ''}
-                                        onChange={(e) => {
-                                            const telefoneFormatado = formatarTelefone(e.target.value);
-                                            handleFieldChange('telefone', telefoneFormatado);
-                                        }}
-                                        placeholder={getPlaceholderByFieldName('telefone')}
-                                        maxLength={15}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        required
-                                    />
-                                    {errors.telefone && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Data de Nascimento *</label>
-                                    <input
-                                        type="date"
-                                        value={formData.dataNascimento || ''}
-                                        onChange={(e) => handleFieldChange('dataNascimento', e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.dataNascimento ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        placeholder={getPlaceholderByFieldName('datanascimento')}
-                                        required
-                                    />
-                                    {errors.dataNascimento && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.dataNascimento}</p>
-                                    )}
-                                </div>
-
-                                {!editingUsuario && (
-                                    <>
-                                        <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Senha *</label>
-                                            <input
-                                                type="password"
-                                                value={formData.senha || ''}
-                                                onChange={(e) => handleFieldChange('senha', e.target.value)}
-                                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.senha ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                                    }`}
-                                                placeholder={getPlaceholderByFieldName('senha')}
-                                                autoComplete="new-password"
-                                                required
-                                            />
-                                            {errors.senha && (
-                                                <p className="mt-1 text-sm text-red-600">{errors.senha}</p>
-                                            )}
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha *</label>
-                                            <input
-                                                type="password"
-                                                value={confirmarSenha}
-                                                onChange={(e) => handleConfirmarSenhaChange(e.target.value)}
-                                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.confirmarSenha ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                                    }`}
-                                                placeholder={getPlaceholderByFieldName('confirmarsenha')}
-                                                autoComplete="new-password"
-                                                required
-                                            />
-                                            {errors.confirmarSenha && (
-                                                <p className="mt-1 text-sm text-red-600">{errors.confirmarSenha}</p>
-                                            )}
-                                        </div>
-                                    </>
-                                )}
-
-                                <div className="flex justify-end gap-4 mt-8">
-                                    <button
-                                        type="button"
-                                        onClick={closeModal}
-                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title="Cancelar"
-                                    >
-                                        <CancelIcon size={20} />
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className={`p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border flex items-center justify-center ${isSubmitting
-                                            ? 'bg-gray-400 cursor-not-allowed'
-                                            : 'bg-green-500 hover:bg-green-600 border-green-700'
-                                            }`}
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title={isSubmitting ? 'Salvando...' : (editingUsuario ? 'Atualizar' : 'Criar')}
-                                    >
-                                        {isSubmitting ? (
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                        ) : (
-                                            editingUsuario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
+                    <form onSubmit={(e) => { e.preventDefault(); saveUsuario(); }} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Nome *</label>
+                            <input
+                                type="text"
+                                value={formData.nome || ''}
+                                onChange={(e) => handleFieldChange('nome', e.target.value)}
+                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                    }`}
+                                placeholder={getPlaceholderByFieldName('nome')}
+                                autoComplete="off"
+                                required
+                            />
+                            {errors.nome && (
+                                <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
+                            )}
                         </div>
-                    </motion.div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <input
+                                type="email"
+                                value={formData.email || ''}
+                                onChange={(e) => handleFieldChange('email', e.target.value)}
+                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.email ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                    }`}
+                                placeholder={getPlaceholderByFieldName('email')}
+                                autoComplete="off"
+                                required
+                            />
+                            {errors.email && (
+                                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">CPF *</label>
+                            <input
+                                type="text"
+                                value={formData.cpf || ''}
+                                onChange={(e) => {
+                                    const cpfFormatado = formatarCPF(e.target.value);
+                                    handleFieldChange('cpf', cpfFormatado);
+                                }}
+                                placeholder={getPlaceholderByFieldName('cpf')}
+                                maxLength={14}
+                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.cpf ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                    }`}
+                                required
+                            />
+                            {errors.cpf && (
+                                <p className="mt-1 text-sm text-red-600">{errors.cpf}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone *</label>
+                            <input
+                                type="text"
+                                value={formData.telefone || ''}
+                                onChange={(e) => {
+                                    const telefoneFormatado = formatarTelefone(e.target.value);
+                                    handleFieldChange('telefone', telefoneFormatado);
+                                }}
+                                placeholder={getPlaceholderByFieldName('telefone')}
+                                maxLength={15}
+                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                    }`}
+                                required
+                            />
+                            {errors.telefone && (
+                                <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Data de Nascimento *</label>
+                            <input
+                                type="date"
+                                value={formData.dataNascimento || ''}
+                                onChange={(e) => handleFieldChange('dataNascimento', e.target.value)}
+                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.dataNascimento ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                    }`}
+                                placeholder={getPlaceholderByFieldName('datanascimento')}
+                                required
+                            />
+                            {errors.dataNascimento && (
+                                <p className="mt-1 text-sm text-red-600">{errors.dataNascimento}</p>
+                            )}
+                        </div>
+
+                        {!editingUsuario && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Senha *</label>
+                                    <input
+                                        type="password"
+                                        value={formData.senha || ''}
+                                        onChange={(e) => handleFieldChange('senha', e.target.value)}
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.senha ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                            }`}
+                                        placeholder={getPlaceholderByFieldName('senha')}
+                                        autoComplete="new-password"
+                                        required
+                                    />
+                                    {errors.senha && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.senha}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha *</label>
+                                    <input
+                                        type="password"
+                                        value={confirmarSenha}
+                                        onChange={(e) => handleConfirmarSenhaChange(e.target.value)}
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.confirmarSenha ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                            }`}
+                                        placeholder={getPlaceholderByFieldName('confirmarsenha')}
+                                        autoComplete="new-password"
+                                        required
+                                    />
+                                    {errors.confirmarSenha && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.confirmarSenha}</p>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        <div className="flex justify-end gap-4 mt-8">
+                            <button
+                                type="button"
+                                onClick={closeModal}
+                                className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                style={{ minWidth: '48px', minHeight: '48px' }}
+                                title="Cancelar"
+                            >
+                                <CancelIcon size={20} />
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border flex items-center justify-center ${isSubmitting
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-green-500 hover:bg-green-600 border-green-700'
+                                    }`}
+                                style={{ minWidth: '48px', minHeight: '48px' }}
+                                title={isSubmitting ? 'Salvando...' : (editingUsuario ? 'Atualizar' : 'Criar')}
+                            >
+                                {isSubmitting ? (
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                ) : (
+                                    editingUsuario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </ModalOverlay>
         </Layout>
     );
 };

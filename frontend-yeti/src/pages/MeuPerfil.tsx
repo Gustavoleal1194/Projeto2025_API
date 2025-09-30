@@ -128,7 +128,7 @@ const MeuPerfil: React.FC = () => {
 
     if (loading) {
         return (
-            <UsuarioLayout>
+            <UsuarioLayout pageTitle="Meu Perfil" pageSubtitle="Carregando suas informações...">
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -141,7 +141,7 @@ const MeuPerfil: React.FC = () => {
 
     if (error && !usuario) {
         return (
-            <UsuarioLayout>
+            <UsuarioLayout pageTitle="Meu Perfil" pageSubtitle="Erro ao carregar informações">
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <p className="text-red-600 text-lg font-medium mb-2">Erro ao carregar perfil</p>
@@ -159,16 +159,10 @@ const MeuPerfil: React.FC = () => {
     }
 
     return (
-        <UsuarioLayout>
+        <UsuarioLayout pageTitle="Meu Perfil" pageSubtitle="Gerencie suas informações pessoais e visualize suas estatísticas">
             <div className="p-6 space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Meu Perfil</h1>
-                        <p className="text-gray-600">
-                            Gerencie suas informações pessoais e visualize suas estatísticas
-                        </p>
-                    </div>
+                {/* Botões de Ação */}
+                <div className="flex justify-end">
                     <div className="flex gap-3">
                         {editando ? (
                             <>

@@ -6,7 +6,8 @@ import { editoraService } from '../services/editoraService';
 import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { EditoraValidator } from '../validators/EditoraValidator';
-import { BookLoader } from '../components/Loading';
+import { LoadingOverlay } from '../components/Loading';
+import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarEditoras: React.FC = () => {
@@ -266,18 +267,11 @@ const GerenciarEditoras: React.FC = () => {
             onRefresh={loadEditoras}
         >
             {/* Loading State */}
-            {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
-                        <div className="flex flex-col items-center space-y-4">
-                            <BookLoader size="lg" />
-                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                                Carregando editoras...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <LoadingOverlay
+                isVisible={loading}
+                text="Carregando editoras..."
+                size="lg"
+            />
 
             {/* Page Content */}
             <div className="space-y-6">
@@ -422,240 +416,237 @@ const GerenciarEditoras: React.FC = () => {
                 </motion.div>
 
                 {/* Modal */}
-                {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="bg-white rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl"
-                        >
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-gray-900">
-                                    {editingEditora ? 'Editar Editora' : 'Criar Nova Editora'}
-                                </h2>
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '36px', minHeight: '36px' }}
-                                    title="Fechar"
-                                >
-                                    <CancelIcon size={16} />
-                                </button>
+                <ModalOverlay
+                    isVisible={isModalOpen}
+                    onClose={closeModal}
+                    size="xl"
+                >
+                    <div className="p-8">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900">
+                                {editingEditora ? 'Editar Editora' : 'Criar Nova Editora'}
+                            </h2>
+                            <button
+                                onClick={closeModal}
+                                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                style={{ minWidth: '36px', minHeight: '36px' }}
+                                title="Fechar"
+                            >
+                                <CancelIcon size={16} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={(e) => { e.preventDefault(); saveEditora(); }} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Nome */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.nome}
+                                        onChange={(e) => handleFieldChange('nome', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                    {errors.nome && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
+                                    )}
+                                </div>
+
+                                {/* CNPJ */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">CNPJ *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.cnpj}
+                                        onChange={(e) => handleFieldChange('cnpj', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cnpj ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                    {errors.cnpj && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.cnpj}</p>
+                                    )}
+                                </div>
+
+                                {/* Telefone */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                                    <input
+                                        type="tel"
+                                        value={formData.telefone || ''}
+                                        onChange={(e) => handleFieldChange('telefone', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                    />
+                                    {errors.telefone && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
+                                    )}
+                                </div>
+
+                                {/* Email */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                                    <input
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => handleFieldChange('email', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                    {errors.email && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                    )}
+                                </div>
+
+                                {/* Endereço */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Endereço</label>
+                                    <input
+                                        type="text"
+                                        value={formData.endereco || ''}
+                                        onChange={(e) => handleFieldChange('endereco', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.endereco ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                    />
+                                    {errors.endereco && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.endereco}</p>
+                                    )}
+                                </div>
+
+                                {/* Cidade */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Cidade</label>
+                                    <input
+                                        type="text"
+                                        value={formData.cidade || ''}
+                                        onChange={(e) => handleFieldChange('cidade', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cidade ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                    />
+                                    {errors.cidade && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.cidade}</p>
+                                    )}
+                                </div>
+
+                                {/* Estado */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                                    <input
+                                        type="text"
+                                        value={formData.estado || ''}
+                                        onChange={(e) => handleFieldChange('estado', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.estado ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                    />
+                                    {errors.estado && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.estado}</p>
+                                    )}
+                                </div>
+
+                                {/* CEP */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">CEP</label>
+                                    <input
+                                        type="text"
+                                        value={formData.cep || ''}
+                                        onChange={(e) => handleFieldChange('cep', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cep ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                    />
+                                    {errors.cep && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.cep}</p>
+                                    )}
+                                </div>
+
+                                {/* País */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
+                                    <input
+                                        type="text"
+                                        value={formData.pais || ''}
+                                        onChange={(e) => handleFieldChange('pais', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.pais ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                    />
+                                    {errors.pais && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.pais}</p>
+                                    )}
+                                </div>
+
+                                {/* Data de Fundação */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Fundação</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataFundacao}
+                                        onChange={(e) => handleFieldChange('dataFundacao', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataFundacao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                    />
+                                    {errors.dataFundacao && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.dataFundacao}</p>
+                                    )}
+                                </div>
+
+                                {/* Site */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Site</label>
+                                    <input
+                                        type="url"
+                                        value={formData.site || ''}
+                                        onChange={(e) => handleFieldChange('site', e.target.value)}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.site ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                    />
+                                    {errors.site && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.site}</p>
+                                    )}
+                                </div>
+
+                                {/* Status */}
+                                <div className="md:col-span-2">
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.ativa}
+                                            onChange={(e) => setFormData({ ...formData, ativa: e.target.checked })}
+                                            className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">Ativa</span>
+                                    </label>
+                                </div>
                             </div>
 
-                            <form onSubmit={(e) => { e.preventDefault(); saveEditora(); }} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Nome */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
-                                        <input
-                                            type="text"
-                                            value={formData.nome}
-                                            onChange={(e) => handleFieldChange('nome', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                            required
-                                        />
-                                        {errors.nome && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
-                                        )}
-                                    </div>
-
-                                    {/* CNPJ */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">CNPJ *</label>
-                                        <input
-                                            type="text"
-                                            value={formData.cnpj}
-                                            onChange={(e) => handleFieldChange('cnpj', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cnpj ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                            required
-                                        />
-                                        {errors.cnpj && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.cnpj}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Telefone */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
-                                        <input
-                                            type="tel"
-                                            value={formData.telefone || ''}
-                                            onChange={(e) => handleFieldChange('telefone', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                        />
-                                        {errors.telefone && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Email */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                        <input
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={(e) => handleFieldChange('email', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                            required
-                                        />
-                                        {errors.email && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Endereço */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Endereço</label>
-                                        <input
-                                            type="text"
-                                            value={formData.endereco || ''}
-                                            onChange={(e) => handleFieldChange('endereco', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.endereco ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                        />
-                                        {errors.endereco && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.endereco}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Cidade */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Cidade</label>
-                                        <input
-                                            type="text"
-                                            value={formData.cidade || ''}
-                                            onChange={(e) => handleFieldChange('cidade', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cidade ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                        />
-                                        {errors.cidade && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.cidade}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Estado */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
-                                        <input
-                                            type="text"
-                                            value={formData.estado || ''}
-                                            onChange={(e) => handleFieldChange('estado', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.estado ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                        />
-                                        {errors.estado && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.estado}</p>
-                                        )}
-                                    </div>
-
-                                    {/* CEP */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">CEP</label>
-                                        <input
-                                            type="text"
-                                            value={formData.cep || ''}
-                                            onChange={(e) => handleFieldChange('cep', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cep ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                        />
-                                        {errors.cep && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.cep}</p>
-                                        )}
-                                    </div>
-
-                                    {/* País */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
-                                        <input
-                                            type="text"
-                                            value={formData.pais || ''}
-                                            onChange={(e) => handleFieldChange('pais', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.pais ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                        />
-                                        {errors.pais && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.pais}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Data de Fundação */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Fundação</label>
-                                        <input
-                                            type="date"
-                                            value={formData.dataFundacao}
-                                            onChange={(e) => handleFieldChange('dataFundacao', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataFundacao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                        />
-                                        {errors.dataFundacao && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.dataFundacao}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Site */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Site</label>
-                                        <input
-                                            type="url"
-                                            value={formData.site || ''}
-                                            onChange={(e) => handleFieldChange('site', e.target.value)}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.site ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                        />
-                                        {errors.site && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.site}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Status */}
-                                    <div className="md:col-span-2">
-                                        <label className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.ativa}
-                                                onChange={(e) => setFormData({ ...formData, ativa: e.target.checked })}
-                                                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                            />
-                                            <span className="text-sm font-medium text-gray-700">Ativa</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* Botões */}
-                                <div className="flex justify-end gap-4 mt-8">
-                                    <button
-                                        type="button"
-                                        onClick={closeModal}
-                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title="Cancelar"
-                                    >
-                                        <CancelIcon size={20} />
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title={editingEditora ? 'Atualizar' : 'Criar'}
-                                    >
-                                        {isSubmitting ? (
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                        ) : (
-                                            editingEditora ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
+                            {/* Botões */}
+                            <div className="flex justify-end gap-4 mt-8">
+                                <button
+                                    type="button"
+                                    onClick={closeModal}
+                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title="Cancelar"
+                                >
+                                    <CancelIcon size={20} />
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title={editingEditora ? 'Atualizar' : 'Criar'}
+                                >
+                                    {isSubmitting ? (
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                    ) : (
+                                        editingEditora ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                    )}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )}
+                </ModalOverlay>
             </div>
         </Layout>
     );

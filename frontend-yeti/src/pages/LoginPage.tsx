@@ -18,6 +18,35 @@ const LoginPage: React.FC = () => {
 
     const API_BASE_URL = 'http://localhost:5072/api';
 
+    // Limpar formulário quando a página inicia
+    useEffect(() => {
+        // Limpar todos os estados
+        setEmail('');
+        setPassword('');
+        setShowPassword(false);
+        setIsFocused(false);
+        setIsLoading(false);
+
+        // Forçar limpeza dos inputs do DOM para contornar autofill
+        const clearInputs = () => {
+            const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+            const passwordInput = document.querySelector('input[type="password"], input[type="text"]') as HTMLInputElement;
+
+            if (emailInput) {
+                emailInput.value = '';
+            }
+            if (passwordInput && passwordInput.placeholder === "Digite sua senha") {
+                passwordInput.value = '';
+            }
+        };
+
+        // Limpar imediatamente e com delays para contornar autofill
+        clearInputs();
+        setTimeout(clearInputs, 100);
+        setTimeout(clearInputs, 500);
+        setTimeout(clearInputs, 1000);
+    }, []);
+
     useEffect(() => {
         if (yetiRef.current && formRef.current) {
             const svg = yetiRef.current.querySelector('svg');
@@ -264,6 +293,9 @@ const LoginPage: React.FC = () => {
                 gsap.set(mouth, { transformOrigin: "center center" });
             }
 
+            // Resetar animação do Yeti para estado inicial
+            resetFace();
+
             // Iniciar piscar
             startBlinking(5);
 
@@ -456,8 +488,8 @@ const LoginPage: React.FC = () => {
         radial-gradient(circle at 20% 80%, rgba(52, 104, 140, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(74, 125, 92, 0.1) 0%, transparent 50%)
       `,
-            backgroundSize: '80% auto, auto, auto',
-            backgroundPosition: 'center center, 20% 80%, 80% 20%',
+            backgroundSize: 'cover, auto, auto',
+            backgroundPosition: 'center calc(50% + 100px), 20% 80%, 80% 20%',
             backgroundRepeat: 'no-repeat, no-repeat, no-repeat',
             position: 'relative',
             width: '100%',
@@ -500,6 +532,7 @@ const LoginPage: React.FC = () => {
             <form
                 ref={formRef}
                 onSubmit={handleLogin}
+                autoComplete="off"
                 style={{
                     position: 'absolute',
                     top: '50%',
@@ -683,6 +716,10 @@ const LoginPage: React.FC = () => {
                             e.target.style.border = 'solid 2px #217093';
                         }}
                         maxLength={254}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck="false"
                         style={{
                             display: 'block',
                             margin: 0,
@@ -739,6 +776,10 @@ const LoginPage: React.FC = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Digite sua senha"
+                        autoComplete="new-password"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck="false"
                         style={{
                             display: 'block',
                             margin: 0,

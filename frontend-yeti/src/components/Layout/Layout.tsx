@@ -39,17 +39,35 @@ const Layout: React.FC<LayoutProps> = ({
     };
 
     const [activeTab, setActiveTab] = useState(() => getActiveTabFromPath(location.pathname));
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+        const saved = localStorage.getItem('yeti_admin_sidebar_collapsed');
+        return saved ? JSON.parse(saved) : false;
+    });
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem('yeti_admin_sidebar_collapsed', JSON.stringify(newState));
+    };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div
+            className="min-h-screen bg-gray-50"
+            style={{ '--sidebar-width': isSidebarCollapsed ? '4rem' : '17.5rem' } as React.CSSProperties}
+        >
             {/* Sidebar */}
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            <Sidebar
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                isCollapsed={isSidebarCollapsed}
+                onToggleCollapse={toggleSidebar}
+            />
 
             {/* Header */}
-            <Header />
+            <Header isSidebarCollapsed={isSidebarCollapsed} />
 
             {/* Main Content */}
-            <main className="mt-18 p-8" style={{ marginLeft: '17.5rem' }}>
+            <main className="mt-18 p-8 transition-all duration-300" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
                 {/* Page Header */}
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-2xl">
                     <div className="flex items-center justify-between">

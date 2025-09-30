@@ -11,6 +11,7 @@ import UsuarioLayout from '../components/Layout/UsuarioLayout';
 import meusLivrosService, { type FiltrosMeusLivros, type MeuLivro } from '../services/meusLivrosService';
 import { useFavorites } from '../hooks/useFavorites';
 import { BookLoader } from '../components/Loading';
+import BookCardYeti from '../components/BookCardYeti';
 
 const MeusLivros: React.FC = () => {
     const [livros, setLivros] = useState<MeuLivro[]>([]);
@@ -26,7 +27,6 @@ const MeusLivros: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filtros, setFiltros] = useState<FiltrosMeusLivros>({});
     const [currentPage, setCurrentPage] = useState(1);
-    const [hoveredBookId, setHoveredBookId] = useState<number | null>(null);
     const [showFiltros, setShowFiltros] = useState(false);
 
     // Hook de favoritos
@@ -113,30 +113,6 @@ const MeusLivros: React.FC = () => {
     };
 
 
-    const highlightSearchTerm = (text: string, searchTerm: string) => {
-        if (!searchTerm.trim()) return text;
-
-        const regex = new RegExp(`(${searchTerm})`, 'gi');
-        return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
-    };
-
-    const formatarData = (data: string) => {
-        return new Date(data).toLocaleDateString('pt-BR');
-    };
-
-    const getStatusColor = (status: string, estaAtrasado: boolean) => {
-        if (estaAtrasado) return 'bg-red-500';
-        if (status === 'Emprestado') return 'bg-green-500';
-        if (status === 'Devolvido') return 'bg-gray-500';
-        return 'bg-blue-500';
-    };
-
-    const getStatusText = (status: string, estaAtrasado: boolean) => {
-        if (estaAtrasado) return 'Atrasado';
-        if (status === 'Emprestado') return 'Emprestado';
-        if (status === 'Devolvido') return 'Devolvido';
-        return status;
-    };
 
     // Calcular livros da página atual
     const totalPages = Math.ceil(livrosFiltrados.length / livrosPerPage);
@@ -173,7 +149,7 @@ const MeusLivros: React.FC = () => {
                     { title: 'Emprestados', value: estatisticas.emprestados.toString(), icon: '📖', color: 'bg-green-500' },
                     { title: 'Atrasados', value: estatisticas.atrasados.toString(), icon: '⚠️', color: 'bg-red-500' },
                     { title: 'Devolvidos', value: estatisticas.devolvidos.toString(), icon: '✅', color: 'bg-gray-500' },
-                    { title: 'Próximos Vencimentos', value: estatisticas.proximosVencimentos.toString(), icon: '⏰', color: 'bg-amber-500' }
+                    { title: 'Próximos Vencimentos', value: estatisticas.proximosVencimentos.toString(), icon: '⏰', color: 'bg-yellow-400' }
                 ].map((stat, index) => (
                     <motion.div
                         key={index}
@@ -187,8 +163,11 @@ const MeusLivros: React.FC = () => {
                                 <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
                                 <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                             </div>
-                            <div className={`w-12 h-12 ${stat.color} rounded-full flex items-center justify-center text-xl`}>
-                                {stat.icon}
+                            <div
+                                className={`w-12 h-12 ${stat.color} rounded-full flex items-center justify-center text-xl`}
+                                style={stat.title === 'Próximos Vencimentos' ? { backgroundColor: '#fbbf24' } : {}}
+                            >
+                                <span className="flex items-center justify-center w-full h-full">{stat.icon}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -284,7 +263,7 @@ const MeusLivros: React.FC = () => {
             </div>
 
             {/* Grid de Livros */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
                 {livrosFiltrados.length === 0 ? (
                     <div className="col-span-full text-center py-12">
                         <div className="text-gray-500 text-lg mb-4">
@@ -308,167 +287,35 @@ const MeusLivros: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: index * 0.1 }}
                             whileHover={{ y: -5 }}
-                            className="group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
-                            style={{ zIndex: hoveredBookId === livro.id ? 1000 : 1 }}
-                            onMouseEnter={() => setHoveredBookId(livro.id)}
-                            onMouseLeave={() => setHoveredBookId(null)}
                         >
-                            {/* Capa do Livro */}
-                            <div className="relative h-64 bg-gray-100 overflow-hidden">
-                                {livro.capaUrl ? (
-                                    <img
-                                        src={livro.capaUrl}
-                                        alt={livro.titulo}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            target.style.display = 'none';
-                                            const parent = target.parentElement;
-                                            if (parent) {
-                                                parent.innerHTML = `
-                                                    <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
-                                                        <div class="text-center p-4">
-                                                            <h3 class="text-lg font-bold mb-2">${livro.titulo.length > 30 ? livro.titulo.substring(0, 30) + '...' : livro.titulo}</h3>
-                                                            <p class="text-sm opacity-90">${livro.nomeAutor}</p>
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            }
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
-                                        <div className="text-center p-4">
-                                            <h3 className="text-lg font-bold mb-2">
-                                                {livro.titulo.length > 30 ? livro.titulo.substring(0, 30) + '...' : livro.titulo}
-                                            </h3>
-                                            <p className="text-sm opacity-90">{livro.nomeAutor}</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Indicador de Favorito */}
-                                {isFavorite(livro.id) && (
-                                    <div className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
-                                        <span className="text-white text-sm">💖</span>
-                                    </div>
-                                )}
-
-                                {/* Status do Empréstimo */}
-                                <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(livro.status, livro.estaAtrasado)} text-white`}>
-                                    {getStatusText(livro.status, livro.estaAtrasado)}
-                                </div>
-
-                                {/* Hover Overlay */}
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{
-                                        opacity: hoveredBookId === livro.id ? 1 : 0
-                                    }}
-                                    className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center"
-                                >
-                                    <div className="text-center text-white p-4">
-                                        <h4 className="text-lg font-bold mb-2 line-clamp-2">
-                                            {livro.titulo}
-                                        </h4>
-                                        <p className="text-sm mb-3 opacity-90">
-                                            {livro.nomeAutor}
-                                        </p>
-                                        <div className="flex gap-2 justify-center">
-                                            <button
-                                                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-300"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    console.log('Ver detalhes:', livro.titulo);
-                                                }}
-                                            >
-                                                📖 Detalhes
-                                            </button>
-                                            <button
-                                                className={`px-3 py-1 rounded text-sm transition-colors duration-300 ${isFavorite(livro.id)
-                                                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                                                    : 'bg-green-600 hover:bg-green-700 text-white'
-                                                    }`}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const wasAdded = toggleFavorite(livro.id);
-                                                    console.log(wasAdded ? 'Adicionado aos favoritos:' : 'Removido dos favoritos:', livro.titulo);
-                                                }}
-                                            >
-                                                {isFavorite(livro.id) ? '💖 Favorito' : '❤️ Favoritar'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </div>
-
-                            {/* Informações do Livro */}
-                            <div className="p-4">
-                                <h3
-                                    className="text-lg font-bold text-gray-800 mb-2 line-clamp-2"
-                                    dangerouslySetInnerHTML={{
-                                        __html: highlightSearchTerm(livro.titulo, searchQuery)
-                                    }}
-                                />
-
-                                <p
-                                    className="text-gray-600 text-sm mb-2"
-                                    dangerouslySetInnerHTML={{
-                                        __html: highlightSearchTerm(livro.nomeAutor, searchQuery)
-                                    }}
-                                />
-
-                                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                                    <span>{livro.genero}</span>
-                                    <span>{livro.ano}</span>
-                                </div>
-
-                                {/* Informações do Empréstimo */}
-                                <div className="space-y-2 mb-4">
-                                    <div className="flex justify-between text-xs">
-                                        <span className="text-gray-500">Emprestado em:</span>
-                                        <span className="font-medium">{formatarData(livro.dataEmprestimo)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs">
-                                        <span className="text-gray-500">Devolução prevista:</span>
-                                        <span className={`font-medium ${livro.estaAtrasado ? 'text-red-600' : 'text-gray-700'}`}>
-                                            {formatarData(livro.dataPrevistaDevolucao)}
-                                        </span>
-                                    </div>
-                                    {livro.estaAtrasado && livro.diasAtraso && (
-                                        <div className="flex justify-between text-xs">
-                                            <span className="text-red-500">Dias de atraso:</span>
-                                            <span className="font-medium text-red-600">{livro.diasAtraso} dias</span>
-                                        </div>
-                                    )}
-                                    {!livro.estaAtrasado && livro.diasRestantes >= 0 && (
-                                        <div className="flex justify-between text-xs">
-                                            <span className="text-gray-500">Dias restantes:</span>
-                                            <span className={`font-medium ${livro.diasRestantes <= 3 ? 'text-amber-600' : 'text-gray-700'}`}>
-                                                {livro.diasRestantes} dias
-                                            </span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between text-xs">
-                                        <span className="text-gray-500">Renovações:</span>
-                                        <span className="font-medium">{livro.quantidadeRenovacoes}/{livro.maxRenovacoes}</span>
-                                    </div>
-                                </div>
-
-                                {/* Status do Empréstimo */}
-                                <div className="text-center">
-                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${livro.estaAtrasado
-                                        ? 'bg-red-100 text-red-800'
-                                        : livro.status === 'Emprestado'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-gray-100 text-gray-800'
-                                        }`}>
-                                        {livro.estaAtrasado ? '⚠️ Atrasado' :
-                                            livro.status === 'Emprestado' ? '📖 Emprestado' :
-                                                '✅ Devolvido'}
-                                    </span>
-                                </div>
-                            </div>
+                            <BookCardYeti
+                                livro={{
+                                    id: livro.id,
+                                    titulo: livro.titulo,
+                                    nomeAutor: livro.nomeAutor,
+                                    genero: livro.genero,
+                                    ano: livro.ano,
+                                    capaUrl: livro.capaUrl,
+                                    sinopse: livro.sinopse,
+                                    nomeEditora: livro.nomeEditora,
+                                    numeroPaginas: livro.numeroPaginas,
+                                    exemplaresDisponiveis: 0,
+                                    totalExemplares: 0,
+                                    temExemplaresDisponiveis: false,
+                                    // Dados específicos do empréstimo
+                                    status: livro.status,
+                                    estaAtrasado: livro.estaAtrasado,
+                                    dataEmprestimo: livro.dataEmprestimo,
+                                    dataPrevistaDevolucao: livro.dataPrevistaDevolucao,
+                                    diasAtraso: livro.diasAtraso,
+                                    diasRestantes: livro.diasRestantes,
+                                    quantidadeRenovacoes: livro.quantidadeRenovacoes,
+                                    maxRenovacoes: livro.maxRenovacoes
+                                }}
+                                isFavorite={isFavorite(livro.id)}
+                                onToggleFavorite={toggleFavorite}
+                                onVerDetalhes={() => console.log('Ver detalhes:', livro.titulo)}
+                            />
                         </motion.div>
                     ))
                 )}

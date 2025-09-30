@@ -7,7 +7,8 @@ import { CARGO_FUNCIONARIO } from '../constants/entities';
 import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { FuncionarioValidator } from '../validators/FuncionarioValidator';
-import { BookLoader } from '../components/Loading';
+import { LoadingOverlay } from '../components/Loading';
+import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarFuncionarios: React.FC = () => {
@@ -292,18 +293,11 @@ const GerenciarFuncionarios: React.FC = () => {
             onRefresh={loadFuncionarios}
         >
             {/* Loading State */}
-            {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
-                        <div className="flex flex-col items-center space-y-4">
-                            <BookLoader size="lg" />
-                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                                Carregando funcionários...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <LoadingOverlay
+                isVisible={loading}
+                text="Carregando funcionários..."
+                size="lg"
+            />
 
             {/* Page Content */}
             <div className="space-y-6">
@@ -448,190 +442,192 @@ const GerenciarFuncionarios: React.FC = () => {
                 </motion.div>
 
                 {/* Modal */}
-                {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
-                        <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-2xl font-bold text-gray-900">
-                                    {editingFuncionario ? 'Editar Funcionário' : 'Criar Novo Funcionário'}
-                                </h3>
-                                <button
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '36px', minHeight: '36px' }}
-                                    title="Fechar"
-                                >
-                                    <CancelIcon size={16} />
-                                </button>
+                <ModalOverlay
+                    isVisible={isModalOpen}
+                    onClose={closeModal}
+                    size="lg"
+                >
+                    <div className="p-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-2xl font-bold text-gray-900">
+                                {editingFuncionario ? 'Editar Funcionário' : 'Criar Novo Funcionário'}
+                            </h3>
+                            <button
+                                onClick={closeModal}
+                                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                style={{ minWidth: '36px', minHeight: '36px' }}
+                                title="Fechar"
+                            >
+                                <CancelIcon size={16} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={(e) => { e.preventDefault(); saveFuncionario(); }} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
+                                    <input
+                                        type="text"
+                                        value={formData.nome}
+                                        onChange={(e) => handleFieldChange('nome', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                    {errors.nome && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                                    <input
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => handleFieldChange('email', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                    {errors.email && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Telefone *</label>
+                                    <input
+                                        type="tel"
+                                        value={formData.telefone}
+                                        onChange={(e) => handleFieldChange('telefone', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                    {errors.telefone && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Senha {!editingFuncionario && '*'}
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={formData.senha}
+                                        onChange={(e) => handleFieldChange('senha', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.senha ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="new-password"
+                                        required={!editingFuncionario}
+                                    />
+                                    {errors.senha && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.senha}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Cargo *</label>
+                                    <select
+                                        value={formData.cargo}
+                                        onChange={(e) => handleFieldChange('cargo', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cargo ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        required
+                                    >
+                                        <option value="">Selecione um cargo</option>
+                                        {Object.values(CARGO_FUNCIONARIO).map(cargo => (
+                                            <option key={cargo} value={cargo}>{cargo}</option>
+                                        ))}
+                                    </select>
+                                    {errors.cargo && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.cargo}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Salário *</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.salario}
+                                        onChange={(e) => handleFieldChange('salario', parseFloat(e.target.value) || 0)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.salario ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        autoComplete="off"
+                                        required
+                                    />
+                                    {errors.salario && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.salario}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Admissão *</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataAdmissao}
+                                        onChange={(e) => handleFieldChange('dataAdmissao', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataAdmissao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        required
+                                    />
+                                    {errors.dataAdmissao && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.dataAdmissao}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Demissão (opcional)</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataDemissao}
+                                        onChange={(e) => handleFieldChange('dataDemissao', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataDemissao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                    />
+                                    {errors.dataDemissao && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.dataDemissao}</p>
+                                    )}
+                                </div>
+
+                                <div className="md:col-span-2">
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.ativo}
+                                            onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                                            className="mr-2"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">Funcionário ativo</span>
+                                    </label>
+                                </div>
                             </div>
 
-                            <form onSubmit={(e) => { e.preventDefault(); saveFuncionario(); }} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
-                                        <input
-                                            type="text"
-                                            value={formData.nome}
-                                            onChange={(e) => handleFieldChange('nome', e.target.value)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.nome ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                            required
-                                        />
-                                        {errors.nome && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.nome}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                        <input
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={(e) => handleFieldChange('email', e.target.value)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                            required
-                                        />
-                                        {errors.email && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Telefone *</label>
-                                        <input
-                                            type="tel"
-                                            value={formData.telefone}
-                                            onChange={(e) => handleFieldChange('telefone', e.target.value)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.telefone ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                            required
-                                        />
-                                        {errors.telefone && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Senha {!editingFuncionario && '*'}
-                                        </label>
-                                        <input
-                                            type="password"
-                                            value={formData.senha}
-                                            onChange={(e) => handleFieldChange('senha', e.target.value)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.senha ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="new-password"
-                                            required={!editingFuncionario}
-                                        />
-                                        {errors.senha && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.senha}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Cargo *</label>
-                                        <select
-                                            value={formData.cargo}
-                                            onChange={(e) => handleFieldChange('cargo', e.target.value)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.cargo ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            required
-                                        >
-                                            <option value="">Selecione um cargo</option>
-                                            {Object.values(CARGO_FUNCIONARIO).map(cargo => (
-                                                <option key={cargo} value={cargo}>{cargo}</option>
-                                            ))}
-                                        </select>
-                                        {errors.cargo && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.cargo}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Salário *</label>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            value={formData.salario}
-                                            onChange={(e) => handleFieldChange('salario', parseFloat(e.target.value) || 0)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.salario ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            autoComplete="off"
-                                            required
-                                        />
-                                        {errors.salario && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.salario}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Admissão *</label>
-                                        <input
-                                            type="date"
-                                            value={formData.dataAdmissao}
-                                            onChange={(e) => handleFieldChange('dataAdmissao', e.target.value)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataAdmissao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            required
-                                        />
-                                        {errors.dataAdmissao && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.dataAdmissao}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Demissão (opcional)</label>
-                                        <input
-                                            type="date"
-                                            value={formData.dataDemissao}
-                                            onChange={(e) => handleFieldChange('dataDemissao', e.target.value)}
-                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataDemissao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                        />
-                                        {errors.dataDemissao && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.dataDemissao}</p>
-                                        )}
-                                    </div>
-
-                                    <div className="md:col-span-2">
-                                        <label className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.ativo}
-                                                onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-                                                className="mr-2"
-                                            />
-                                            <span className="text-sm font-medium text-gray-700">Funcionário ativo</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* Botões do Modal */}
-                                <div className="flex justify-end gap-4 mt-8">
-                                    <button
-                                        type="button"
-                                        onClick={closeModal}
-                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title="Cancelar"
-                                    >
-                                        <CancelIcon size={20} />
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title={editingFuncionario ? 'Atualizar' : 'Criar'}
-                                    >
-                                        {isSubmitting ? (
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                        ) : (
-                                            editingFuncionario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            {/* Botões do Modal */}
+                            <div className="flex justify-end gap-4 mt-8">
+                                <button
+                                    type="button"
+                                    onClick={closeModal}
+                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title="Cancelar"
+                                >
+                                    <CancelIcon size={20} />
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title={editingFuncionario ? 'Atualizar' : 'Criar'}
+                                >
+                                    {isSubmitting ? (
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                    ) : (
+                                        editingFuncionario ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                    )}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )}
+                </ModalOverlay>
             </div>
         </Layout>
     );

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import DashboardService from '../services/dashboardService';
-import { BookLoader } from '../components/Loading';
+import { LoadingOverlay } from '../components/Loading';
 import LogoutButton from '../components/LogoutButton';
 import type {
     DashboardData,
@@ -121,18 +121,11 @@ const Dashboard: React.FC = () => {
             lastUpdate={new Date().toLocaleString('pt-BR')}
         >
             {/* Loading State */}
-            {isLoading && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
-                        <div className="flex flex-col items-center space-y-4">
-                            <BookLoader size="lg" />
-                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                                Carregando dados do dashboard...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <LoadingOverlay
+                isVisible={isLoading}
+                text="Carregando dados do dashboard..."
+                size="lg"
+            />
 
             {/* Error Alert */}
             {error && (
@@ -241,7 +234,12 @@ const Dashboard: React.FC = () => {
                 >
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-xl font-bold text-gray-900">Atividades Recentes</h3>
-                        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">Ver todas</button>
+                        <button
+                            onClick={() => navigate('/gerenciar-emprestimos')}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                        >
+                            Ver todas
+                        </button>
                     </div>
                     <div className="space-y-4 max-h-80 overflow-y-auto">
                         {recentActivities.length > 0 ? (
@@ -450,12 +448,12 @@ const Dashboard: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-6">Ações Rápidas</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {[
-                        { label: 'Novo Livro', icon: '📚', color: 'bg-blue-500', action: () => console.log('Novo Livro') },
+                        { label: 'Novo Livro', icon: '📚', color: 'bg-blue-500', action: () => navigate('/gerenciar-livros') },
                         { label: 'Novo Usuário', icon: '👤', color: 'bg-green-500', action: () => navigate('/gerenciar-usuarios') },
-                        { label: 'Novo Empréstimo', icon: '📖', color: 'bg-yellow-500', action: () => console.log('Novo Empréstimo') },
-                        { label: 'Adicionar Exemplar', icon: '📚', color: 'bg-orange-500', action: () => console.log('Adicionar Exemplar') },
-                        { label: 'Adicionar Funcionário', icon: '👨‍💼', color: 'bg-indigo-500', action: () => console.log('Adicionar Funcionário') },
-                        { label: 'Relatórios', icon: '📊', color: 'bg-purple-500', action: () => console.log('Relatórios') }
+                        { label: 'Novo Empréstimo', icon: '📖', color: 'bg-yellow-500', action: () => navigate('/gerenciar-emprestimos') },
+                        { label: 'Adicionar Exemplar', icon: '📚', color: 'bg-orange-500', action: () => navigate('/gerenciar-exemplares') },
+                        { label: 'Adicionar Funcionário', icon: '👨‍💼', color: 'bg-indigo-500', action: () => navigate('/gerenciar-funcionarios') },
+                        { label: 'Relatórios', icon: '📊', color: 'bg-purple-500', action: () => navigate('/relatorios') }
                     ].map((action, index) => (
                         <button
                             key={index}

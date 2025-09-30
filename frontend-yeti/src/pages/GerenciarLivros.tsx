@@ -7,7 +7,8 @@ import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { getPlaceholderByFieldName } from '../components/PlaceholderHelper';
 import { LivroValidator } from '../validators/LivroValidator';
-import { BookLoader } from '../components/Loading';
+import { LoadingOverlay } from '../components/Loading';
+import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
 
 const GerenciarLivros: React.FC = () => {
@@ -291,18 +292,11 @@ const GerenciarLivros: React.FC = () => {
             lastUpdate={lastUpdate}
         >
             {/* Loading State */}
-            {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
-                        <div className="flex flex-col items-center space-y-4">
-                            <BookLoader size="lg" />
-                            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                                Carregando livros...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <LoadingOverlay
+                isVisible={loading}
+                text="Carregando livros..."
+                size="lg"
+            />
 
             {/* Error Alert */}
             {error && (
@@ -493,271 +487,269 @@ const GerenciarLivros: React.FC = () => {
             </motion.div>
 
             {/* Modal de Criação/Edição */}
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style={{ left: '17.5rem' }}>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
-                    >
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-800">
-                                {editingLivro ? 'Editar Livro' : 'Criar Novo Livro'}
-                            </h2>
-                            <button
-                                onClick={closeModal}
-                                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                style={{ minWidth: '36px', minHeight: '36px' }}
-                                title="Fechar"
-                            >
-                                <CancelIcon size={16} />
-                            </button>
+            <ModalOverlay
+                isVisible={isModalOpen}
+                onClose={closeModal}
+                size="xl"
+            >
+                <div className="p-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-gray-800">
+                            {editingLivro ? 'Editar Livro' : 'Criar Novo Livro'}
+                        </h2>
+                        <button
+                            onClick={closeModal}
+                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                            style={{ minWidth: '36px', minHeight: '36px' }}
+                            title="Fechar"
+                        >
+                            <CancelIcon size={16} />
+                        </button>
+                    </div>
+
+                    <form onSubmit={(e) => { e.preventDefault(); saveLivro(); }} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Título */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Título *</label>
+                                <input
+                                    type="text"
+                                    value={formData.titulo}
+                                    onChange={(e) => handleFieldChange('titulo', e.target.value)}
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.titulo ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                        }`}
+                                    maxLength={200}
+                                    placeholder={getPlaceholderByFieldName('titulo')}
+                                    required
+                                />
+                                {errors.titulo && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.titulo}</p>
+                                )}
+                            </div>
+
+                            {/* Subtítulo */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Subtítulo</label>
+                                <input
+                                    type="text"
+                                    value={formData.subtitulo}
+                                    onChange={(e) => setFormData({ ...formData, subtitulo: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={200}
+                                    placeholder={getPlaceholderByFieldName('subtitulo')}
+                                />
+                            </div>
+
+                            {/* ISBN */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">ISBN *</label>
+                                <input
+                                    type="text"
+                                    value={formData.isbn}
+                                    onChange={(e) => handleFieldChange('isbn', e.target.value)}
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.isbn ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                        }`}
+                                    maxLength={20}
+                                    placeholder={getPlaceholderByFieldName('isbn')}
+                                    required
+                                />
+                                {errors.isbn && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.isbn}</p>
+                                )}
+                            </div>
+
+                            {/* Ano */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Ano *</label>
+                                <input
+                                    type="number"
+                                    value={formData.ano}
+                                    onChange={(e) => handleFieldChange('ano', parseInt(e.target.value))}
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.ano ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                        }`}
+                                    placeholder={getPlaceholderByFieldName('ano')}
+                                    min="1000"
+                                    max={new Date().getFullYear()}
+                                    required
+                                />
+                                {errors.ano && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.ano}</p>
+                                )}
+                            </div>
+
+                            {/* Edição */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Edição</label>
+                                <input
+                                    type="number"
+                                    value={formData.edicao}
+                                    onChange={(e) => setFormData({ ...formData, edicao: parseInt(e.target.value) })}
+                                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                />
+                            </div>
+
+                            {/* Número de Páginas */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Número de Páginas *</label>
+                                <input
+                                    type="number"
+                                    value={formData.numeroPaginas}
+                                    onChange={(e) => setFormData({ ...formData, numeroPaginas: parseInt(e.target.value) })}
+                                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                />
+                            </div>
+
+                            {/* Idioma */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Idioma</label>
+                                <input
+                                    type="text"
+                                    value={formData.idioma}
+                                    onChange={(e) => setFormData({ ...formData, idioma: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={50}
+                                    placeholder="Máximo 50 caracteres"
+                                />
+                            </div>
+
+                            {/* Gênero */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Gênero *</label>
+                                <input
+                                    type="text"
+                                    value={formData.genero}
+                                    onChange={(e) => handleFieldChange('genero', e.target.value)}
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.genero ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                        }`}
+                                    maxLength={100}
+                                    placeholder="Máximo 100 caracteres"
+                                    required
+                                />
+                                {errors.genero && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.genero}</p>
+                                )}
+                            </div>
+
+                            {/* Preço */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Preço</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    value={formData.preco}
+                                    onChange={(e) => setFormData({ ...formData, preco: parseFloat(e.target.value) })}
+                                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                />
+                            </div>
+
+                            {/* Código de Barras */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Código de Barras</label>
+                                <input
+                                    type="text"
+                                    value={formData.codigoBarras}
+                                    onChange={(e) => setFormData({ ...formData, codigoBarras: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={50}
+                                    placeholder="Máximo 50 caracteres"
+                                />
+                            </div>
+
+                            {/* URL da Capa */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">URL da Capa</label>
+                                <input
+                                    type="url"
+                                    value={formData.capaUrl}
+                                    onChange={(e) => setFormData({ ...formData, capaUrl: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
+                                    maxLength={500}
+                                    placeholder="Máximo 500 caracteres"
+                                />
+                            </div>
+
+                            {/* ID do Autor */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">ID do Autor *</label>
+                                <input
+                                    type="number"
+                                    value={formData.idAutor}
+                                    onChange={(e) => handleFieldChange('idAutor', parseInt(e.target.value))}
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.idAutor ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                        }`}
+                                    required
+                                />
+                                {errors.idAutor && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.idAutor}</p>
+                                )}
+                            </div>
+
+                            {/* ID da Editora */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">ID da Editora *</label>
+                                <input
+                                    type="number"
+                                    value={formData.idEditora}
+                                    onChange={(e) => handleFieldChange('idEditora', parseInt(e.target.value))}
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.idEditora ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                        }`}
+                                    required
+                                />
+                                {errors.idEditora && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.idEditora}</p>
+                                )}
+                            </div>
+
+                            {/* Sinopse */}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Sinopse *</label>
+                                <textarea
+                                    value={formData.sinopse}
+                                    onChange={(e) => handleFieldChange('sinopse', e.target.value)}
+                                    rows={4}
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.sinopse ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                        }`}
+                                    maxLength={2000}
+                                    placeholder="Máximo 2000 caracteres"
+                                    required
+                                />
+                                {errors.sinopse && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.sinopse}</p>
+                                )}
+                            </div>
                         </div>
 
-                        <form onSubmit={(e) => { e.preventDefault(); saveLivro(); }} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Título */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Título *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.titulo}
-                                        onChange={(e) => handleFieldChange('titulo', e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.titulo ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        maxLength={200}
-                                        placeholder={getPlaceholderByFieldName('titulo')}
-                                        required
-                                    />
-                                    {errors.titulo && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.titulo}</p>
-                                    )}
-                                </div>
-
-                                {/* Subtítulo */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Subtítulo</label>
-                                    <input
-                                        type="text"
-                                        value={formData.subtitulo}
-                                        onChange={(e) => setFormData({ ...formData, subtitulo: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                        maxLength={200}
-                                        placeholder={getPlaceholderByFieldName('subtitulo')}
-                                    />
-                                </div>
-
-                                {/* ISBN */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">ISBN *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.isbn}
-                                        onChange={(e) => handleFieldChange('isbn', e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.isbn ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        maxLength={20}
-                                        placeholder={getPlaceholderByFieldName('isbn')}
-                                        required
-                                    />
-                                    {errors.isbn && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.isbn}</p>
-                                    )}
-                                </div>
-
-                                {/* Ano */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Ano *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.ano}
-                                        onChange={(e) => handleFieldChange('ano', parseInt(e.target.value))}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.ano ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        placeholder={getPlaceholderByFieldName('ano')}
-                                        min="1000"
-                                        max={new Date().getFullYear()}
-                                        required
-                                    />
-                                    {errors.ano && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.ano}</p>
-                                    )}
-                                </div>
-
-                                {/* Edição */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Edição</label>
-                                    <input
-                                        type="number"
-                                        value={formData.edicao}
-                                        onChange={(e) => setFormData({ ...formData, edicao: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                    />
-                                </div>
-
-                                {/* Número de Páginas */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Número de Páginas *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.numeroPaginas}
-                                        onChange={(e) => setFormData({ ...formData, numeroPaginas: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                    />
-                                </div>
-
-                                {/* Idioma */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Idioma</label>
-                                    <input
-                                        type="text"
-                                        value={formData.idioma}
-                                        onChange={(e) => setFormData({ ...formData, idioma: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                        maxLength={50}
-                                        placeholder="Máximo 50 caracteres"
-                                    />
-                                </div>
-
-                                {/* Gênero */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Gênero *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.genero}
-                                        onChange={(e) => handleFieldChange('genero', e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.genero ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        maxLength={100}
-                                        placeholder="Máximo 100 caracteres"
-                                        required
-                                    />
-                                    {errors.genero && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.genero}</p>
-                                    )}
-                                </div>
-
-                                {/* Preço */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Preço</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.preco}
-                                        onChange={(e) => setFormData({ ...formData, preco: parseFloat(e.target.value) })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                    />
-                                </div>
-
-                                {/* Código de Barras */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Código de Barras</label>
-                                    <input
-                                        type="text"
-                                        value={formData.codigoBarras}
-                                        onChange={(e) => setFormData({ ...formData, codigoBarras: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                        maxLength={50}
-                                        placeholder="Máximo 50 caracteres"
-                                    />
-                                </div>
-
-                                {/* URL da Capa */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">URL da Capa</label>
-                                    <input
-                                        type="url"
-                                        value={formData.capaUrl}
-                                        onChange={(e) => setFormData({ ...formData, capaUrl: e.target.value })}
-                                        className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300"
-                                        maxLength={500}
-                                        placeholder="Máximo 500 caracteres"
-                                    />
-                                </div>
-
-                                {/* ID do Autor */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">ID do Autor *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.idAutor}
-                                        onChange={(e) => handleFieldChange('idAutor', parseInt(e.target.value))}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.idAutor ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        required
-                                    />
-                                    {errors.idAutor && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.idAutor}</p>
-                                    )}
-                                </div>
-
-                                {/* ID da Editora */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">ID da Editora *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.idEditora}
-                                        onChange={(e) => handleFieldChange('idEditora', parseInt(e.target.value))}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.idEditora ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        required
-                                    />
-                                    {errors.idEditora && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.idEditora}</p>
-                                    )}
-                                </div>
-
-                                {/* Sinopse */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Sinopse *</label>
-                                    <textarea
-                                        value={formData.sinopse}
-                                        onChange={(e) => handleFieldChange('sinopse', e.target.value)}
-                                        rows={4}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.sinopse ? 'border-red-500 bg-red-50' : 'border-blue-200'
-                                            }`}
-                                        maxLength={2000}
-                                        placeholder="Máximo 2000 caracteres"
-                                        required
-                                    />
-                                    {errors.sinopse && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.sinopse}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Botões do Modal */}
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button
-                                    type="button"
-                                    onClick={closeModal}
-                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title="Cancelar"
-                                >
-                                    <CancelIcon size={20} />
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className={`p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border flex items-center justify-center ${isSubmitting
-                                        ? 'bg-gray-400 cursor-not-allowed'
-                                        : 'bg-green-500 hover:bg-green-600 border-green-700'
-                                        }`}
-                                    style={{ minWidth: '48px', minHeight: '48px' }}
-                                    title={isSubmitting ? 'Salvando...' : (editingLivro ? 'Atualizar' : 'Criar')}
-                                >
-                                    {isSubmitting ? (
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    ) : (
-                                        editingLivro ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </motion.div>
+                        {/* Botões do Modal */}
+                        <div className="flex justify-end gap-4 mt-8">
+                            <button
+                                type="button"
+                                onClick={closeModal}
+                                className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                style={{ minWidth: '48px', minHeight: '48px' }}
+                                title="Cancelar"
+                            >
+                                <CancelIcon size={20} />
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border flex items-center justify-center ${isSubmitting
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-green-500 hover:bg-green-600 border-green-700'
+                                    }`}
+                                style={{ minWidth: '48px', minHeight: '48px' }}
+                                title={isSubmitting ? 'Salvando...' : (editingLivro ? 'Atualizar' : 'Criar')}
+                            >
+                                {isSubmitting ? (
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                ) : (
+                                    editingLivro ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </ModalOverlay>
         </Layout>
     );
 };

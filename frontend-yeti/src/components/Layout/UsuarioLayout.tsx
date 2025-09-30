@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import UsuarioSidebar from './UsuarioSidebar';
 import UsuarioHeader from './UsuarioHeader';
 
@@ -19,16 +19,7 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
     searchQuery: externalSearchQuery,
     onSearchChange
 }) => {
-    const [activeTab, setActiveTab] = useState('dashboard');
-    const [internalSearchQuery, setInternalSearchQuery] = useState('');
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
-    const setSearchQuery = onSearchChange || setInternalSearchQuery;
-
-    // Mapear rotas para tabs
-    useEffect(() => {
+    const [activeTab, setActiveTab] = useState(() => {
         const pathToTab: { [key: string]: string } = {
             '/usuario-dashboard': 'dashboard',
             '/explorar-livros': 'explore',
@@ -37,13 +28,24 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
             '/favoritos': 'favorites',
             '/meu-perfil': 'profile'
         };
+        return pathToTab[window.location.pathname] || 'dashboard';
+    });
+    const [internalSearchQuery, setInternalSearchQuery] = useState('');
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+        const saved = localStorage.getItem('yeti_sidebar_collapsed');
+        return saved ? JSON.parse(saved) : false;
+    });
+    const navigate = useNavigate();
 
-        const currentTab = pathToTab[location.pathname] || 'dashboard';
-        setActiveTab(currentTab);
-    }, [location.pathname]);
+    const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
+    const setSearchQuery = onSearchChange || setInternalSearchQuery;
+
 
     // Navegar para páginas
     const handleTabChange = (tab: string) => {
+        // Atualizar o activeTab imediatamente
+        setActiveTab(tab);
+
         const tabToPath: { [key: string]: string } = {
             'dashboard': '/usuario-dashboard',
             'explore': '/explorar-livros',
@@ -61,7 +63,6 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
 
     // Mock user data - será substituído por dados reais da API
     const userName = "Gustavo Leal";
-    const userInitial = "G";
 
     const handleLogout = () => {
         localStorage.removeItem('yeti_token');
@@ -69,12 +70,23 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
         window.location.href = '/';
     };
 
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem('yeti_sidebar_collapsed', JSON.stringify(newState));
+    };
+
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div
+            className="min-h-screen bg-gray-50"
+            style={{ '--sidebar-width': isSidebarCollapsed ? '4rem' : '17.5rem' } as React.CSSProperties}
+        >
             {/* Sidebar */}
             <UsuarioSidebar
                 activeTab={activeTab}
                 setActiveTab={handleTabChange}
+                isCollapsed={isSidebarCollapsed}
+                onToggleCollapse={toggleSidebar}
             />
 
             {/* Header */}
@@ -83,10 +95,11 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
                 setSearchQuery={setSearchQuery}
                 userName={userName}
                 onLogout={handleLogout}
+                isSidebarCollapsed={isSidebarCollapsed}
             />
 
             {/* Main Content */}
-            <main className="ml-70 mt-18 p-8" style={{ marginLeft: '17.5rem', marginTop: '4.5rem' }}>
+            <main className="ml-70 mt-18 p-8 transition-all duration-300" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem', marginTop: '4.5rem' }}>
                 {/* Page Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
