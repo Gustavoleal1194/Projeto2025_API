@@ -332,7 +332,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         >
             {/* Loading State */}
             {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
                     <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
                         <div className="flex flex-col items-center space-y-4">
                             <BookLoader size="lg" />
@@ -487,7 +487,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
             {/* Modal de Criação/Edição */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4" style={{ left: '17.5rem' }}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}

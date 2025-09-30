@@ -257,7 +257,7 @@ const GerenciarEmprestimos: React.FC = () => {
         >
             {/* Loading State */}
             {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
                     <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4">
                         <div className="flex flex-col items-center space-y-4">
                             <BookLoader size="lg" />
@@ -423,7 +423,7 @@ const GerenciarEmprestimos: React.FC = () => {
 
                 {/* Modal */}
                 {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -445,111 +445,111 @@ const GerenciarEmprestimos: React.FC = () => {
                             </div>
 
                             <form onSubmit={(e) => { e.preventDefault(); saveEmprestimo(); }} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Usuário ID */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">ID do Usuário *</label>
-                                        <input
-                                            type="number"
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Usuário ID */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">ID do Usuário *</label>
+                                    <input
+                                        type="number"
                                             value={formData.idUsuario || ''}
                                             onChange={(e) => handleFieldChange('idUsuario', parseInt(e.target.value) || 0)}
                                             className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.idUsuario ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                                             autoComplete="off"
-                                            required
-                                        />
+                                        required
+                                    />
                                         {errors.idUsuario && (
                                             <p className="mt-1 text-sm text-red-600">{errors.idUsuario}</p>
                                         )}
-                                    </div>
+                                </div>
 
-                                    {/* Exemplar ID */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">ID do Exemplar *</label>
-                                        <input
-                                            type="number"
+                                {/* Exemplar ID */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">ID do Exemplar *</label>
+                                    <input
+                                        type="number"
                                             value={formData.idExemplar || ''}
                                             onChange={(e) => handleFieldChange('idExemplar', parseInt(e.target.value) || 0)}
                                             className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.idExemplar ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                                             autoComplete="off"
-                                            required
-                                        />
+                                        required
+                                    />
                                         {errors.idExemplar && (
                                             <p className="mt-1 text-sm text-red-600">{errors.idExemplar}</p>
                                         )}
-                                    </div>
+                                </div>
 
-                                    {/* Data de Empréstimo */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Empréstimo *</label>
-                                        <input
-                                            type="date"
-                                            value={formData.dataEmprestimo}
+                                {/* Data de Empréstimo */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Empréstimo *</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataEmprestimo}
                                             onChange={(e) => handleFieldChange('dataEmprestimo', e.target.value)}
                                             className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataEmprestimo ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            required
-                                        />
+                                        required
+                                    />
                                         {errors.dataEmprestimo && (
                                             <p className="mt-1 text-sm text-red-600">{errors.dataEmprestimo}</p>
                                         )}
-                                    </div>
+                                </div>
 
-                                    {/* Data de Devolução Prevista */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Devolução Prevista *</label>
-                                        <input
-                                            type="date"
-                                            value={formData.dataPrevistaDevolucao}
+                                {/* Data de Devolução Prevista */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Data de Devolução Prevista *</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dataPrevistaDevolucao}
                                             onChange={(e) => handleFieldChange('dataPrevistaDevolucao', e.target.value)}
                                             className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.dataPrevistaDevolucao ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            required
-                                        />
+                                        required
+                                    />
                                         {errors.dataPrevistaDevolucao && (
                                             <p className="mt-1 text-sm text-red-600">{errors.dataPrevistaDevolucao}</p>
                                         )}
-                                    </div>
+                                </div>
 
-                                    {/* Observações */}
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
-                                        <textarea
-                                            value={formData.observacoes}
+                                {/* Observações */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                    <textarea
+                                        value={formData.observacoes}
                                             onChange={(e) => handleFieldChange('observacoes', e.target.value)}
-                                            rows={3}
+                                        rows={3}
                                             className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.observacoes ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-                                            placeholder="Observações sobre o empréstimo..."
+                                        placeholder="Observações sobre o empréstimo..."
                                             autoComplete="off"
-                                        />
+                                    />
                                         {errors.observacoes && (
                                             <p className="mt-1 text-sm text-red-600">{errors.observacoes}</p>
                                         )}
-                                    </div>
                                 </div>
+                            </div>
 
-                                {/* Botões */}
-                                <div className="flex justify-end gap-4 mt-8">
-                                    <button
+                            {/* Botões */}
+                            <div className="flex justify-end gap-4 mt-8">
+                                <button
                                         type="button"
-                                        onClick={closeModal}
-                                        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title="Cancelar"
-                                    >
-                                        <CancelIcon size={20} />
-                                    </button>
-                                    <button
+                                    onClick={closeModal}
+                                    className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-red-700 flex items-center justify-center"
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title="Cancelar"
+                                >
+                                    <CancelIcon size={20} />
+                                </button>
+                                <button
                                         type="submit"
                                         disabled={isSubmitting}
                                         className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-700 flex items-center justify-center"
-                                        style={{ minWidth: '48px', minHeight: '48px' }}
-                                        title={editingEmprestimo ? 'Atualizar' : 'Criar'}
-                                    >
+                                    style={{ minWidth: '48px', minHeight: '48px' }}
+                                    title={editingEmprestimo ? 'Atualizar' : 'Criar'}
+                                >
                                         {isSubmitting ? (
                                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                                         ) : (
                                             editingEmprestimo ? <UpdateIcon size={20} /> : <CreateIcon size={20} />
                                         )}
-                                    </button>
-                                </div>
+                                </button>
+                            </div>
                             </form>
                         </motion.div>
                     </div>
@@ -557,7 +557,7 @@ const GerenciarEmprestimos: React.FC = () => {
 
                 {/* Modal de Devolução de Empréstimo */}
                 {isDevolucaoModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}

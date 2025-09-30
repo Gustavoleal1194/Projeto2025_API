@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
+import LoginButton from '../components/LoginButton';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -813,41 +814,16 @@ const LoginPage: React.FC = () => {
 
                 {/* Botão Entrar */}
                 <div style={{ margin: '0 0 0', padding: 0, position: 'relative' }}>
-                    <button
-                        type="submit"
+                    <LoginButton
+                        onClick={() => {
+                            const form = formRef.current;
+                            if (form) {
+                                form.requestSubmit();
+                            }
+                        }}
                         disabled={isLoading}
-                        style={{
-                            display: 'block',
-                            margin: 0,
-                            padding: '0.65em 1em 1em',
-                            backgroundColor: isLoading ? '#a0a0a0' : '#4eb8dd',
-                            border: 'none',
-                            borderRadius: '4px',
-                            boxSizing: 'border-box',
-                            boxShadow: 'none',
-                            width: '100%',
-                            height: '65px',
-                            fontSize: '1.2em',
-                            color: '#FFF',
-                            fontWeight: '600',
-                            fontFamily: 'inherit',
-                            transition: 'background-color .2s ease-out',
-                            cursor: isLoading ? 'not-allowed' : 'pointer',
-                            opacity: isLoading ? 0.7 : 1
-                        }}
-                        onMouseOver={(e) => {
-                            if (!isLoading) {
-                                e.currentTarget.style.backgroundColor = '#217093';
-                            }
-                        }}
-                        onMouseOut={(e) => {
-                            if (!isLoading) {
-                                e.currentTarget.style.backgroundColor = '#4eb8dd';
-                            }
-                        }}
-                    >
-                        {isLoading ? 'Entrando...' : 'Entrar'}
-                    </button>
+                        text={isLoading ? 'Entrando...' : 'Login'}
+                    />
                 </div>
             </form>
         </div>
