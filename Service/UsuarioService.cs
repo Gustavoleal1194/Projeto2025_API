@@ -69,14 +69,28 @@ namespace Service
 
         public async Task UpdateAsync(UsuarioDTO usuarioDTO)
         {
-            // Fazer hash da senha antes de atualizar (se a senha não estiver vazia)
-            if (!string.IsNullOrEmpty(usuarioDTO.Senha))
+            // Carregar o usuário atual para preservar campos não enviados (ex.: senha)
+            var existente = await usuarioRepositorio.GetByIdAsync(usuarioDTO.Id);
+            if (existente == null)
             {
-                usuarioDTO.Senha = PasswordHashService.HashPassword(usuarioDTO.Senha);
+                throw new InvalidOperationException("Usuário não encontrado.");
             }
 
-            var usuario = mapper.Map<Usuario>(usuarioDTO);
-            await usuarioRepositorio.UpdateAsync(usuario);
+            // Atualizar campos básicos
+            existente.Nome = usuarioDTO.Nome ?? existente.Nome;
+            existente.Email = usuarioDTO.Email ?? existente.Email;
+            existente.CPF = usuarioDTO.CPF ?? existente.CPF;
+            existente.Telefone = usuarioDTO.Telefone ?? existente.Telefone;
+            existente.DataNascimento = usuarioDTO.DataNascimento != default ? usuarioDTO.DataNascimento : existente.DataNascimento;
+            // Não alterar o status Ativo neste fluxo de atualização de perfil
+
+            // Senha: apenas atualizar se enviada; caso contrário, manter hash atual
+            if (!string.IsNullOrEmpty(usuarioDTO.Senha))
+            {
+                existente.Senha = PasswordHashService.HashPassword(usuarioDTO.Senha);
+            }
+
+            await usuarioRepositorio.UpdateAsync(existente);
         }
 
         // Métodos específicos para consultas

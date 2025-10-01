@@ -26,6 +26,9 @@ const MeuPerfil: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [editando, setEditando] = useState(false);
     const [salvando, setSalvando] = useState(false);
+    const [changePassword, setChangePassword] = useState(false);
+    const [senha, setSenha] = useState('');
+    const [confirmarSenha, setConfirmarSenha] = useState('');
 
     // Estados do formulário de edição
     const [formData, setFormData] = useState({
@@ -78,9 +81,31 @@ const MeuPerfil: React.FC = () => {
             setSalvando(true);
             setError(null);
 
-            const dadosAtualizados = await usuarioPerfilService.atualizarPerfil(formData);
+            // Validação simples de senha quando toggle ativo
+            if (changePassword) {
+                if (!senha || senha.trim().length < 6) {
+                    setError('A nova senha deve ter pelo menos 6 caracteres.');
+                    setSalvando(false);
+                    return;
+                }
+                if (senha !== confirmarSenha) {
+                    setError('A confirmação de senha não confere.');
+                    setSalvando(false);
+                    return;
+                }
+            }
+
+            const payload: any = { ...formData };
+            if (changePassword && senha.trim() !== '') {
+                payload.senha = senha;
+            }
+
+            const dadosAtualizados = await usuarioPerfilService.atualizarPerfil(payload);
             setUsuario(dadosAtualizados);
             setEditando(false);
+            setChangePassword(false);
+            setSenha('');
+            setConfirmarSenha('');
         } catch (err) {
             console.error('Erro ao salvar perfil:', err);
             setError('Erro ao salvar alterações');
@@ -100,6 +125,9 @@ const MeuPerfil: React.FC = () => {
                 dataNascimento: usuario.dataNascimento ?
                     new Date(usuario.dataNascimento).toISOString().split('T')[0] : ''
             });
+            setChangePassword(false);
+            setSenha('');
+            setConfirmarSenha('');
         }
         setEditando(false);
         setError(null);
@@ -252,6 +280,56 @@ const MeuPerfil: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Alterar Senha */}
+                            {editando && (
+                                <div className="mt-6 pt-6 border-t border-gray-200 space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            id="meu-perfil-toggle-senha"
+                                            type="checkbox"
+                                            checked={changePassword}
+                                            onChange={(e) => {
+                                                setChangePassword(e.target.checked);
+                                                if (!e.target.checked) {
+                                                    setSenha('');
+                                                    setConfirmarSenha('');
+                                                    setError(null);
+                                                }
+                                            }}
+                                            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                        />
+                                        <label htmlFor="meu-perfil-toggle-senha" className="text-sm font-medium text-gray-700">
+                                            Alterar senha
+                                        </label>
+                                    </div>
+
+                                    {changePassword && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Nova Senha *</label>
+                                                <input
+                                                    type="password"
+                                                    value={senha}
+                                                    onChange={(e) => setSenha(e.target.value)}
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                    autoComplete="new-password"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-gray-700">Confirmar Nova Senha *</label>
+                                                <input
+                                                    type="password"
+                                                    value={confirmarSenha}
+                                                    onChange={(e) => setConfirmarSenha(e.target.value)}
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                    autoComplete="new-password"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </motion.div>
                     </div>
 

@@ -8,7 +8,7 @@ interface AnimatedToggleButtonProps {
 
 const AnimatedToggleButton: React.FC<AnimatedToggleButtonProps> = ({ onClick, isCollapsed }) => {
   return (
-    <StyledWrapper isCollapsed={isCollapsed}>
+    <StyledWrapper $isCollapsed={isCollapsed}>
       <button className="button" onClick={onClick} title={isCollapsed ? 'Expandir sidebar' : 'Minimizar sidebar'}>
         <div className="button-box">
           <span className="button-elem">
@@ -27,7 +27,8 @@ const AnimatedToggleButton: React.FC<AnimatedToggleButtonProps> = ({ onClick, is
   );
 }
 
-const StyledWrapper = styled.div<{ isCollapsed: boolean }>`
+// Usar prop transitória ($isCollapsed) para não vazar para o DOM
+const StyledWrapper = styled.div<{ $isCollapsed: boolean }>`
   .button {
     display: block;
     position: relative;
@@ -84,7 +85,7 @@ const StyledWrapper = styled.div<{ isCollapsed: boolean }>`
     position: absolute;
     top: 0;
     left: 0;
-    transform: ${({ isCollapsed }) => (isCollapsed ? 'translateX(-56px)' : 'translateX(0)')};
+    transform: ${({ $isCollapsed }) => ($isCollapsed ? 'translateX(-56px)' : 'translateX(0)')};
     transition: transform 0.4s;
   }
 
@@ -93,14 +94,14 @@ const StyledWrapper = styled.div<{ isCollapsed: boolean }>`
     width: 20px;
     height: 20px;
     margin: 17px 18px 0 18px;
-    transform: ${({ isCollapsed }) => (isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)')};
+    transform: ${({ $isCollapsed }) => ($isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)')};
     fill: #f0eeef;
   }
 
   .button:hover .button-box,
   .button:focus .button-box {
     transition: 0.4s;
-    transform: ${({ isCollapsed }) => (isCollapsed ? 'translateX(0)' : 'translateX(-56px)')};
+    transform: ${({ $isCollapsed }) => ($isCollapsed ? 'translateX(0)' : 'translateX(-56px)')};
   }`;
 
 export default AnimatedToggleButton;

@@ -32,6 +32,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         senha: ''
     });
     const [confirmarSenha, setConfirmarSenha] = useState('');
+    const [changePassword, setChangePassword] = useState(false);
 
     // Estados de validação
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -60,7 +61,12 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
     };
 
     const validateForm = (): boolean => {
-        const formDataWithConfirm = { ...formData, confirmarSenha };
+        // Quando estiver editando, senha é opcional. Porém, se senha for preenchida, confirmarSenha passa a ser obrigatória.
+        const formDataWithConfirm = { ...formData, confirmarSenha } as any;
+        if (!!editingUsuario && (!formData.senha || formData.senha.trim() === '')) {
+            // Não validar confirmarSenha quando não há alteração de senha
+            delete formDataWithConfirm.confirmarSenha;
+        }
         const newErrors = UsuarioValidator.validateForm(formDataWithConfirm, !!editingUsuario);
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -79,7 +85,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
         // Se mudou a senha, revalidar confirmação de senha
         if (name === 'senha') {
-            const confirmarSenhaError = UsuarioValidator.validateConfirmarSenha(value, confirmarSenha, !!editingUsuario);
+            const confirmarSenhaError = (!value || value.trim() === '') && !!editingUsuario
+                ? ''
+                : UsuarioValidator.validateConfirmarSenha(value || '', confirmarSenha, !!editingUsuario);
             setErrors(prev => ({
                 ...prev,
                 confirmarSenha: confirmarSenhaError
@@ -91,7 +99,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         setConfirmarSenha(value);
 
         // Validar confirmação de senha
-        const error = UsuarioValidator.validateConfirmarSenha(formData.senha || '', value, !!editingUsuario);
+        const error = (!!editingUsuario && (!formData.senha || formData.senha.trim() === ''))
+            ? ''
+            : UsuarioValidator.validateConfirmarSenha(formData.senha || '', value, !!editingUsuario);
         setErrors(prev => ({
             ...prev,
             confirmarSenha: error
@@ -157,6 +167,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                 dataNascimento: usuario.dataNascimento,
                 senha: ''
             });
+            setChangePassword(false);
         } else {
             setEditingUsuario(null);
             setFormData({
@@ -167,6 +178,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                 dataNascimento: '',
                 senha: ''
             });
+            setChangePassword(true);
         }
         setConfirmarSenha('');
         setErrors({}); // Limpar erros ao abrir modal
@@ -202,6 +214,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             senha: ''
         });
         setConfirmarSenha('');
+        setChangePassword(false);
     };
 
 
@@ -239,13 +252,19 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
             const method = editingUsuario ? 'PUT' : 'POST';
 
+            // Montar payload: ao editar, só enviar senha se a opção de alterar senha estiver ativa e o campo preenchido
+            const payload: any = { ...formData };
+            if (editingUsuario && (!changePassword || !payload.senha || (payload.senha as string).trim() === '')) {
+                delete payload.senha;
+            }
+
             const response = await fetch(url, {
                 method,
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
@@ -621,6 +640,66 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
                                         <p className="mt-1 text-sm text-red-600">{errors.confirmarSenha}</p>
                                     )}
                                 </div>
+                            </>
+                        )}
+
+                        {editingUsuario && (
+                            <>
+                                <div className="flex items-center gap-3 pt-2">
+                                    <input
+                                        id="toggle-change-password"
+                                        type="checkbox"
+                                        checked={changePassword}
+                                        onChange={(e) => {
+                                            setChangePassword(e.target.checked);
+                                            if (!e.target.checked) {
+                                                setFormData(prev => ({ ...prev, senha: '' }));
+                                                setConfirmarSenha('');
+                                                setErrors(prev => ({ ...prev, senha: '', confirmarSenha: '' }));
+                                            }
+                                        }}
+                                        className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                    />
+                                    <label htmlFor="toggle-change-password" className="text-sm font-medium text-gray-700">Alterar senha</label>
+                                </div>
+
+                                {changePassword && (
+                                    <>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Nova Senha *</label>
+                                            <input
+                                                type="password"
+                                                value={formData.senha || ''}
+                                                onChange={(e) => handleFieldChange('senha', e.target.value)}
+                                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.senha ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                                    }`}
+                                                placeholder={getPlaceholderByFieldName('senha')}
+                                                autoComplete="new-password"
+                                                required
+                                            />
+                                            {errors.senha && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.senha}</p>
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirmar Nova Senha *</label>
+                                            <input
+                                                type="password"
+                                                value={confirmarSenha}
+                                                onChange={(e) => handleConfirmarSenhaChange(e.target.value)}
+                                                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition-all duration-300 ${errors.confirmarSenha ? 'border-red-500 bg-red-50' : 'border-blue-200'
+                                                    }`}
+                                                placeholder={getPlaceholderByFieldName('confirmarsenha')}
+                                                autoComplete="new-password"
+                                                required
+                                            />
+                                            {errors.confirmarSenha && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.confirmarSenha}</p>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </>
                         )}
 
