@@ -9,6 +9,7 @@ import { AutorValidator } from '../validators/AutorValidator';
 import { LoadingOverlay } from '../components/Loading';
 import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
+import RefreshButton from '../components/Buttons/RefreshButton';
 
 const GerenciarAutores: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -402,13 +403,7 @@ const GerenciarAutores: React.FC = () => {
 
                     {/* Botão Criar */}
                     <div className="mt-8 flex justify-center">
-                        <button
-                            onClick={() => openModal()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-blue-800"
-                        >
-                            Criar Novo Autor
-                            <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
-                        </button>
+                        <RefreshButton onClick={() => openModal()} text="Criar Novo Autor" icon={<span className="text-xl">➕</span>} />
                     </div>
                 </div>
 

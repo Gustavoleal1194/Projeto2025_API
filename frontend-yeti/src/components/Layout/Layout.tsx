@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import RefreshButton from '../Buttons/RefreshButton';
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -82,23 +83,7 @@ const Layout: React.FC<LayoutProps> = ({
                         <div className="text-right">
                             <div className="flex items-center gap-4">
                                 {onRefresh && (
-                                    <button
-                                        onClick={onRefresh}
-                                        disabled={loading}
-                                        className="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {loading ? (
-                                            <div className="flex items-center gap-2">
-                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700"></div>
-                                                <span className="text-gray-700" style={{ color: '#374151' }}>Atualizando...</span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-2">
-                                                <span>🔄</span>
-                                                <span className="text-gray-700" style={{ color: '#374151' }}>Atualizar</span>
-                                            </div>
-                                        )}
-                                    </button>
+                                    <RefreshButton onClick={onRefresh} text={loading ? 'Atualizando...' : 'Atualizar'} />
                                 )}
                                 {lastUpdate && (
                                     <div>

@@ -10,6 +10,8 @@ import { editoraService } from '../services/editoraService';
 import { funcionarioService } from '../services/funcionarioService';
 import type { Emprestimo, Usuario, Exemplar, Autor, Editora, Funcionario } from '../types/entities';
 import type { Livro } from '../constants/entities';
+import RefreshButton from '../components/Buttons/RefreshButton';
+import PrintButton from '../components/Buttons/PrintButton';
 
 const GerenciarRelatorios: React.FC = () => {
     // Estados principais
@@ -571,19 +573,8 @@ const GerenciarRelatorios: React.FC = () => {
                             </div>
 
                             <div className="flex gap-4">
-                                <button
-                                    onClick={loadAllData}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-blue-700 hover:border-blue-800"
-                                >
-                                    🔄 Atualizar
-                                </button>
-                                <button
-                                    onClick={exportarRelatorio}
-                                    className="!bg-green-600 hover:!bg-green-700 !text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg !border-2 !border-green-700 hover:!border-green-800"
-                                    style={{ backgroundColor: '#16a34a', color: 'white', borderColor: '#15803d' }}
-                                >
-                                    📄 Exportar
-                                </button>
+                                <RefreshButton onClick={loadAllData} text="Atualizar" />
+                                <PrintButton onClick={exportarRelatorio} text="Imprimir" />
                             </div>
                         </div>
                     </motion.div>

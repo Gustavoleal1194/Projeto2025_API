@@ -4,6 +4,7 @@ import { exemplarService } from '../services/exemplarService';
 import { livroService } from '../services/livroService';
 import type { Exemplar, ExemplarCreateRequest, Livro } from '../constants/entities';
 import Layout from '../components/Layout/Layout';
+import RefreshButton from '../components/Buttons/RefreshButton';
 import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
 import { useNotifications } from '../hooks/useNotifications';
 import { ExemplarValidator } from '../validators/ExemplarValidator';
@@ -419,13 +420,7 @@ const GerenciarExemplares: React.FC = () => {
 
                         {/* Botão Criar */}
                         <div className="flex items-end justify-center">
-                            <button
-                                onClick={() => openModal()}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-blue-800"
-                            >
-                                Criar Novo Exemplar
-                                <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
-                            </button>
+                            <RefreshButton onClick={() => openModal()} text="Criar Novo Exemplar" icon={<span className="text-xl">➕</span>} />
                         </div>
                     </div>
                 </div>

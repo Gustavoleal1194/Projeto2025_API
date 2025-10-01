@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
+import RefreshButton from '../components/Buttons/RefreshButton';
 import type { Emprestimo, EmprestimoForm } from '../types/entities';
 import { emprestimoService } from '../services/emprestimoService';
 import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
@@ -376,22 +377,9 @@ const GerenciarEmprestimos: React.FC = () => {
 
                     {/* Botões de Ação */}
                     <div className="mt-8 flex justify-center gap-4">
-                        <button
-                            onClick={() => openModal()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-blue-800"
-                        >
-                            Criar Novo Empréstimo
-                            <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
-                        </button>
+                        <RefreshButton onClick={() => openModal()} text="Criar Novo Empréstimo" icon={<span className="text-xl">➕</span>} />
 
-                        <button
-                            onClick={() => setIsDevolucaoModalOpen(true)}
-                            className="bg-green-700 hover:bg-green-800 text-white px-8 py-3 rounded-lg font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2 border border-black"
-                            style={{ backgroundColor: '#15803d', color: 'white', borderColor: '#000000', borderWidth: '1px' }}
-                        >
-                            Devolução de Empréstimo
-                            <span className="text-lg bg-white text-green-700 rounded-full w-6 h-6 flex items-center justify-center">📚</span>
-                        </button>
+                        <RefreshButton onClick={() => setIsDevolucaoModalOpen(true)} text="Devolução de Empréstimo" variant="success" icon={<span className="text-xl">📚</span>} />
                     </div>
                 </div>
 

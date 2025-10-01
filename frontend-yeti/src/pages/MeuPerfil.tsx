@@ -169,7 +169,7 @@ const MeuPerfil: React.FC = () => {
                                 <button
                                     onClick={handleSalvar}
                                     disabled={salvando}
-                                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-300"
+                                    className="px-6 py-2 rounded-lg btn-primary transition-colors duration-300"
                                 >
                                     {salvando ? 'Salvando...' : 'Salvar'}
                                 </button>

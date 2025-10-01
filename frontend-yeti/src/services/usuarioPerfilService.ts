@@ -52,7 +52,7 @@ class UsuarioPerfilService {
                 id: perfilAtual.id
             };
 
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/Usuario`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/Usuario/${perfilAtual.id}`, {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(dadosCompletos)

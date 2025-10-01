@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
+import RefreshButton from '../components/Buttons/RefreshButton';
 import type { Livro, LivroCreateRequest } from '../constants/entities';
 import livroService from '../services/livroService';
 import { CancelIcon, CreateIcon, UpdateIcon } from '../components/Icons';
@@ -457,13 +458,7 @@ const GerenciarLivros: React.FC = () => {
                 className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 mb-8"
             >
                 <div className="flex justify-center">
-                    <button
-                        onClick={() => openModal()}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 border border-blue-800"
-                    >
-                        <span>Criar Novo Livro</span>
-                        <span className="text-lg bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center">➕</span>
-                    </button>
+                    <RefreshButton onClick={() => openModal()} text="Criar Novo Livro" icon={<span className="text-xl">➕</span>} />
                 </div>
             </motion.div>
 
