@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import LogoutButton from '../LogoutButton';
 import { ThemeContext } from '../../contexts/ThemeContext';
+import ThemeToggleSwitch from '../ToogleThemeComponent';
 
 interface HeaderProps {
     onLogout?: () => void;
@@ -74,18 +75,18 @@ const Header: React.FC<HeaderProps> = ({ onLogout, isSidebarCollapsed = false })
         </header>
     );
 };
-
-export default Header;
-
 const ThemeToggleButton: React.FC = () => {
-    const { mode, toggle } = useContext(ThemeContext);
+    const { toggle } = useContext(ThemeContext);
     return (
         <button
             onClick={toggle}
             className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            title={mode === 'dark' ? 'Tema: Escuro' : 'Tema: Claro'}
         >
-            {mode === 'dark' ? '🌙' : '☀️'}
+
+            <ThemeToggleSwitch />
         </button>
     );
 };
+
+export default Header;
+

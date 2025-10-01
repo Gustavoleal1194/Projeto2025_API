@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import LogoutButton from '../LogoutButton';
 import AnimatedSearchBar from '../AnimatedSearchBar';
+import { ThemeContext } from '../../contexts/ThemeContext';
+import ThemeToggleSwitch from '../ToogleThemeComponent';
 
 interface UsuarioHeaderProps {
     searchQuery: string;
@@ -30,6 +32,8 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
 
             {/* User Profile & Actions */}
             <div className="flex items-center gap-4">
+                <ThemeToggleButton />
+
                 {/* User Profile */}
                 <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
                     <div className="w-12 h-12 rounded-full overflow-hidden mr-2" style={{ width: '50px', height: '50px' }}>
@@ -76,5 +80,18 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
         </header>
     );
 };
+const ThemeToggleButton: React.FC = () => {
+    const { toggle } = useContext(ThemeContext);
+    return (
+        <button
+            onClick={toggle}
+            className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+
+            <ThemeToggleSwitch />
+        </button>
+    );
+};
+
 
 export default UsuarioHeader;
