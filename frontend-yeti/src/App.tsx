@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NotificationProvider, useNotification } from './contexts/NotificationContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import NotificationModal from './components/NotificationModal';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
@@ -25,97 +26,99 @@ const AppContent: React.FC = () => {
   const { notification, hideNotification } = useNotification();
 
   return (
-    <Router>
-      <Routes>
-        {/* Rota pública - Login */}
-        <Route path="/" element={<LoginPage />} />
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          {/* Rota pública - Login */}
+          <Route path="/" element={<LoginPage />} />
 
-        {/* Rotas protegidas para ADMIN */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute requiredRole="admin">
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/gerenciar-usuarios" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarUsuarios />
-          </ProtectedRoute>
-        } />
-        <Route path="/gerenciar-livros" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarLivros />
-          </ProtectedRoute>
-        } />
-        <Route path="/gerenciar-exemplares" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarExemplares />
-          </ProtectedRoute>
-        } />
-        <Route path="/gerenciar-funcionarios" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarFuncionarios />
-          </ProtectedRoute>
-        } />
-        <Route path="/gerenciar-autores" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarAutores />
-          </ProtectedRoute>
-        } />
-        <Route path="/gerenciar-editores" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarEditoras />
-          </ProtectedRoute>
-        } />
-        <Route path="/gerenciar-emprestimos" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarEmprestimos />
-          </ProtectedRoute>
-        } />
-        <Route path="/relatorios" element={
-          <ProtectedRoute requiredRole="admin">
-            <GerenciarRelatorios />
-          </ProtectedRoute>
-        } />
-        <Route path="/configuracoes" element={
-          <ProtectedRoute requiredRole="admin">
-            <Configuracoes />
-          </ProtectedRoute>
-        } />
+          {/* Rotas protegidas para ADMIN */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute requiredRole="admin">
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/gerenciar-usuarios" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarUsuarios />
+            </ProtectedRoute>
+          } />
+          <Route path="/gerenciar-livros" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarLivros />
+            </ProtectedRoute>
+          } />
+          <Route path="/gerenciar-exemplares" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarExemplares />
+            </ProtectedRoute>
+          } />
+          <Route path="/gerenciar-funcionarios" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarFuncionarios />
+            </ProtectedRoute>
+          } />
+          <Route path="/gerenciar-autores" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarAutores />
+            </ProtectedRoute>
+          } />
+          <Route path="/gerenciar-editores" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarEditoras />
+            </ProtectedRoute>
+          } />
+          <Route path="/gerenciar-emprestimos" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarEmprestimos />
+            </ProtectedRoute>
+          } />
+          <Route path="/relatorios" element={
+            <ProtectedRoute requiredRole="admin">
+              <GerenciarRelatorios />
+            </ProtectedRoute>
+          } />
+          <Route path="/configuracoes" element={
+            <ProtectedRoute requiredRole="admin">
+              <Configuracoes />
+            </ProtectedRoute>
+          } />
 
-        {/* Rotas protegidas para USUÁRIO */}
-        <Route path="/usuario-dashboard" element={
-          <ProtectedRoute requiredRole="user">
-            <UsuarioDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/explorar-livros" element={
-          <ProtectedRoute requiredRole="user">
-            <ExplorarLivros />
-          </ProtectedRoute>
-        } />
-        <Route path="/meus-livros" element={
-          <ProtectedRoute requiredRole="user">
-            <MeusLivros />
-          </ProtectedRoute>
-        } />
-        <Route path="/meus-emprestimos" element={
-          <ProtectedRoute requiredRole="user">
-            <MeusEmprestimos />
-          </ProtectedRoute>
-        } />
-        <Route path="/favoritos" element={
-          <ProtectedRoute requiredRole="user">
-            <Favoritos />
-          </ProtectedRoute>
-        } />
-        <Route path="/meu-perfil" element={
-          <ProtectedRoute requiredRole="user">
-            <MeuPerfil />
-          </ProtectedRoute>
-        } />
-      </Routes>
-      <NotificationModal notification={notification} onClose={hideNotification} />
-    </Router>
+          {/* Rotas protegidas para USUÁRIO */}
+          <Route path="/usuario-dashboard" element={
+            <ProtectedRoute requiredRole="user">
+              <UsuarioDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/explorar-livros" element={
+            <ProtectedRoute requiredRole="user">
+              <ExplorarLivros />
+            </ProtectedRoute>
+          } />
+          <Route path="/meus-livros" element={
+            <ProtectedRoute requiredRole="user">
+              <MeusLivros />
+            </ProtectedRoute>
+          } />
+          <Route path="/meus-emprestimos" element={
+            <ProtectedRoute requiredRole="user">
+              <MeusEmprestimos />
+            </ProtectedRoute>
+          } />
+          <Route path="/favoritos" element={
+            <ProtectedRoute requiredRole="user">
+              <Favoritos />
+            </ProtectedRoute>
+          } />
+          <Route path="/meu-perfil" element={
+            <ProtectedRoute requiredRole="user">
+              <MeuPerfil />
+            </ProtectedRoute>
+          } />
+        </Routes>
+        <NotificationModal notification={notification} onClose={hideNotification} />
+      </Router>
+    </ThemeProvider>
   );
 };
 

@@ -53,7 +53,7 @@ const Layout: React.FC<LayoutProps> = ({
 
     return (
         <div
-            className="min-h-screen bg-gray-50"
+            className="min-h-screen bg-gray-50 dark:bg-gray-950"
             style={{ '--sidebar-width': isSidebarCollapsed ? '4rem' : '17.5rem' } as React.CSSProperties}
         >
             {/* Sidebar */}
@@ -68,15 +68,15 @@ const Layout: React.FC<LayoutProps> = ({
             <Header isSidebarCollapsed={isSidebarCollapsed} />
 
             {/* Main Content */}
-            <main className="mt-18 p-8 transition-all duration-300" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
+            <main className="mt-18 p-8 transition-all duration-300 text-gray-900 dark:text-gray-100" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
                 {/* Page Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-2xl">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 text-white mb-8 shadow-2xl border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-4xl font-bold mb-4 text-gray-800" style={{ color: '#1f2937' }}>
+                            <h1 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-100" style={{ color: '#1f2937' }}>
                                 {pageTitle}
                             </h1>
-                            <p className="text-xl text-gray-600" style={{ color: '#4b5563' }}>
+                            <p className="text-xl text-gray-600 dark:text-gray-200" style={{ color: '#4b5563' }}>
                                 {pageSubtitle}
                             </p>
                         </div>
@@ -87,8 +87,8 @@ const Layout: React.FC<LayoutProps> = ({
                                 )}
                                 {lastUpdate && (
                                     <div>
-                                        <p className="text-sm text-gray-600" style={{ color: '#4b5563' }}>Última atualização</p>
-                                        <p className="text-lg font-semibold text-gray-800" style={{ color: '#1f2937' }}>{lastUpdate}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-200" style={{ color: '#4b5563' }}>Última atualização</p>
+                                        <p className="text-lg font-semibold text-gray-800 dark:text-gray-100" style={{ color: '#1f2937' }}>{lastUpdate}</p>
                                     </div>
                                 )}
                             </div>

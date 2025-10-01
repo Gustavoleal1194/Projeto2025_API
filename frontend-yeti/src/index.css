@@ -23,6 +23,12 @@ body {
   color: var(--charcoal);
 }
 
+/* Dark mode base overrides when .dark está no html */
+.dark body {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+
 * {
   box-sizing: border-box;
 }

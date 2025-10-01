@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import LogoutButton from '../LogoutButton';
+import { ThemeContext } from '../../contexts/ThemeContext';
 
 interface HeaderProps {
     onLogout?: () => void;
@@ -19,12 +20,14 @@ const Header: React.FC<HeaderProps> = ({ onLogout, isSidebarCollapsed = false })
     };
 
     return (
-        <header className="fixed top-0 right-0 h-18 bg-white border-b border-blue-400 flex items-center justify-between px-8 z-40 transition-all duration-300" style={{ left: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
+        <header className="fixed top-0 right-0 h-18 bg-white dark:bg-gray-900 border-b border-blue-400 dark:border-gray-700 flex items-center justify-between px-8 z-40 transition-all duration-300" style={{ left: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
             {/* Empty space for balance */}
             <div></div>
 
             {/* Admin Profile & Actions */}
             <div className="flex items-center gap-4">
+                {/* Theme Toggle */}
+                <ThemeToggleButton />
                 {/* Admin Profile */}
                 <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
                     <div className="w-12 h-12 rounded-full overflow-hidden mr-2" style={{ width: '50px', height: '50px' }}>
@@ -73,3 +76,16 @@ const Header: React.FC<HeaderProps> = ({ onLogout, isSidebarCollapsed = false })
 };
 
 export default Header;
+
+const ThemeToggleButton: React.FC = () => {
+    const { mode, toggle } = useContext(ThemeContext);
+    return (
+        <button
+            onClick={toggle}
+            className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            title={mode === 'dark' ? 'Tema: Escuro' : 'Tema: Claro'}
+        >
+            {mode === 'dark' ? '🌙' : '☀️'}
+        </button>
+    );
+};

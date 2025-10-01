@@ -185,6 +185,33 @@ svg {
     background-color: #f9fafb;
 }
 
+/* Dark mode overrides for common utility classes used em wrappers/cards */
+.dark .bg-gray-50 {
+    background-color: #0b1220 !important;
+    /* fundo geral escuro */
+}
+
+.dark .bg-white {
+    background-color: #111827 !important;
+    /* cards e containers */
+}
+
+.dark .border-gray-200 {
+    border-color: #374151 !important;
+}
+
+.dark .text-gray-800 {
+    color: #e5e7eb !important;
+}
+
+.dark .text-gray-600 {
+    color: #cbd5e1 !important;
+}
+
+.dark .text-gray-900 {
+    color: #cbd5e1 !important;
+}
+
 .fixed {
     position: fixed;
 }
@@ -868,6 +895,12 @@ body {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
+}
+
+/* Dark mode base overrides when .dark is present on html/body */
+.dark body {
+    background-color: #0b1220 !important;
+    color: #e5e7eb !important;
 }
 
 #root {
