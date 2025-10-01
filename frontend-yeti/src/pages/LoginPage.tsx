@@ -808,10 +808,11 @@ const LoginPage: React.FC = () => {
                         }}
                     />
                     <label style={{
+                        color: '#217093',
                         display: 'block',
                         padding: '0 0 0 1.45em',
                         position: 'absolute',
-                        top: '0.25em',
+                        top: '0.35em',
                         right: 0,
                         fontSize: '1em',
                         cursor: 'pointer'
@@ -828,14 +829,16 @@ const LoginPage: React.FC = () => {
                             }}
                         />
                         <div style={{
+
                             position: 'absolute',
-                            top: 0,
+                            top: '0.35em',
                             left: 0,
                             height: '0.85em',
                             width: '0.85em',
                             backgroundColor: '#f3fafd',
                             border: 'solid 2px #217093',
                             borderRadius: '3px'
+
                         }}>
                             <div style={{
                                 content: '""',
