@@ -1474,7 +1474,7 @@ body {
 }
 
 .bg-red-100 {
-    background-color: #fef2f2;
+    background-color: #FFCDD2;
 }
 
 .text-red-800 {
@@ -1483,6 +1483,14 @@ body {
 
 .bg-yellow-100 {
     background-color: #fef3c7;
+}
+
+.bg-purple-100 {
+    background-color: #E1BEE7;
+}
+
+.bg-blue-100 {
+    background-color: #BBDEFB;
 }
 
 .text-yellow-800 {
