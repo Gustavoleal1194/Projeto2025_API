@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import DashboardService from '../services/dashboardService';
 import { LoadingOverlay } from '../components/Loading';
-import LogoutButton from '../components/LogoutButton';
 import type {
     DashboardData,
     Activity,
@@ -106,11 +105,23 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('yeti_token');
-        localStorage.removeItem('yeti_user');
-        navigate('/');
-    };
+
+
+    // Dados para gráfico real (SVG) usando monthlyStats
+    const chartData = monthlyStats.slice(0, 12);
+    const maxValue = chartData.length > 0
+        ? Math.max(1, ...chartData.map(s => Math.max(s.emprestimos, s.devolucoes)))
+        : 1;
+    const paddingX = 40;
+    const paddingY = 30;
+    const chartHeight = 260;
+    const innerHeight = chartHeight - paddingY * 2;
+    // Largura baseada no número de meses para uma boa densidade de barras
+    const baseGroupWidth = 56; // espaço por mês (duas barras + gap)
+    const chartWidth = paddingX * 2 + Math.max(baseGroupWidth * chartData.length, 480);
+    const innerWidth = chartWidth - paddingX * 2;
+    const groupWidth = chartData.length > 0 ? innerWidth / chartData.length : 0;
+    const barWidth = Math.max(8, (groupWidth - 12) / 2);
 
     return (
         <Layout
@@ -343,7 +354,7 @@ const Dashboard: React.FC = () => {
 
             {/* Charts and Analytics */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                {/* Monthly Statistics Chart */}
+                {/* Monthly Statistics Chart (SVG real) */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -351,33 +362,40 @@ const Dashboard: React.FC = () => {
                     className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
                 >
                     <h3 className="text-xl font-bold text-gray-900 mb-6">Estatísticas Mensais</h3>
-                    <div className="space-y-4">
-                        {monthlyStats.length > 0 ? (
-                            monthlyStats.map((stat, index) => (
-                                <div key={index} className="flex items-center justify-between">
-                                    <span className="text-sm font-medium text-gray-600 w-12">{stat.month}</span>
-                                    <div className="flex-1 mx-4">
-                                        <div className="flex items-center space-x-2">
-                                            <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                                <div
-                                                    className="bg-blue-500 h-2 rounded-full"
-                                                    style={{ width: `${(stat.emprestimos / 200) * 100}%` }}
-                                                ></div>
-                                            </div>
-                                            <span className="text-xs text-gray-500 w-12 text-right">{stat.emprestimos}</span>
-                                        </div>
-                                        <div className="flex items-center space-x-2 mt-1">
-                                            <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                                <div
-                                                    className="bg-green-500 h-2 rounded-full"
-                                                    style={{ width: `${(stat.devolucoes / 200) * 100}%` }}
-                                                ></div>
-                                            </div>
-                                            <span className="text-xs text-gray-500 w-12 text-right">{stat.devolucoes}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
+                    <div>
+                        {chartData.length > 0 ? (
+                            <svg className="w-full" height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+                                {/* Grid horizontal */}
+                                {[0, 0.25, 0.5, 0.75, 1].map((t, i) => {
+                                    const y = paddingY + innerHeight * (1 - t);
+                                    const value = Math.round(maxValue * t);
+                                    return (
+                                        <g key={i}>
+                                            <line x1={paddingX} y1={y} x2={paddingX + innerWidth} y2={y} stroke="#e5e7eb" strokeDasharray="4 4" />
+                                            <text x={paddingX - 8} y={y + 4} textAnchor="end" className="fill-gray-400" style={{ fontSize: 10 }}>{value}</text>
+                                        </g>
+                                    );
+                                })}
+
+                                {/* Barras */}
+                                {chartData.map((d, idx) => {
+                                    const groupX = paddingX + idx * groupWidth + 4;
+                                    const hLoan = (d.emprestimos / maxValue) * innerHeight;
+                                    const hRet = (d.devolucoes / maxValue) * innerHeight;
+                                    const xLoan = groupX;
+                                    const xRet = groupX + barWidth + 4;
+                                    const yLoan = paddingY + (innerHeight - hLoan);
+                                    const yRet = paddingY + (innerHeight - hRet);
+                                    return (
+                                        <g key={idx}>
+                                            <rect x={xLoan} y={yLoan} width={barWidth} height={hLoan} fill="#3b82f6" rx={3} />
+                                            <rect x={xRet} y={yRet} width={barWidth} height={hRet} fill="#10b981" rx={3} />
+                                            {/* Label do mês */}
+                                            <text x={groupX + barWidth} y={paddingY + innerHeight + 14} textAnchor="middle" className="fill-gray-600" style={{ fontSize: 10 }}>{d.month}</text>
+                                        </g>
+                                    );
+                                })}
+                            </svg>
                         ) : (
                             <div className="text-center py-8 text-gray-500">
                                 <div className="text-4xl mb-2">📈</div>
@@ -470,10 +488,7 @@ const Dashboard: React.FC = () => {
             </motion.div>
 
 
-            {/* Logout Button */}
-            <div className="mt-8 text-center">
-                <LogoutButton onClick={handleLogout} />
-            </div>
+
         </Layout>
     );
 };

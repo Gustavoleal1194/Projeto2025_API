@@ -267,19 +267,24 @@ export class DashboardService {
             });
 
             const data = await this.handleResponse<any>(response);
+            console.debug('[DashboardService] livros-mais-emprestados resposta:', data);
 
-            // Verificar se data.livros existe e é um array (camelCase)
-            if (!data.livros || !Array.isArray(data.livros)) {
-                console.warn('⚠️ getLivrosMaisEmprestados: data.livros não é um array válido:', data);
+            // Aceitar diferentes formatos: { livros: [...] }, { Livros: [...] } ou array direto
+            const livrosArray = Array.isArray(data)
+                ? data
+                : (Array.isArray(data?.livros) ? data.livros : (Array.isArray(data?.Livros) ? data.Livros : null));
+
+            if (!livrosArray) {
+                console.warn('⚠️ getLivrosMaisEmprestados: resposta inesperada, retornando vazio:', data);
                 return [];
             }
 
-            return data.livros.map((livro: any, index: number) => ({
-                id: livro.id || index + 1,
-                title: livro.titulo || 'Livro',
-                author: livro.autor || 'Autor',
-                emprestimos: livro.totalEmprestimos || 0,
-                rating: 4.5 + Math.random() * 0.5 // Simular rating
+            return livrosArray.map((livro: any, index: number) => ({
+                id: livro.id ?? livro.Id ?? index + 1,
+                title: livro.titulo ?? livro.Titulo ?? 'Livro',
+                author: livro.autor ?? livro.Autor ?? 'Autor',
+                emprestimos: livro.totalEmprestimos ?? livro.TotalEmprestimos ?? livro.emprestimos ?? 0,
+                rating: 4.5 + Math.random() * 0.5
             }));
         } catch (error) {
             console.error('Erro ao buscar livros mais emprestados:', error);
@@ -292,19 +297,48 @@ export class DashboardService {
      */
     static async getEstatisticasMensais(): Promise<MonthlyStat[]> {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/relatorios/emprestimos-por-periodo?dataInicio=2024-01-01&dataFim=2024-12-31`, {
+            const now = new Date();
+            const ano = now.getFullYear();
+            const inicio = `${ano}-01-01`;
+            const fim = `${ano}-12-31`;
+            const response = await fetch(`${API_BASE_URL}/api/relatorios/emprestimos-por-periodo?dataInicio=${inicio}&dataFim=${fim}`, {
                 method: 'GET',
                 headers: this.getAuthHeaders()
             });
 
-            await this.handleResponse<any>(response);
+            const raw = await this.handleResponse<any>(response);
+            console.debug('[DashboardService] emprestimos-por-periodo resposta:', raw);
 
-            // Simular dados mensais baseados nos dados recebidos
+            // Esperado do backend: [{ month: 'yyyy-MM', emprestimos: number, devolucoes: number }]
+            const lista = Array.isArray(raw) ? raw : (Array.isArray(raw?.dados) ? raw.dados : []);
+
+            const mapMonth = (yyyyMM: string) => {
+                // yyyy-MM -> Mon PT-BR abreviado
+                try {
+                    const [y, m] = yyyyMM.split('-').map((n: string) => parseInt(n, 10));
+                    const d = new Date(y, (m || 1) - 1, 1);
+                    return d.toLocaleString('pt-BR', { month: 'short' }).replace('.', '');
+                } catch {
+                    return yyyyMM;
+                }
+            };
+
+            const mapped = lista
+                .map((item: any) => ({
+                    month: mapMonth(item.month ?? item.mes ?? ''),
+                    emprestimos: Number(item.emprestimos ?? item.Emprestimos ?? 0),
+                    devolucoes: Number(item.devolucoes ?? item.Devolucoes ?? 0)
+                }))
+                .filter((x: any) => !!x.month);
+
+            if (mapped.length > 0) return mapped;
+
+            // Fallback mínimo (evitar card vazio)
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
             return meses.map((mes) => ({
                 month: mes,
-                emprestimos: Math.floor(Math.random() * 50) + 100,
-                devolucoes: Math.floor(Math.random() * 45) + 95
+                emprestimos: 0,
+                devolucoes: 0
             }));
         } catch (error) {
             console.error('Erro ao buscar estatísticas mensais:', error);
