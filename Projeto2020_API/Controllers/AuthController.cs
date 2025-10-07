@@ -64,8 +64,7 @@ namespace Projeto2025_API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Hash da senha antes de salvar
-            usuarioDTO.Senha = PasswordHashService.HashPassword(usuarioDTO.Senha);
+            // O UsuarioService já faz o hash da senha, não precisa fazer aqui
 
             var usuario = await _usuarioService.AddAsync(usuarioDTO);
             return Ok(usuario);
@@ -78,8 +77,7 @@ namespace Projeto2025_API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Hash da senha antes de salvar
-            funcionarioDTO.Senha = PasswordHashService.HashPassword(funcionarioDTO.Senha);
+            // O FuncionarioService já faz o hash da senha, não precisa fazer aqui
 
             var funcionario = await _funcionarioService.AddAsync(funcionarioDTO);
             return Ok(funcionario);
@@ -98,8 +96,7 @@ namespace Projeto2025_API.Controllers
                 return BadRequest(new { message = "Já existe pelo menos um funcionário no sistema. Use o endpoint /registrar-funcionario com autenticação." });
             }
 
-            // Hash da senha antes de salvar
-            funcionarioDTO.Senha = PasswordHashService.HashPassword(funcionarioDTO.Senha);
+            // O FuncionarioService já faz o hash da senha, não precisa fazer aqui
             funcionarioDTO.Cargo = "Administrador";
             funcionarioDTO.Salario = 5000.00m;
             funcionarioDTO.DataAdmissao = DateTime.Now;
@@ -152,6 +149,33 @@ namespace Projeto2025_API.Controllers
             }
         }
 
+        [HttpPost("corrigir-senhas-funcionarios")]
+        public async Task<ActionResult> CorrigirSenhasFuncionarios()
+        {
+            try
+            {
+                // Buscar funcionários com senhas em texto simples
+                var funcionarios = await _funcionarioService.GetAllAsync();
+                var funcionariosComSenhaSimples = funcionarios.Where(f => f.Senha == "123456").ToList();
+
+                foreach (var funcionario in funcionariosComSenhaSimples)
+                {
+                    // Atualizar senha com hash correto
+                    funcionario.Senha = PasswordHashService.HashPassword("123456");
+                    await _funcionarioService.UpdateAsync(funcionario);
+                }
+
+                return Ok(new { 
+                    message = $"Senhas corrigidas para {funcionariosComSenhaSimples.Count} funcionários",
+                    funcionarios = funcionariosComSenhaSimples.Select(f => new { f.Id, f.Nome, f.Email })
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("criar-usuario-teste")]
         public async Task<ActionResult<UsuarioDTO>> CriarUsuarioTeste()
         {
@@ -167,8 +191,7 @@ namespace Projeto2025_API.Controllers
                     DataNascimento = new DateTime(1990, 1, 1)
                 };
 
-                // Hash da senha antes de salvar
-                usuarioTeste.Senha = PasswordHashService.HashPassword(usuarioTeste.Senha);
+                // O UsuarioService já faz o hash da senha, não precisa fazer aqui
 
                 var usuario = await _usuarioService.AddAsync(usuarioTeste);
                 return Ok(usuario);
@@ -195,8 +218,7 @@ namespace Projeto2025_API.Controllers
                     DataAdmissao = DateTime.Now
                 };
 
-                // Hash da senha antes de salvar
-                funcionarioTeste.Senha = PasswordHashService.HashPassword(funcionarioTeste.Senha);
+                // O FuncionarioService já faz o hash da senha, não precisa fazer aqui
 
                 var funcionario = await _funcionarioService.AddAsync(funcionarioTeste);
                 return Ok(funcionario);
