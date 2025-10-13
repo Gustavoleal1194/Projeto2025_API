@@ -11,7 +11,7 @@ class UsuarioEmprestimoService {
     }
 
     async listarEmprestimosAtivos(): Promise<Emprestimo[]> {
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/Emprestimo/ativos`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/Emprestimo/meus-emprestimos`, {
             method: 'GET',
             headers: this.getAuthHeaders()
         });
@@ -20,7 +20,11 @@ class UsuarioEmprestimoService {
             throw new Error('Erro ao listar empréstimos ativos');
         }
 
-        return await response.json();
+        const emprestimos = await response.json();
+        // Filtrar apenas os empréstimos ativos (status 'Emprestado' ou 'Atrasado')
+        return emprestimos.filter((emprestimo: any) =>
+            emprestimo.status === 'Emprestado' || emprestimo.status === 'Atrasado'
+        );
     }
 
     async listarEmprestimosAtrasados(): Promise<Emprestimo[]> {

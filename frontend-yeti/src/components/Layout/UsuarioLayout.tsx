@@ -62,7 +62,21 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
     };
 
     // Mock user data - será substituído por dados reais da API
-    const userName = "Gustavo Leal";
+    // Buscar nome do usuário do localStorage
+    const getUserName = () => {
+        try {
+            const userData = localStorage.getItem('yeti_user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                return user.nome || user.name || user.nomeCompleto || user.fullName || user.username || 'Usuário';
+            }
+        } catch (error) {
+            console.error('Erro ao obter dados do usuário:', error);
+        }
+        return 'Usuário';
+    };
+
+    const userName = getUserName();
 
     const handleLogout = () => {
         localStorage.removeItem('yeti_token');

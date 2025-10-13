@@ -9,9 +9,11 @@ import { useNotifications } from '../hooks/useNotifications';
 import { EmprestimoValidator } from '../validators/EmprestimoValidator';
 import { LoadingOverlay } from '../components/Loading';
 import { createSmartTable } from '../utils/tableRecipes';
+import { useSolicitacaoState } from '../utils/solicitacaoState';
 
 const GerenciarEmprestimos: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
+    const { solicitacaoData, clearSolicitacaoData } = useSolicitacaoState();
 
     const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
     const [loading, setLoading] = useState(true);
@@ -56,9 +58,13 @@ const GerenciarEmprestimos: React.FC = () => {
     };
 
     const validateForm = (): boolean => {
+        console.log('🔍 Validando formulário com dados:', formData);
         const newErrors = EmprestimoValidator.validateForm(formData);
+        console.log('❌ Erros de validação encontrados:', newErrors);
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        const isValid = Object.keys(newErrors).length === 0;
+        console.log('✅ Formulário válido:', isValid);
+        return isValid;
     };
 
     // Handler para mudanças nos campos com validação em tempo real
@@ -93,6 +99,47 @@ const GerenciarEmprestimos: React.FC = () => {
     useEffect(() => {
         loadEmprestimos();
     }, []);
+
+    // Detectar dados de solicitação e abrir modal automaticamente
+    useEffect(() => {
+        if (solicitacaoData && solicitacaoData.abrirModal) {
+            console.log('📚 Dados de solicitação detectados, abrindo modal:', solicitacaoData);
+
+            // Pré-preencher formulário com dados da solicitação
+            const hoje = new Date();
+            const dataPrevista = new Date();
+            dataPrevista.setDate(hoje.getDate() + 14); // 14 dias a partir de hoje
+
+            // Usar data de ontem para empréstimo para passar na validação
+            const dataEmprestimo = new Date();
+            dataEmprestimo.setDate(hoje.getDate() - 1);
+
+            const novoFormData = {
+                idUsuario: solicitacaoData.usuarioId,
+                idExemplar: solicitacaoData.exemplarId,
+                dataEmprestimo: dataEmprestimo.toISOString().split('T')[0],
+                dataPrevistaDevolucao: dataPrevista.toISOString().split('T')[0],
+                observacoes: `Solicitação de empréstimo para "${solicitacaoData.livroTitulo}" solicitado por ${solicitacaoData.nomeUsuario}`
+            };
+
+            console.log('📝 Pré-preenchendo formulário com:', novoFormData);
+            setFormData(novoFormData);
+
+            // Limpar erros
+            setErrors({});
+
+            // Abrir modal com um pequeno delay para garantir que o estado seja atualizado
+            setTimeout(() => {
+                console.log('🚀 Abrindo modal de empréstimo...');
+                setIsModalOpen(true);
+
+                // Limpar dados APÓS abrir o modal para evitar loop
+                setTimeout(() => {
+                    clearSolicitacaoData();
+                }, 200);
+            }, 100);
+        }
+    }, [solicitacaoData]);
 
     // Filtrar empréstimos
     const filteredEmprestimos = emprestimos.filter(emprestimo => {
@@ -164,20 +211,27 @@ const GerenciarEmprestimos: React.FC = () => {
         });
     };
 
+
     // Salvar empréstimo
     const saveEmprestimo = async () => {
         if (isSubmitting) return;
 
+        console.log('💾 Iniciando salvamento de empréstimo...');
+        console.log('📋 Dados do formulário:', formData);
+
         // Validar formulário antes de enviar
         if (!validateForm()) {
+            console.log('❌ Validação falhou');
             return;
         }
 
         try {
             setIsSubmitting(true);
+            console.log('🔄 Enviando dados...');
 
             // Preparar dados para envio
             const dadosParaEnvio = { ...formData };
+            console.log('📤 Dados preparados para envio:', dadosParaEnvio);
 
             // Se for um novo empréstimo, usar a data/hora atual
             if (!editingEmprestimo) {
@@ -205,16 +259,21 @@ const GerenciarEmprestimos: React.FC = () => {
             }
 
             if (editingEmprestimo) {
+                console.log('✏️ Atualizando empréstimo existente...');
                 await emprestimoService.atualizar({ ...dadosParaEnvio, id: editingEmprestimo.id } as any);
             } else {
+                console.log('➕ Criando novo empréstimo...');
                 await emprestimoService.criar(dadosParaEnvio);
             }
+
+            console.log('✅ Empréstimo salvo com sucesso!');
             await loadEmprestimos();
             closeModal();
 
             // Mostrar notificação de sucesso
             showCrudSuccess(editingEmprestimo ? 'update' : 'create', 'empréstimo');
         } catch (error) {
+            console.error('❌ Erro ao salvar empréstimo:', error);
             handleRequestError(error, 'Erro ao salvar empréstimo');
         } finally {
             setIsSubmitting(false);
@@ -595,6 +654,7 @@ const GerenciarEmprestimos: React.FC = () => {
                     </div>
                 )}
             </div>
+
         </Layout>
     );
 };

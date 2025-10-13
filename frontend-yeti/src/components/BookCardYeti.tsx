@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import type { LivroResumido } from '../services/explorarLivrosService';
 import AnimatedHeartButton from './AnimatedHeartButton';
 import AnimatedDetailsButton from './AnimatedDetailsButton';
+import SolicitarEmprestimoButton from './Buttons/SolicitarEmprestimoButton';
+import { exemplarService } from '../services/exemplarService';
 
 // Interface estendida para incluir informações de empréstimo
 interface LivroComEmprestimo extends LivroResumido {
@@ -21,7 +23,9 @@ interface BookCardYetiProps {
   isFavorite: boolean;
   onToggleFavorite: (id: number) => void;
   onVerDetalhes: (livro: LivroComEmprestimo) => void;
+  onSolicitarEmprestimo?: (exemplarId: number, livroTitulo: string) => void;
   searchQuery?: string;
+  showSolicitarButton?: boolean;
 }
 
 const BookCardYeti: React.FC<BookCardYetiProps> = ({
@@ -29,8 +33,43 @@ const BookCardYeti: React.FC<BookCardYetiProps> = ({
   isFavorite,
   onToggleFavorite,
   onVerDetalhes,
-  searchQuery = ''
+  onSolicitarEmprestimo,
+  searchQuery = '',
+  showSolicitarButton = false
 }) => {
+  const [exemplaresDisponiveis, setExemplaresDisponiveis] = useState<any[]>([]);
+  const [exemplarSelecionado, setExemplarSelecionado] = useState<any>(null);
+  const [carregandoExemplares, setCarregandoExemplares] = useState(false);
+
+  // Buscar exemplares disponíveis quando o componente for montado
+  useEffect(() => {
+    if (showSolicitarButton && livro.temExemplaresDisponiveis) {
+      buscarExemplaresDisponiveis();
+    }
+  }, [showSolicitarButton, livro.id]);
+
+  const buscarExemplaresDisponiveis = async () => {
+    try {
+      setCarregandoExemplares(true);
+      console.log('🔍 Buscando exemplares disponíveis para o livro:', livro.id);
+
+      const exemplares = await exemplarService.listarDisponiveisPorLivro(livro.id);
+      console.log('📚 Exemplares encontrados:', exemplares);
+
+      setExemplaresDisponiveis(exemplares);
+
+      // Selecionar o primeiro exemplar disponível automaticamente
+      if (exemplares.length > 0) {
+        setExemplarSelecionado(exemplares[0]);
+        console.log('✅ Exemplar selecionado:', exemplares[0]);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao buscar exemplares disponíveis:', error);
+    } finally {
+      setCarregandoExemplares(false);
+    }
+  };
+
   const highlightSearchTerm = (text: string, query: string) => {
     if (!query.trim()) return text;
     const regex = new RegExp(`(${query})`, 'gi');
@@ -103,6 +142,27 @@ const BookCardYeti: React.FC<BookCardYetiProps> = ({
             )}
           </div>
         </div>
+
+        {/* Botão de Solicitar Empréstimo */}
+        {showSolicitarButton && livro.temExemplaresDisponiveis && (
+          <div className="solicitar-container">
+            {carregandoExemplares ? (
+              <div className="loading-exemplares">
+                <span>Carregando exemplares...</span>
+              </div>
+            ) : exemplarSelecionado ? (
+              <SolicitarEmprestimoButton
+                exemplarId={exemplarSelecionado.id} // Usando ID real do exemplar
+                livroTitulo={livro.titulo}
+                onSuccess={() => onSolicitarEmprestimo?.(exemplarSelecionado.id, livro.titulo)}
+              />
+            ) : exemplaresDisponiveis.length === 0 ? (
+              <div className="sem-exemplares">
+                <span>Nenhum exemplar disponível</span>
+              </div>
+            ) : null}
+          </div>
+        )}
 
         {/* Botões de Ação */}
         <div className="action-buttons">
@@ -273,6 +333,29 @@ const StyledWrapper = styled.div`
 
   .exemplares, .pages {
     color: #c7d2fe;
+  }
+
+  .solicitar-container {
+    margin: 8px 0;
+    padding: 0 8px;
+  }
+
+  .loading-exemplares {
+    text-align: center;
+    padding: 8px;
+    font-size: 12px;
+    color: #c7d2fe;
+    opacity: 0.8;
+  }
+
+  .sem-exemplares {
+    text-align: center;
+    padding: 8px;
+    font-size: 12px;
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
   }
 
   .action-buttons {

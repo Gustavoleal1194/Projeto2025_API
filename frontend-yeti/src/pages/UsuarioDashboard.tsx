@@ -146,17 +146,9 @@ const UsuarioDashboard: React.FC = () => {
                                     : 'text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                📚 2D
+                                📚
                             </button>
-                            <button
-                                onClick={() => setView3D(true)}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${view3D
-                                    ? 'bg-white text-gray-800 shadow-sm'
-                                    : 'text-gray-600 hover:text-gray-800'
-                                    }`}
-                            >
-                                🎯 3D (BETA)
-                            </button>
+
                         </div>
 
                         {/* Botão de limpar busca */}

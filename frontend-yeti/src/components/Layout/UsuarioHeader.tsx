@@ -3,6 +3,7 @@ import LogoutButton from '../LogoutButton';
 import AnimatedSearchBar from '../AnimatedSearchBar';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import ThemeToggleSwitch from '../ToogleThemeComponent';
+import NotificationButton from '../Notifications/NotificationButton';
 
 interface UsuarioHeaderProps {
     searchQuery: string;
@@ -33,6 +34,9 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
             {/* User Profile & Actions */}
             <div className="flex items-center gap-4">
                 <ThemeToggleButton />
+
+                {/* Notifications */}
+                <NotificationButton />
 
                 {/* User Profile */}
                 <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">

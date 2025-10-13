@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import LogoutButton from '../LogoutButton';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import ThemeToggleSwitch from '../ToogleThemeComponent';
+import AdminNotificationButton from '../Notifications/AdminNotificationButton';
 
 interface HeaderProps {
     onLogout?: () => void;
@@ -29,6 +30,10 @@ const Header: React.FC<HeaderProps> = ({ onLogout, isSidebarCollapsed = false })
             <div className="flex items-center gap-4">
                 {/* Theme Toggle */}
                 <ThemeToggleButton />
+
+                {/* Admin Notifications */}
+                <AdminNotificationButton />
+
                 {/* Admin Profile */}
                 <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
                     <div className="w-12 h-12 rounded-full overflow-hidden mr-2" style={{ width: '50px', height: '50px' }}>

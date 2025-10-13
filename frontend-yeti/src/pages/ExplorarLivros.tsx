@@ -15,6 +15,7 @@ import BookDetailsCard from '../components/BookDetailsCard';
 import PaginationButton from '../components/Buttons/PaginationButton';
 import BookCardYeti from '../components/BookCardYeti';
 import FilterButton from '../components/Buttons/FilterButton';
+import { solicitacaoEmprestimoService } from '../services/solicitacaoEmprestimoService';
 
 const ExplorarLivros: React.FC = () => {
     const [livros, setLivros] = useState<LivroResumido[]>([]);
@@ -125,6 +126,24 @@ const ExplorarLivros: React.FC = () => {
     const handleVerDetalhes = (livro: LivroResumido) => {
         setSelectedBook(livro);
         setShowBookDetails(true);
+    };
+
+    const handleSolicitarEmprestimo = async (exemplarId: number, livroTitulo: string) => {
+        try {
+            console.log(`📚 Iniciando solicitação de empréstimo:`, {
+                exemplarId,
+                livroTitulo
+            });
+
+            await solicitacaoEmprestimoService.solicitarEmprestimo(exemplarId, livroTitulo);
+
+            // Mostrar confirmação para o usuário
+            alert(`✅ Solicitação de empréstimo enviada para: "${livroTitulo}"\n\nO administrador será notificado e processará sua solicitação.`);
+
+        } catch (error) {
+            console.error('Erro ao solicitar empréstimo:', error);
+            alert(`❌ Erro ao enviar solicitação: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+        }
     };
 
     const handleCloseDetails = () => {
@@ -295,7 +314,9 @@ const ExplorarLivros: React.FC = () => {
                                     console.log(wasAdded ? 'Adicionado aos favoritos:' : 'Removido dos favoritos:', livro.titulo);
                                 }}
                                 onVerDetalhes={handleVerDetalhes}
+                                onSolicitarEmprestimo={handleSolicitarEmprestimo}
                                 searchQuery={searchQuery}
+                                showSolicitarButton={true}
                             />
                         </motion.div>
                     ))

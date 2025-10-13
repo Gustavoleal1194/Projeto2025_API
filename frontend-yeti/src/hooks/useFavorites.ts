@@ -14,6 +14,9 @@ export const useFavorites = () => {
     // Carrega favoritos do localStorage na inicialização
     useEffect(() => {
         try {
+            // Migrar favoritos antigos se existirem
+            FavoritosService.migrarFavoritosAntigos();
+
             const favoritos = FavoritosService.getFavoritos();
             setFavorites(favoritos);
         } catch (error) {
