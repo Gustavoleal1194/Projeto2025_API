@@ -11,6 +11,8 @@ import UsuarioLayout from '../components/Layout/UsuarioLayout';
 import meusLivrosService, { type MeuLivro, type FiltrosMeusLivros } from '../services/meusLivrosService';
 import { useFavorites } from '../hooks/useFavorites';
 import { BookLoader } from '../components/Loading';
+import PaginationButton from '../components/Buttons/PaginationButton';
+import FilterButton from '../components/Buttons/FilterButton';
 
 const MeusEmprestimos: React.FC = () => {
     // Estados
@@ -241,19 +243,10 @@ const MeusEmprestimos: React.FC = () => {
                         </div>
 
                         <div className="flex gap-3">
-                            <button
-                                onClick={() => setShowFiltros(!showFiltros)}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
-                            >
+                            <FilterButton onClick={() => setShowFiltros(!showFiltros)}>
                                 🔍 {showFiltros ? 'Ocultar' : 'Mostrar'} Filtros
-                            </button>
-
-                            <button
-                                onClick={limparFiltros}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-300"
-                            >
-                                🗑️ Limpar
-                            </button>
+                            </FilterButton>
+                            <FilterButton onClick={limparFiltros} variant="neutral">🗑️ Limpar</FilterButton>
                         </div>
                     </div>
 
@@ -524,20 +517,8 @@ const MeusEmprestimos: React.FC = () => {
                     {totalPages > 1 && (
                         <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
                             <div className="flex-1 flex justify-between sm:hidden">
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-800 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Anterior
-                                </button>
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-800 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Próximo
-                                </button>
+                                <PaginationButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
+                                <PaginationButton onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próximo</PaginationButton>
                             </div>
                             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                                 <div>
@@ -549,34 +530,15 @@ const MeusEmprestimos: React.FC = () => {
                                 </div>
                                 <div>
                                     <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                        <button
-                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                            disabled={currentPage === 1}
-                                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            Anterior
-                                        </button>
+                                        <PaginationButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
 
                                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                            <button
-                                                key={page}
-                                                onClick={() => setCurrentPage(page)}
-                                                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === currentPage
-                                                    ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                                                    }`}
-                                            >
+                                            <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={page === currentPage}>
                                                 {page}
-                                            </button>
+                                            </PaginationButton>
                                         ))}
 
-                                        <button
-                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                            disabled={currentPage === totalPages}
-                                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            Próximo
-                                        </button>
+                                        <PaginationButton onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próximo</PaginationButton>
                                     </nav>
                                 </div>
                             </div>

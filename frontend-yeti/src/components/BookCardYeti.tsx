@@ -131,8 +131,8 @@ const BookCardYeti: React.FC<BookCardYetiProps> = ({
 const StyledWrapper = styled.div`
   .card {
     position: relative;
-    width: 280px;
-    height: 400px;
+    width: 100%;
+    height: 420px; /* altura fixa para alinhar todos os cards */
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%);
     display: flex;
     flex-direction: column;
@@ -148,11 +148,8 @@ const StyledWrapper = styled.div`
   .card::before {
     content: '';
     position: absolute;
-    inset: 0;
-    left: -5px;
+    inset: -5px; /* expansão uniforme para o brilho externo */
     margin: auto;
-    width: 290px;
-    height: 410px;
     border-radius: 16px;
     background: linear-gradient(-45deg, #3b82f6 0%, #1e40af 50%, #60a5fa 100%);
     z-index: -10;
@@ -220,6 +217,10 @@ const StyledWrapper = styled.div`
     line-height: 1.3;
     margin: 0;
     color: white;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* limita a 1 linha */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .book-author {
@@ -227,6 +228,10 @@ const StyledWrapper = styled.div`
     opacity: 0.9;
     margin: 0;
     color: #e0e7ff;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .book-meta {
@@ -251,6 +256,10 @@ const StyledWrapper = styled.div`
     opacity: 0.8;
     margin: 4px 0;
     color: #e0e7ff;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* limita a 3 linhas para evitar crescimento vertical */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .book-stats {
@@ -327,13 +336,7 @@ const StyledWrapper = styled.div`
   /* Responsividade */
   @media (max-width: 768px) {
     .card {
-      width: 260px;
-      height: 380px;
-    }
-
-    .card::before {
-      width: 270px;
-      height: 390px;
+      height: 400px; /* altura ajustada em telas menores */
     }
   }
 `;

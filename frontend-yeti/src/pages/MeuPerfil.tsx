@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import UsuarioLayout from '../components/Layout/UsuarioLayout';
+import FilterButton from '../components/Buttons/FilterButton';
 import usuarioPerfilService from '../services/usuarioPerfilService';
 import type { UsuarioDTO } from '../types/entities';
 
@@ -194,27 +195,13 @@ const MeuPerfil: React.FC = () => {
                     <div className="flex gap-3">
                         {editando ? (
                             <>
-                                <button
-                                    onClick={handleSalvar}
-                                    disabled={salvando}
-                                    className="px-6 py-2 rounded-lg btn-primary transition-colors duration-300"
-                                >
+                                <FilterButton onClick={handleSalvar} disabled={salvando} variant="success">
                                     {salvando ? 'Salvando...' : 'Salvar'}
-                                </button>
-                                <button
-                                    onClick={handleCancelar}
-                                    className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-300"
-                                >
-                                    Cancelar
-                                </button>
+                                </FilterButton>
+                                <FilterButton onClick={handleCancelar} variant="neutral">Cancelar</FilterButton>
                             </>
                         ) : (
-                            <button
-                                onClick={() => setEditando(true)}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
-                            >
-                                Editar Perfil
-                            </button>
+                            <FilterButton onClick={() => setEditando(true)}>Editar Perfil</FilterButton>
                         )}
                     </div>
                 </div>
@@ -236,7 +223,7 @@ const MeuPerfil: React.FC = () => {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-xl shadow-lg p-6"
+                            className="bg-white rounded-xl shadow-lg p-6 h-full"
                         >
                             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                                 <span className="text-3xl">👤</span>
@@ -334,13 +321,13 @@ const MeuPerfil: React.FC = () => {
                     </div>
 
                     {/* Estatísticas */}
-                    <div className="space-y-6">
+                    <div className="flex flex-col h-full gap-6">
                         {/* Card de Estatísticas */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-xl shadow-lg p-6"
+                            className="bg-white rounded-xl shadow-lg p-6 flex-1"
                         >
                             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                                 <span className="text-2xl">📊</span>
@@ -401,14 +388,14 @@ const MeuPerfil: React.FC = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="bg-white rounded-xl shadow-lg p-6"
+                            className="bg-white rounded-xl shadow-lg p-6 flex-1"
                         >
                             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                                 <span className="text-2xl">⚡</span>
                                 Ações Rápidas
                             </h3>
 
-                            <div className="space-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                                 <button
                                     onClick={() => window.location.href = '/meus-livros'}
                                     className="w-full flex items-center gap-3 p-3 text-left bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-300"

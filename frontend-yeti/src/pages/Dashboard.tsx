@@ -235,7 +235,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-[4px] gap-y-8 mb-8">
                 {/* Recent Activities */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}

@@ -138,7 +138,7 @@ const UsuarioDashboard: React.FC = () => {
 
                     <div className="flex items-center space-x-4">
                         {/* Toggle de visualização */}
-                        <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-x-[4px]">
                             <button
                                 onClick={() => setView3D(false)}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${!view3D

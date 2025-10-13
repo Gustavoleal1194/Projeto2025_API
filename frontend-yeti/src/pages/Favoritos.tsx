@@ -13,6 +13,8 @@ import FavoritosService from '../services/favoritosService';
 import { useFavorites } from '../hooks/useFavorites';
 import { BookLoader } from '../components/Loading';
 import BookCardYeti from '../components/BookCardYeti';
+import PaginationButton from '../components/Buttons/PaginationButton';
+import FilterButton from '../components/Buttons/FilterButton';
 import BookDetailsCard from '../components/BookDetailsCard';
 
 const Favoritos: React.FC = () => {
@@ -197,12 +199,9 @@ const Favoritos: React.FC = () => {
                                 <option value="ano">Ordenar por Ano</option>
                             </select>
 
-                            <button
-                                onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
-                            >
+                            <FilterButton onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}>
                                 {sortDirection === 'asc' ? '↑ Crescente' : '↓ Decrescente'}
-                            </button>
+                            </FilterButton>
                         </div>
                     </div>
                 </div>
@@ -222,12 +221,7 @@ const Favoritos: React.FC = () => {
                         <div className="text-center">
                             <p className="text-red-600 text-lg font-medium mb-2">Erro ao carregar favoritos</p>
                             <p className="text-gray-600 mb-4">{error}</p>
-                            <button
-                                onClick={loadLivrosFavoritos}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
-                            >
-                                Tentar Novamente
-                            </button>
+                            <FilterButton onClick={loadLivrosFavoritos}>Tentar Novamente</FilterButton>
                         </div>
                     </div>
                 ) : livrosFiltrados.length === 0 ? (
@@ -255,34 +249,13 @@ const Favoritos: React.FC = () => {
                         {/* Paginação */}
                         {totalPages > 1 && (
                             <div className="flex items-center justify-center space-x-2">
-                                <button
-                                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                                    disabled={currentPage === 1}
-                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
-                                >
-                                    Anterior
-                                </button>
-
+                                <PaginationButton onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
                                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                    <button
-                                        key={page}
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`px-4 py-2 rounded-lg transition-colors duration-300 ${currentPage === page
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                            }`}
-                                    >
+                                    <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={currentPage === page}>
                                         {page}
-                                    </button>
+                                    </PaginationButton>
                                 ))}
-
-                                <button
-                                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
-                                >
-                                    Próxima
-                                </button>
+                                <PaginationButton onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>Próxima</PaginationButton>
                             </div>
                         )}
                     </>

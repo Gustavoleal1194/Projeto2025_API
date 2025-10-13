@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout/Layout';
+import PaginationButton from '../components/Buttons/PaginationButton';
 
 const Configuracoes: React.FC = () => {
     return (
@@ -113,19 +114,16 @@ const Configuracoes: React.FC = () => {
                         </div>
                     </motion.div>
 
-                    {/* Botão de Voltar */}
+                    {/* Botão de Voltar (padrão do sistema) */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7 }}
                         className="mt-8"
                     >
-                        <button
-                            onClick={() => window.history.back()}
-                            className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border-2 border-gray-700 hover:border-gray-800"
-                        >
+                        <PaginationButton onClick={() => window.history.back()}>
                             ← Voltar
-                        </button>
+                        </PaginationButton>
                     </motion.div>
                 </motion.div>
             </div>

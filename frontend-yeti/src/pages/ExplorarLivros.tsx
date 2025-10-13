@@ -12,7 +12,9 @@ import explorarLivrosService, { type FiltrosExploracao, type LivroResumido } fro
 import { useFavorites } from '../hooks/useFavorites';
 import { BookLoader } from '../components/Loading';
 import BookDetailsCard from '../components/BookDetailsCard';
+import PaginationButton from '../components/Buttons/PaginationButton';
 import BookCardYeti from '../components/BookCardYeti';
+import FilterButton from '../components/Buttons/FilterButton';
 
 const ExplorarLivros: React.FC = () => {
     const [livros, setLivros] = useState<LivroResumido[]>([]);
@@ -170,19 +172,10 @@ const ExplorarLivros: React.FC = () => {
                     </div>
 
                     <div className="flex gap-3">
-                        <button
-                            onClick={() => setShowFiltros(!showFiltros)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
-                        >
+                        <FilterButton onClick={() => setShowFiltros(!showFiltros)}>
                             🔍 {showFiltros ? 'Ocultar' : 'Mostrar'} Filtros
-                        </button>
-
-                        <button
-                            onClick={limparFiltros}
-                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-300"
-                        >
-                            🗑️ Limpar
-                        </button>
+                        </FilterButton>
+                        <FilterButton onClick={limparFiltros} variant="neutral">🗑️ Limpar</FilterButton>
                     </div>
                 </div>
 
@@ -269,7 +262,7 @@ const ExplorarLivros: React.FC = () => {
             </div>
 
             {/* Grid de Livros */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 items-stretch justify-items-stretch">
                 {livrosFiltrados.length === 0 ? (
                     <div className="col-span-full text-center py-12">
                         <div className="text-gray-500 text-lg mb-4">
@@ -312,36 +305,15 @@ const ExplorarLivros: React.FC = () => {
             {/* Paginação */}
             {livrosFiltrados.length > livrosPerPage && (
                 <div className="flex justify-center items-center mt-8 space-x-2">
-                    <button
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors duration-300"
-                    >
-                        ← Anterior
-                    </button>
-
+                    <PaginationButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
                     <div className="flex space-x-1">
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                            <button
-                                key={page}
-                                onClick={() => setCurrentPage(page)}
-                                className={`px-3 py-2 rounded-lg transition-colors duration-300 ${currentPage === page
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                    }`}
-                            >
+                            <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={currentPage === page}>
                                 {page}
-                            </button>
+                            </PaginationButton>
                         ))}
                     </div>
-
-                    <button
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors duration-300"
-                    >
-                        Próxima →
-                    </button>
+                    <PaginationButton onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próxima</PaginationButton>
                 </div>
             )}
 

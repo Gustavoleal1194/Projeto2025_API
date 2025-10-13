@@ -640,12 +640,12 @@ const GerenciarRelatorios: React.FC = () => {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="bg-white rounded-2xl p-6 shadow-lg"
+                            className="bg-white rounded-2xl p-6 shadow-lg mb-4"
                         >
                             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                                 🏆 Livros Mais Emprestados
                             </h2>
-                            <div className="space-y-4">
+                            <div className="space-y-4 mx-auto">
                                 {livrosMaisEmprestados.slice(0, 5).map((item, index) => (
                                     <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                                         <div className="flex items-center gap-3">
@@ -667,7 +667,7 @@ const GerenciarRelatorios: React.FC = () => {
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="bg-white rounded-2xl p-6 shadow-lg"
+                            className="bg-white rounded-2xl p-6 shadow-lg mb-4"
                         >
                             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                                 👥 Usuários Mais Ativos
@@ -694,7 +694,7 @@ const GerenciarRelatorios: React.FC = () => {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="bg-white rounded-2xl p-6 shadow-lg"
+                            className="bg-white rounded-2xl p-6 shadow-lg mb-4"
                         >
                             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                                 📊 Status dos Exemplares
