@@ -248,13 +248,15 @@ const Favoritos: React.FC = () => {
 
                         {/* Paginação */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-center space-x-2">
+                            <div className="flex items-center justify-between">
                                 <PaginationButton onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                    <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={currentPage === page}>
-                                        {page}
-                                    </PaginationButton>
-                                ))}
+                                <div className="flex space-x-2">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                        <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={currentPage === page}>
+                                            {page}
+                                        </PaginationButton>
+                                    ))}
+                                </div>
                                 <PaginationButton onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>Próxima</PaginationButton>
                             </div>
                         )}

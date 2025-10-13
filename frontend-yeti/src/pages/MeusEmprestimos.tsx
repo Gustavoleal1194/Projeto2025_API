@@ -515,33 +515,23 @@ const MeusEmprestimos: React.FC = () => {
 
                     {/* Paginação */}
                     {totalPages > 1 && (
-                        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                            <div className="flex-1 flex justify-between sm:hidden">
-                                <PaginationButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
-                                <PaginationButton onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próximo</PaginationButton>
+                        <div className="flex justify-between items-center mt-8">
+                            <PaginationButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
+                            <div className="flex space-x-2">
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                    <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={currentPage === page}>
+                                        {page}
+                                    </PaginationButton>
+                                ))}
                             </div>
-                            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-700">
-                                        Mostrando <span className="font-medium">{startIndex + 1}</span> a{' '}
-                                        <span className="font-medium">{Math.min(endIndex, emprestimosFiltrados.length)}</span> de{' '}
-                                        <span className="font-medium">{emprestimosFiltrados.length}</span> empréstimos
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                        <PaginationButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
+                            <PaginationButton onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próxima</PaginationButton>
+                        </div>
+                    )}
 
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                            <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={page === currentPage}>
-                                                {page}
-                                            </PaginationButton>
-                                        ))}
-
-                                        <PaginationButton onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próximo</PaginationButton>
-                                    </nav>
-                                </div>
-                            </div>
+                    {/* Info da Paginação */}
+                    {emprestimosFiltrados.length > 0 && (
+                        <div className="text-center mt-4 text-gray-600 text-sm">
+                            Mostrando {startIndex + 1} a {Math.min(endIndex, emprestimosFiltrados.length)} de {emprestimosFiltrados.length} empréstimos
                         </div>
                     )}
                 </div>

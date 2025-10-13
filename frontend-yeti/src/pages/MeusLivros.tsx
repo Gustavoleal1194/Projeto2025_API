@@ -316,9 +316,9 @@ const MeusLivros: React.FC = () => {
 
             {/* Paginação */}
             {livrosFiltrados.length > livrosPerPage && (
-                <div className="flex justify-center items-center mt-8 space-x-2">
+                <div className="flex justify-between items-center mt-8">
                     <PaginationButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</PaginationButton>
-                    <div className="flex space-x-1">
+                    <div className="flex space-x-2">
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                             <PaginationButton key={page} onClick={() => setCurrentPage(page)} isActive={currentPage === page}>
                                 {page}
