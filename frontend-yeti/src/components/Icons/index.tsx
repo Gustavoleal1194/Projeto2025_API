@@ -85,7 +85,7 @@ export const PauseIcon: React.FC<{ size?: number; className?: string }> = ({
     </svg>
 );
 
-// Ícone de Devolver
+// Ícone de Devolver - Seta de retorno
 export const ReturnIcon: React.FC<{ size?: number; className?: string }> = ({
     size = 20,
     className = ''
@@ -101,9 +101,7 @@ export const ReturnIcon: React.FC<{ size?: number; className?: string }> = ({
         strokeLinejoin="round"
         className={className}
     >
-        <path d="M3 7v6h6" />
-        <path d="M21 17v-6h-6" />
-        <path d="M21 3l-9 9-9-9" />
+        <path d="M21 12H3m9-9l-9 9 9 9" />
     </svg>
 );
 

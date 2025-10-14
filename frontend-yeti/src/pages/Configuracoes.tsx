@@ -171,7 +171,7 @@ const Configuracoes: React.FC = () => {
                     transition={{ delay: 0.2 }}
                     className="bg-white rounded-xl shadow-lg p-6"
                 >
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-4">
                         {tabs.map((tab) => (
                             <FilterButton
                                 key={tab.id}
