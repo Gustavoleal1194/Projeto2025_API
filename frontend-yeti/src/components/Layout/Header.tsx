@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ onLogout, isSidebarCollapsed = false })
                 <AdminNotificationButton />
 
                 {/* Admin Profile */}
-                <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-300">
+                <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-300">
                     <div className="w-12 h-12 rounded-full overflow-hidden mr-2" style={{ width: '50px', height: '50px' }}>
                         <svg viewBox="0 0 144.773 144.773" className="w-full h-full">
                             <g>

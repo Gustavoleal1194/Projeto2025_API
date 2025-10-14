@@ -176,7 +176,7 @@ const createTable = (config: TableConfig) => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                                className={`hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors duration-200 ${onRowClick ? 'cursor-pointer' : ''
+                                className={`hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 ${onRowClick ? 'cursor-pointer' : ''
                                     }`}
                                 onClick={onRowClick ? () => onRowClick(item, index) : undefined}
                             >

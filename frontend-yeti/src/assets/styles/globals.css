@@ -554,9 +554,7 @@ svg {
     padding: 0.5rem;
 }
 
-.hover\:bg-blue-50:hover {
-    background-color: #eff6ff;
-}
+/* CSS customizado removido - usando apenas Tailwind */
 
 .bg-green-500 {
     background-color: #10b981;

@@ -463,7 +463,7 @@ const GerenciarEmprestimos: React.FC = () => {
 
                 {/* Modal */}
                 {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 p-4" style={{ left: 'var(--sidebar-width, 17.5rem)', top: '4.5rem' }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -597,7 +597,7 @@ const GerenciarEmprestimos: React.FC = () => {
 
                 {/* Modal de Devolução de Empréstimo */}
                 {isDevolucaoModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ left: '17.5rem' }}>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 p-4" style={{ left: 'var(--sidebar-width, 17.5rem)', top: '4.5rem' }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}

@@ -655,7 +655,7 @@ const GerenciarRelatorios: React.FC = () => {
                                                 <p className="text-sm text-gray-600">{autores.find(a => a.id === item.livro.idAutor)?.nome || 'N/A'}</p>
                                             </div>
                                         </div>
-                                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+                                        <span className="bg-gray-200 text-gray-900 px-3 py-1 rounded-full font-semibold">
                                             {item.count}x
                                         </span>
                                     </div>
@@ -682,7 +682,7 @@ const GerenciarRelatorios: React.FC = () => {
                                                 <p className="text-sm text-gray-600">{item.usuario.email}</p>
                                             </div>
                                         </div>
-                                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">
+                                        <span className="text-gray-900 px-3 py-1 rounded-full font-semibold">
                                             {item.count}x
                                         </span>
                                     </div>
@@ -703,7 +703,7 @@ const GerenciarRelatorios: React.FC = () => {
                                 {Object.entries(exemplaresPorCondicao).map(([condicao, count]) => (
                                     <div key={condicao} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                                         <span className="font-semibold text-gray-900">{condicao}</span>
-                                        <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-semibold">
+                                        <span className="text-gray-900 px-3 py-1 rounded-full font-semibold">
                                             {count}
                                         </span>
                                     </div>

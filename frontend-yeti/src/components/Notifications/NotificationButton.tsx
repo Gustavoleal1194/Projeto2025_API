@@ -79,7 +79,7 @@ const NotificationButton: React.FC = () => {
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`notification-item ${!notification.read ? 'unread' : ''} border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800`}
+                  className={`notification-item ${!notification.read ? 'unread' : ''} border-b border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`}
                   onClick={() => markAsRead(notification.id)}
                 >
                   <div className="notification-content">
@@ -271,13 +271,7 @@ const StyledWrapper = styled.div`
     border-bottom: none;
   }
 
-  .notification-item:hover {
-    background-color: #f9fafb;
-  }
-
-  .dark .notification-item:hover {
-    background-color: #1f2937 !important;
-  }
+  /* Hover styles movidos para classes Tailwind no JSX */
 
   .notification-content {
     display: flex;
