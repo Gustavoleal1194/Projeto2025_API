@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Configurar CORS
+// Configurar CORS com segurança
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -25,7 +25,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials()
+              .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
     });
 });
 
@@ -141,7 +142,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Security middleware
+app.UseSecurityHeaders();
+app.UseGlobalExceptionHandling();
+
 app.UseHttpsRedirection();
+
+// Rate limiting for auth endpoints
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/auth"), 
+    appBuilder => appBuilder.UseRateLimiting(5, 1)); // 5 requests per minute for auth
 
 // Usar CORS
 app.UseCors("AllowFrontend");

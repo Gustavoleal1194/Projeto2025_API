@@ -168,7 +168,7 @@ const Dashboard: React.FC = () => {
             )}
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 {[
                     {
                         title: 'Total de Usuários',
@@ -212,21 +212,21 @@ const Dashboard: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: index * 0.1 }}
-                        className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow cursor-pointer"
+                        className="bg-white dark:bg-gray-900 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow cursor-pointer"
                     >
                         <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                                <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
-                                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                                <p className="text-xs text-gray-500 mt-1">{stat.subtitle}</p>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-gray-600 text-xs sm:text-sm font-medium break-words">{stat.title}</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 sm:mt-2 break-words">{stat.value}</p>
+                                <p className="text-xs text-gray-500 mt-1 break-words">{stat.subtitle}</p>
                                 <div className="flex items-center mt-2">
-                                    <span className={`text-sm font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                                    <span className={`text-xs sm:text-sm font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
                                         {stat.change}
                                     </span>
-                                    <span className="text-xs text-gray-500 ml-1">vs mês anterior</span>
+                                    <span className="text-xs text-gray-500 ml-1 hidden sm:inline">vs mês anterior</span>
                                 </div>
                             </div>
-                            <div className={`w-16 h-16 ${stat.color} rounded-full flex items-center justify-center text-2xl shadow-lg`}>
+                            <div className={`w-12 h-12 sm:w-16 sm:h-16 ${stat.color} rounded-full flex items-center justify-center text-lg sm:text-2xl shadow-lg flex-shrink-0`}>
                                 {stat.icon}
                             </div>
                         </div>
@@ -235,16 +235,16 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-[4px] gap-y-8 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
                 {/* Recent Activities */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+                    className="bg-white dark:bg-gray-900 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700"
                 >
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-bold text-gray-900">Atividades Recentes</h3>
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 break-words">Atividades Recentes</h3>
                         <button
                             onClick={() => navigate('/gerenciar-emprestimos')}
                             className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"

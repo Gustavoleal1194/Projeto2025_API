@@ -242,11 +242,11 @@ const MeusEmprestimos: React.FC = () => {
                             </span>
                         </div>
 
-                        <div className="flex gap-3">
-                            <FilterButton onClick={() => setShowFiltros(!showFiltros)}>
-                                🔍 {showFiltros ? 'Ocultar' : 'Mostrar'} Filtros
+                        <div className="flex gap-2 sm:gap-3">
+                            <FilterButton onClick={() => setShowFiltros(!showFiltros)} title={showFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros'}>
+                                {showFiltros ? 'Ocultar' : 'Mostrar'} Filtros
                             </FilterButton>
-                            <FilterButton onClick={limparFiltros} variant="neutral">🗑️ Limpar</FilterButton>
+                            <FilterButton onClick={limparFiltros} variant="neutral" title="Limpar Filtros"> Limpar</FilterButton>
                         </div>
                     </div>
 

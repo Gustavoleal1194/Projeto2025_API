@@ -155,9 +155,11 @@ const UsuarioDashboard: React.FC = () => {
                         {searchQuery.trim() !== '' && (
                             <button
                                 onClick={() => setSearchQuery('')}
-                                className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200"
+                                className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 sm:px-3 sm:py-2 w-10 h-10 sm:w-auto sm:h-auto sm:rounded-lg rounded-full flex items-center justify-center"
+                                title="Limpar busca"
                             >
-                                ✕ Limpar
+                                <span className="sm:hidden">✕</span>
+                                <span className="hidden sm:inline">✕ Limpar</span>
                             </button>
                         )}
                     </div>

@@ -139,8 +139,8 @@ const StyledWrapper = styled.div`
   display: inline-block;
 
   .inbox-btn {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: none;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.082);
@@ -158,7 +158,7 @@ const StyledWrapper = styled.div`
   }
 
   .inbox-btn svg {
-    height: 17px;
+    height: 14px;
     transition: all 0.3s;
   }
 

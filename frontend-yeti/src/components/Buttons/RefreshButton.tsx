@@ -52,20 +52,44 @@ const StyledWrapper = styled.div`
     --main-color: #1d4ed8; /* usado para borda/sombra e ícone */
     
     position: relative;
-    width: 150px;
-    height: 40px;
+    width: 40px;
+    height: 32px;
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     
     /* Usando as variáveis definidas */
     border: 2px solid var(--main-color);
-    box-shadow: 4px 4px var(--main-color);
+    box-shadow: 3px 3px var(--main-color);
     background-color: var(--bg-color);
     
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
-    padding-right: 44px; /* reserva espaço do ícone à direita */
+    padding: 0;
+    font-size: 12px;
+  }
+
+  /* Esconder texto em mobile */
+  .button .button__text {
+    display: none;
+  }
+
+  /* Responsividade */
+  @media (min-width: 640px) {
+    .button {
+      width: 150px;
+      height: 40px;
+      box-shadow: 4px 4px var(--main-color);
+      border-radius: 10px;
+      padding-right: 44px;
+      font-size: 14px;
+      justify-content: flex-start;
+    }
+    
+    .button .button__text {
+      display: block;
+    }
   }
 
   /* 🎯 MODIFICAÇÃO PRINCIPAL: Estilos para a variante 'success' (Verde) */
@@ -95,7 +119,7 @@ const StyledWrapper = styled.div`
     right: 0;
     top: 0;
     height: 100%;
-    width: 44px;
+    width: 100%;
     background-color: var(--bg-color-sub);
     display: flex;
     align-items: center;
@@ -103,10 +127,23 @@ const StyledWrapper = styled.div`
   }
 
   .button .svg {
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
     display: block;
     fill: #ffffff; 
+  }
+
+  /* Responsividade para ícone */
+  @media (min-width: 640px) {
+    .button .button__icon {
+      width: 44px;
+      right: 0;
+    }
+    
+    .button .svg {
+      width: 22px;
+      height: 22px;
+    }
   }
 
   .button:hover {

@@ -86,7 +86,7 @@ const AdminNotificationButton: React.FC = () => {
         className="inbox-btn"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <svg viewBox="0 0 512 512" height={16} xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 512 512" height={14} xmlns="http://www.w3.org/2000/svg">
           <path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z" />
         </svg>
         {unreadCount > 0 && (
@@ -168,8 +168,8 @@ const StyledWrapper = styled.div`
   display: inline-block;
 
   .inbox-btn {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: none;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.082);
@@ -187,7 +187,7 @@ const StyledWrapper = styled.div`
   }
 
   .inbox-btn svg {
-    height: 17px;
+    height: 14px;
     transition: all 0.3s;
   }
 
@@ -281,8 +281,8 @@ const StyledWrapper = styled.div`
   }
 
   .notification-item.unread {
-    background-color:rgb(75, 60, 2);
-    border-left: 3px solid #f59e0b;
+   background-color:#3b82f6;
+    border-left: 3px solid rgb(6, 0, 29);
   }
 
   /* Dark mode support */
@@ -325,7 +325,7 @@ const StyledWrapper = styled.div`
   .notification-text p {
     margin: 0 0 8px 0;
     font-size: 13px;
-    color: #6b7280;
+    color: #111827;
     line-height: 1.4;
   }
 

@@ -13,12 +13,14 @@ namespace Projeto2025_API.Controllers
         private readonly IAuthService _authService;
         private readonly IUsuarioService _usuarioService;
         private readonly IFuncionarioService _funcionarioService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService, IUsuarioService usuarioService, IFuncionarioService funcionarioService)
+        public AuthController(IAuthService authService, IUsuarioService usuarioService, IFuncionarioService funcionarioService, ILogger<AuthController> logger)
         {
             _authService = authService;
             _usuarioService = usuarioService;
             _funcionarioService = funcionarioService;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -32,11 +34,8 @@ namespace Projeto2025_API.Controllers
             if (token == null)
                 return Unauthorized(new { message = "Email ou senha inválidos" });
 
-            // Log para debug
-            Console.WriteLine($"Token gerado: {token.Token}");
-            Console.WriteLine($"Nome: {token.Nome}");
-            Console.WriteLine($"Email: {token.Email}");
-            Console.WriteLine($"Role: {token.Role}");
+            // Log de segurança (sem dados sensíveis)
+            _logger.LogInformation("Login successful for user: {Email}", loginDTO.Email);
 
             return Ok(token);
         }

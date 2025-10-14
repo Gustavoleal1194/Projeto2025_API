@@ -113,18 +113,18 @@ const UsuarioLayout: React.FC<UsuarioLayoutProps> = ({
             />
 
             {/* Main Content */}
-            <main className="ml-70 mt-18 p-8 transition-all duration-300" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem', marginTop: '4.5rem' }}>
+            <main className="ml-70 mt-18 p-4 sm:p-6 lg:p-8 transition-all duration-300" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem', marginTop: '4.5rem' }}>
                 {/* Page Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mb-8"
+                    className="mb-6 sm:mb-8"
                 >
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">
                         {pageTitle}
                     </h1>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-gray-600 text-base sm:text-lg break-words">
                         {pageSubtitle}
                     </p>
                 </motion.div>

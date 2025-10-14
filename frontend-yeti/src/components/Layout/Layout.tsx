@@ -68,30 +68,28 @@ const Layout: React.FC<LayoutProps> = ({
             <Header isSidebarCollapsed={isSidebarCollapsed} />
 
             {/* Main Content */}
-            <main className="mt-18 p-8 transition-all duration-300 text-gray-900 dark:text-gray-100" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
+            <main className="mt-18 p-4 sm:p-6 lg:p-8 transition-all duration-300 text-gray-900 dark:text-gray-100" style={{ marginLeft: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
                 {/* Page Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 text-white mb-8 shadow-2xl border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-100" style={{ color: '#1f2937' }}>
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-4 sm:p-6 lg:p-8 text-white mb-6 sm:mb-8 shadow-2xl border border-gray-200 dark:border-gray-700">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-4 text-gray-800 dark:text-gray-100 break-words" style={{ color: '#1f2937' }}>
                                 {pageTitle}
                             </h1>
-                            <p className="text-xl text-gray-600 dark:text-gray-200" style={{ color: '#4b5563' }}>
+                            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-200 break-words" style={{ color: '#4b5563' }}>
                                 {pageSubtitle}
                             </p>
                         </div>
-                        <div className="text-right">
-                            <div className="flex items-center gap-4">
-                                {onRefresh && (
-                                    <RefreshButton onClick={onRefresh} text={loading ? 'Atualizando...' : 'Atualizar'} />
-                                )}
-                                {lastUpdate && (
-                                    <div>
-                                        <p className="text-sm text-gray-600 dark:text-gray-200" style={{ color: '#4b5563' }}>Última atualização</p>
-                                        <p className="text-lg font-semibold text-gray-800 dark:text-gray-100" style={{ color: '#1f2937' }}>{lastUpdate}</p>
-                                    </div>
-                                )}
-                            </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                            {onRefresh && (
+                                <RefreshButton onClick={onRefresh} text={loading ? 'Atualizando...' : 'Atualizar'} />
+                            )}
+                            {lastUpdate && (
+                                <div className="text-left sm:text-right">
+                                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-200" style={{ color: '#4b5563' }}>Última atualização</p>
+                                    <p className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 dark:text-gray-100 break-words" style={{ color: '#1f2937' }}>{lastUpdate}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

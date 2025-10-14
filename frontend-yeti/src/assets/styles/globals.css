@@ -228,8 +228,119 @@ svg {
     color: #cbd5e1 !important;
 }
 
+/* Logo Yeti - Fundo uniforme para ambos os temas */
+.yeti-logo {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border-radius: 8px;
+    padding: 6px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode - fundo escuro uniforme */
+.dark .yeti-logo {
+    background-color: #111827 !important;
+    background-image: none !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Camada sólida para cobrir qualquer padrão */
+.yeti-logo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: inherit;
+    z-index: -1;
+    border-radius: 8px;
+}
+
+/* Garantir que a imagem fique sobre o fundo */
+.yeti-logo img {
+    position: relative;
+    z-index: 1;
+}
+
+/* Logo Yeti SVG - Cores do tema */
+.yeti-logo-svg {
+    background-color: transparent !important;
+    padding: 0;
+}
+
+.dark .yeti-logo-svg {
+    background-color: transparent !important;
+}
+
+/* Aplicar cores do tema ao SVG */
+.yeti-svg-image {
+    filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(194deg) brightness(104%) contrast(97%);
+}
+
+.dark .yeti-svg-image {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(98%) saturate(1234%) hue-rotate(194deg) brightness(118%) contrast(119%);
+}
+
+/* Colorir elementos do livro no SVG do Yeti */
+.yeti-logo-svg path:nth-child(1),
+.yeti-logo-svg path:nth-child(2),
+.yeti-logo-svg path:nth-child(3) {
+    fill: #3b82f6 !important;
+    /* Azul para o livro */
+}
+
+.dark .yeti-logo-svg path:nth-child(1),
+.dark .yeti-logo-svg path:nth-child(2),
+.dark .yeti-logo-svg path:nth-child(3) {
+    fill: #60a5fa !important;
+    /* Azul claro para o livro no dark mode */
+}
+
+
+
 .fixed {
     position: fixed;
+}
+
+/* Responsividade global para textos */
+.break-words {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Prevenir overflow em cards */
+.card-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsividade para grids */
+@media (max-width: 640px) {
+    .grid {
+        gap: 1rem;
+    }
+
+    .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 480px) {
+    .text-4xl {
+        font-size: 1.875rem;
+    }
+
+    .text-3xl {
+        font-size: 1.5rem;
+    }
+
+    .text-2xl {
+        font-size: 1.25rem;
+    }
 }
 
 .left-0 {

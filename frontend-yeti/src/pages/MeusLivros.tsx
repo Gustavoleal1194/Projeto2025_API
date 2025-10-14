@@ -188,9 +188,9 @@ const MeusLivros: React.FC = () => {
 
                     <div className="flex gap-3">
                         <FilterButton onClick={() => setShowFiltros(!showFiltros)}>
-                            🔍 {showFiltros ? 'Ocultar' : 'Mostrar'} Filtros
+                            {showFiltros ? 'Ocultar' : 'Mostrar'} Filtros
                         </FilterButton>
-                        <FilterButton onClick={limparFiltros} variant="neutral">🗑️ Limpar</FilterButton>
+                        <FilterButton onClick={limparFiltros} variant="neutral">Limpar</FilterButton>
                     </div>
                 </div>
 

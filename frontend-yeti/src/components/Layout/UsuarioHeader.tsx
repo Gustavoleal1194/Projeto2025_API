@@ -4,6 +4,7 @@ import AnimatedSearchBar from '../AnimatedSearchBar';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import ThemeToggleSwitch from '../ToogleThemeComponent';
 import NotificationButton from '../Notifications/NotificationButton';
+import AnimatedHeader from '../AnimatedHeader';
 
 interface UsuarioHeaderProps {
     searchQuery: string;
@@ -21,9 +22,28 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
     isSidebarCollapsed
 }) => {
     return (
-        <header className="fixed top-0 right-0 h-18 bg-white border-b border-blue-400 flex items-center justify-between px-8 z-40 transition-all duration-300" style={{ left: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
+        <header className="fixed top-0 right-0 h-20 bg-white dark:bg-gray-900 border-b border-blue-400 dark:border-gray-700 flex items-center gap-4 px-4 sm:px-6 lg:px-8 z-40 transition-all duration-300" style={{ left: isSidebarCollapsed ? '4rem' : '17.5rem' }}>
+            {/* Logo Yeti */}
+            <div className="flex items-center">
+                <svg
+                    className="h-16 w-auto sm:h-18 lg:h-20 text-blue-600 dark:text-blue-400 yeti-logo-svg"
+                    viewBox="0 0 200 200"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <image
+                        href="/images/LogoHeader-_1_.svg"
+                        x="0"
+                        y="0"
+                        width="200"
+                        height="200"
+                        className="yeti-svg-image"
+                    />
+                </svg>
+            </div>
+
             {/* Search Container */}
-            <div className="flex-1 max-w-lg">
+            <div className="w-48 sm:w-64 lg:w-80">
                 <AnimatedSearchBar
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
@@ -31,16 +51,21 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
                 />
             </div>
 
+            {/* Animated Header - Centralizado com flexbox */}
+            <div className="flex-1 flex justify-center">
+                <AnimatedHeader />
+            </div>
+
             {/* User Profile & Actions */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
                 <ThemeToggleButton />
 
                 {/* Notifications */}
                 <NotificationButton />
 
                 {/* User Profile */}
-                <div className="flex items-center gap-3 cursor-pointer p-2 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-300">
-                    <div className="w-12 h-12 rounded-full overflow-hidden mr-2" style={{ width: '50px', height: '50px' }}>
+                <div className="flex items-center gap-2 sm:gap-3 cursor-pointer p-1 sm:p-2 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-300">
+                    <div className="w-10 h-10 rounded-full overflow-hidden" style={{ width: '40px', height: '40px' }}>
                         <svg viewBox="0 0 144.773 144.773" className="w-full h-full">
                             <g>
                                 <circle style={{ fill: "#3b82f6" }} cx="72.387" cy="72.386" r="72.386" />
@@ -75,7 +100,7 @@ const UsuarioHeader: React.FC<UsuarioHeaderProps> = ({
                             </g>
                         </svg>
                     </div>
-                    <span className="text-gray-700 font-medium">{userName}</span>
+                    <span className="text-gray-700 dark:text-gray-300 font-medium text-xs sm:text-sm lg:text-base">{userName}</span>
                 </div>
 
                 {/* Logout Button */}
@@ -89,9 +114,8 @@ const ThemeToggleButton: React.FC = () => {
     return (
         <button
             onClick={toggle}
-            className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="px-1 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors scale-75"
         >
-
             <ThemeToggleSwitch />
         </button>
     );
