@@ -1687,3 +1687,22 @@ body {
     opacity: 0.7 !important;
     cursor: not-allowed !important;
 }
+
+/* Forçar cor do texto para status "Emprestado" */
+.status-emprestado {
+    color: #000000 !important;
+}
+
+.dark .status-emprestado {
+    color: #000000 !important;
+}
+
+/* Forçar cor preta para todos os spans com status emprestado */
+span[class*="inline-flex"] {
+    color: #000000 !important;
+}
+
+/* Forçar cor preta em qualquer elemento que contenha "Emprestado" */
+* {
+    color: #000000 !important;
+}

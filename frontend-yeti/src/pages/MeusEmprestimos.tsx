@@ -176,7 +176,7 @@ const MeusEmprestimos: React.FC = () => {
 
     const getStatusColor = (emprestimo: MeuLivro) => {
         if (emprestimo.estaAtrasado) return 'text-red-600 bg-red-100';
-        if (emprestimo.status === 'Emprestado') return 'text-green-600 bg-green-100';
+        if (emprestimo.status === 'Emprestado') return 'bg-green-100 dark:bg-green-100';
         if (emprestimo.status === 'Devolvido') return 'text-gray-600 bg-gray-100';
         return 'text-blue-600 bg-blue-100';
     };
@@ -488,7 +488,10 @@ const MeusEmprestimos: React.FC = () => {
                                                 )}
                                             </td>
                                             <td className="px-6 py-6 whitespace-nowrap">
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(emprestimo)}`}>
+                                                <span
+                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(emprestimo)}`}
+                                                    style={emprestimo.status === 'Emprestado' ? { color: '#000000' } : {}}
+                                                >
                                                     {getStatusText(emprestimo)}
                                                 </span>
                                             </td>
