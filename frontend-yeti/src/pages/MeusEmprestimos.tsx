@@ -489,8 +489,8 @@ const MeusEmprestimos: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-6 whitespace-nowrap">
                                                 <span
-                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(emprestimo)}`}
-                                                    style={emprestimo.status === 'Emprestado' ? { color: '#000000' } : {}}
+                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(emprestimo)} ${emprestimo.status === 'Emprestado' ? 'status-emprestado' : ''}`}
+                                                    style={emprestimo.status === 'Emprestado' ? { color: '#000000 !important' } : {}}
                                                 >
                                                     {getStatusText(emprestimo)}
                                                 </span>

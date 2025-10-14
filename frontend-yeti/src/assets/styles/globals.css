@@ -1697,12 +1697,17 @@ body {
     color: #000000 !important;
 }
 
-/* Forçar cor preta para todos os spans com status emprestado */
-span[class*="inline-flex"] {
+/* Seletor específico para spans com status "Emprestado" */
+.inline-flex.items-center.px-2\.5.py-0\.5.rounded-full.text-xs.font-medium:has-text("Emprestado") {
     color: #000000 !important;
 }
 
-/* Forçar cor preta em qualquer elemento que contenha "Emprestado" */
-* {
+/* Alternativa mais específica para tabelas */
+table .inline-flex.items-center.px-2\.5.py-0\.5.rounded-full.text-xs.font-medium {
+    color: #000000 !important;
+}
+
+/* Forçar cor preta apenas em elementos que contenham texto "Emprestado" */
+span:contains("Emprestado") {
     color: #000000 !important;
 }
