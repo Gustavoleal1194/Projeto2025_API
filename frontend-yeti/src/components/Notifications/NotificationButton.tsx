@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useNotificationSystem } from '../../hooks/useNotifications';
 import FilterButton from '../Buttons/FilterButton';
@@ -13,6 +13,7 @@ const NotificationButton: React.FC = () => {
   } = useNotificationSystem();
 
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const formatTime = (date: Date) => {
     const now = new Date();
@@ -36,8 +37,25 @@ const NotificationButton: React.FC = () => {
     }
   };
 
+  // Fechar dropdown quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <StyledWrapper>
+    <StyledWrapper ref={dropdownRef}>
       <button
         className="inbox-btn"
         onClick={() => setIsOpen(!isOpen)}
@@ -257,8 +275,8 @@ const StyledWrapper = styled.div`
   }
 
   .notification-item.unread {
-    background-color: #fef3c7;
-    border-left: 3px solid #f59e0b;
+    background-color:#3b82f6;
+    border-left: 3px solid rgb(6, 0, 29);
   }
 
   /* Dark mode support */
@@ -301,13 +319,15 @@ const StyledWrapper = styled.div`
   .notification-text p {
     margin: 0 0 8px 0;
     font-size: 13px;
-    color: #6b7280;
+    font-weight: 500;
+
+    color:rgb(18, 18, 19);
     line-height: 1.4;
   }
 
   .notification-time {
     font-size: 11px;
-    color: #9ca3af;
+    color: #111827;
   }
 
   /* Dark mode support */

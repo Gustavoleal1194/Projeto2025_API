@@ -430,7 +430,7 @@ const Dashboard: React.FC = () => {
                         {topBooks.length > 0 ? (
                             topBooks.map((book, index) => (
                                 <div key={book.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
+                                    <div className="w-5 h-12 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
                                         {index + 1}
                                     </div>
                                     <div className="flex-1">

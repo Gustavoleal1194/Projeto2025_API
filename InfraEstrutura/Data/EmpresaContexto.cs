@@ -22,6 +22,10 @@ namespace InfraEstrutura.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Emprestimo> Emprestimos { get; set; }
         public DbSet<Funcionario> Funcionarios { get; set; }
+        
+        // DbSets para configurações do sistema
+        public DbSet<ConfiguracaoSistema> ConfiguracoesSistema { get; set; }
+        public DbSet<ConfiguracaoHistorico> ConfiguracoesHistorico { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -184,6 +188,50 @@ namespace InfraEstrutura.Data
                 builder.Property(f => f.DataAdmissao).IsRequired();
                 builder.Property(f => f.Ativo).IsRequired().HasDefaultValue(true);
                 builder.HasIndex(f => f.Email).IsUnique();
+            });
+
+            // ConfiguracaoSistema
+            modelBuilder.Entity<ConfiguracaoSistema>(builder =>
+            {
+                builder.ToTable("ConfiguracaoSistema");
+                builder.HasKey(c => c.Id);
+                builder.Property(c => c.Chave).IsRequired().HasMaxLength(100);
+                builder.Property(c => c.Valor).IsRequired().HasColumnType("nvarchar(max)");
+                builder.Property(c => c.Tipo).IsRequired().HasMaxLength(50).HasDefaultValue("String");
+                builder.Property(c => c.Descricao).HasMaxLength(500);
+                builder.Property(c => c.Categoria).IsRequired().HasMaxLength(50);
+                builder.Property(c => c.Ativo).IsRequired().HasDefaultValue(true);
+                builder.Property(c => c.DataCriacao).IsRequired().HasDefaultValueSql("GETDATE()");
+                builder.Property(c => c.DataAtualizacao).IsRequired().HasDefaultValueSql("GETDATE()");
+                builder.Property(c => c.UsuarioAtualizacao).HasMaxLength(100);
+                
+                builder.HasIndex(c => c.Chave).IsUnique();
+                builder.HasIndex(c => c.Categoria);
+                
+                // Relacionamento com histórico
+                builder.HasMany(c => c.Historico)
+                       .WithOne(h => h.Configuracao)
+                       .HasForeignKey(h => h.ConfiguracaoId)
+                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // ConfiguracaoHistorico
+            modelBuilder.Entity<ConfiguracaoHistorico>(builder =>
+            {
+                builder.ToTable("ConfiguracaoHistorico");
+                builder.HasKey(h => h.Id);
+                builder.Property(h => h.ConfiguracaoId).IsRequired();
+                builder.Property(h => h.ValorAnterior).HasColumnType("nvarchar(max)");
+                builder.Property(h => h.ValorNovo).HasColumnType("nvarchar(max)");
+                builder.Property(h => h.DataAlteracao).IsRequired().HasDefaultValueSql("GETDATE()");
+                builder.Property(h => h.UsuarioAlteracao).IsRequired().HasMaxLength(100);
+                builder.Property(h => h.IpAlteracao).HasMaxLength(45);
+                builder.Property(h => h.MotivoAlteracao).HasMaxLength(500);
+                builder.Property(h => h.UserAgent).HasMaxLength(500);
+                
+                builder.HasIndex(h => h.ConfiguracaoId);
+                builder.HasIndex(h => h.UsuarioAlteracao);
+                builder.HasIndex(h => h.DataAlteracao);
             });
         }
     }

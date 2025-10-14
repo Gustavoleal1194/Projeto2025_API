@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useAdminNotifications } from '../../hooks/useAdminNotifications';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ const AdminNotificationButton: React.FC = () => {
   } = useAdminNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const handleNotificationClick = (notification: any) => {
@@ -62,8 +63,25 @@ const AdminNotificationButton: React.FC = () => {
     }
   };
 
+  // Fechar dropdown quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <StyledWrapper>
+    <StyledWrapper ref={dropdownRef}>
       <button
         className="inbox-btn"
         onClick={() => setIsOpen(!isOpen)}
@@ -263,7 +281,7 @@ const StyledWrapper = styled.div`
   }
 
   .notification-item.unread {
-    background-color: #fef3c7;
+    background-color:rgb(75, 60, 2);
     border-left: 3px solid #f59e0b;
   }
 

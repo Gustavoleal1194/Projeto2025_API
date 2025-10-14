@@ -3,11 +3,10 @@ import { emprestimoService } from '../services/emprestimoService';
 import { livroService } from '../services/livroService';
 import { usuarioService } from '../services/usuarioService';
 import '../utils/debugNotifications'; // Importar debug
-import '../utils/limparSolicitacoesAntigas'; // Importar limpeza de solicitações antigas
 
 export interface AdminNotification {
     id: string;
-    type: 'atraso' | 'vencimento' | 'novo' | 'usuario' | 'sistema' | 'manutencao' | 'solicitacao';
+    type: 'atraso' | 'vencimento' | 'novo' | 'usuario' | 'sistema' | 'solicitacao';
     title: string;
     message: string;
     read: boolean;
@@ -338,11 +337,6 @@ export const useAdminNotifications = () => {
 
     // Carregar notificações na inicialização
     useEffect(() => {
-        // Limpar solicitações antigas com "Usuário Atual" antes de carregar notificações
-        if (typeof window !== 'undefined' && (window as any).limparSolicitacoesAntigas) {
-            console.log('🧹 Limpando solicitações antigas com "Usuário Atual"...');
-            (window as any).limparSolicitacoesAntigas();
-        }
 
         loadNotifications();
     }, [loadNotifications]);

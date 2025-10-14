@@ -4,8 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './assets/styles/globals.css'
 import App from './App'
 
-// Importar utilitário para limpeza de favoritos antigos
-import './utils/limparFavoritosAntigos'
 
 const queryClient = new QueryClient({
   defaultOptions: {

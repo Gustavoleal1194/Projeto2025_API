@@ -180,19 +180,6 @@ export const useNotificationSystem = () => {
                 console.warn('Erro ao carregar novos livros:', error);
             }
 
-            // Notificações do sistema (exemplo)
-            if (Math.random() > 0.8) { // 20% de chance de aparecer
-                newNotifications.push({
-                    id: 'sistema-manutencao',
-                    type: 'sistema',
-                    title: '⚙️ Manutenção Programada',
-                    message: 'Sistema será atualizado hoje às 23:00',
-                    read: false,
-                    createdAt: new Date(),
-                    priority: 'medium',
-                    actionUrl: '/configuracoes'
-                });
-            }
 
             // Ordenar por prioridade e data
             newNotifications.sort((a, b) => {

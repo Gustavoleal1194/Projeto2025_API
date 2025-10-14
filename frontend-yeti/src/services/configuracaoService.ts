@@ -61,8 +61,6 @@ export interface ConfiguracaoSistema {
 
     // Configurações de Sistema
     logLevel: string;
-    manutencaoProgramada: boolean;
-    dataManutencao?: string;
     observacoes: string;
 
     // Regras de Negócio
@@ -188,7 +186,6 @@ class ConfiguracaoService {
             compressaoBackup: true,
             criptografiaBackup: false,
             logLevel: 'Information',
-            manutencaoProgramada: false,
             observacoes: '',
             permitirRenovacaoAtraso: false,
             permitirEmprestimoBloqueado: false,

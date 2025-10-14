@@ -97,6 +97,11 @@ builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
 builder.Services.AddScoped<IFuncionarioRepositorio, FuncionarioRepositorio>();
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 
+// Configurar serviços de configuração
+builder.Services.AddScoped<IConfiguracaoSistemaRepositorio, ConfiguracaoSistemaRepositorio>();
+builder.Services.AddScoped<IConfiguracaoHistoricoRepositorio, ConfiguracaoHistoricoRepositorio>();
+builder.Services.AddScoped<IConfiguracaoSistemaService, ConfiguracaoSistemaService>();
+
 // Configurar autenticação JWT
 builder.Services.AddScoped<IAuthService, AuthService>();
 
