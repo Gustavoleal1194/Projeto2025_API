@@ -179,7 +179,6 @@ const Configuracoes: React.FC = () => {
                                 variant={activeTab === tab.id ? 'primary' : 'neutral'}
                                 className={activeTab === tab.id ? 'transform scale-105' : ''}
                             >
-                                <span className="mr-2">{tab.icon}</span>
                                 {tab.label}
                             </FilterButton>
                         ))}

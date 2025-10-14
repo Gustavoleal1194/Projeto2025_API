@@ -30,16 +30,28 @@ const FilterButton: React.FC<FilterButtonProps> = ({
         return '🔍';
       } else if (text.includes('limpar')) {
         return '🗑️';
+      } else if (text.includes('sistema')) {
+        return '⚙️';
+      } else if (text.includes('empréstimo') || text.includes('emprestimo')) {
+        return '📚';
+      } else if (text.includes('backup')) {
+        return '💾';
+      } else if (text.includes('notificações') || text.includes('notificacoes')) {
+        return '🔔';
+      } else if (text.includes('cancelar')) {
+        return '❌';
+      } else if (text.includes('salvar') || text.includes('configurações') || text.includes('configuracoes')) {
+        return '💾';
       }
     }
-    return '🔍'; // fallback
+    return '⚙️'; // fallback para configurações
   };
 
   const icon = getIcon();
 
   const DefaultIcon = (
     <span className="icon-text">
-      {icon === '🔍' ? '🔍' : icon === '🗑️' ? '🗑️' : '🔍'}
+      {icon}
     </span>
   );
 

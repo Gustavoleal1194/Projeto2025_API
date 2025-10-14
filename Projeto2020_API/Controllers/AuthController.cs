@@ -212,7 +212,7 @@ namespace Projeto2025_API.Controllers
                     Email = "funcionario@teste.com",
                     Senha = "123456",
                     Telefone = "11999999999",
-                    Cargo = "Funcionário",
+                    Cargo = "Administrador",
                     Salario = 3000.00m,
                     DataAdmissao = DateTime.Now
                 };
