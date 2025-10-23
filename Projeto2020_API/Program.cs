@@ -8,6 +8,7 @@ using Interface.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Projeto2025_API.Extensions;
 using FluentValidation;
 using Projeto2025_API.Validators;
 

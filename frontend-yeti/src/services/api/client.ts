@@ -1,17 +1,16 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import type { ApiResponse } from '../../types';
+import { API_CONFIG } from '../../config/api';
 
 class ApiClient {
     private client: AxiosInstance;
 
     constructor() {
         this.client = axios.create({
-            baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5072/api',
-            timeout: 10000,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            baseURL: API_CONFIG.API_BASE_URL,
+            timeout: API_CONFIG.TIMEOUT,
+            headers: API_CONFIG.DEFAULT_HEADERS,
         });
 
         this.setupInterceptors();
@@ -21,7 +20,7 @@ class ApiClient {
         // Request interceptor
         this.client.interceptors.request.use(
             (config) => {
-                const token = localStorage.getItem('yeti_token');
+                const token = localStorage.getItem(API_CONFIG.AUTH.TOKEN_KEY);
                 if (token) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
@@ -39,8 +38,8 @@ class ApiClient {
             },
             (error) => {
                 if (error.response?.status === 401) {
-                    localStorage.removeItem('yeti_token');
-                    localStorage.removeItem('yeti_user');
+                    localStorage.removeItem(API_CONFIG.AUTH.TOKEN_KEY);
+                    localStorage.removeItem(API_CONFIG.AUTH.USER_KEY);
                     window.location.href = '/login';
                 }
                 return Promise.reject(error);

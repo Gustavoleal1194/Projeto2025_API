@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import LoginButton from '../components/LoginButton';
+import { API_CONFIG, buildApiUrl } from '../config/api';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ const LoginPage: React.FC = () => {
     const yetiRef = useRef<HTMLDivElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
-    const API_BASE_URL = 'http://localhost:5072/api';
+    // Usar configuração centralizada
 
     // Limpar formulário quando a página inicia
     useEffect(() => {
@@ -433,11 +434,9 @@ const LoginPage: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.LOGIN), {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: API_CONFIG.DEFAULT_HEADERS,
                 body: JSON.stringify({
                     email: email,
                     senha: password
@@ -448,8 +447,8 @@ const LoginPage: React.FC = () => {
 
             if (response.ok) {
 
-                localStorage.setItem('yeti_token', data.token);
-                localStorage.setItem('yeti_user', JSON.stringify({
+                localStorage.setItem(API_CONFIG.AUTH.TOKEN_KEY, data.token);
+                localStorage.setItem(API_CONFIG.AUTH.USER_KEY, JSON.stringify({
                     id: data.id,
                     nome: data.nome,
                     email: data.email,

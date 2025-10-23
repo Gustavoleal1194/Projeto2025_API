@@ -33,12 +33,6 @@ namespace Projeto2025_API.Middleware
         {
             context.Response.ContentType = "application/json";
             
-            var response = new
-            {
-                error = "An error occurred while processing your request",
-                requestId = context.TraceIdentifier
-            };
-
             // Log detailed error information
             _logger.LogError(exception, "Request {RequestId} failed with error: {ErrorMessage}", 
                 context.TraceIdentifier, exception.Message);
@@ -53,13 +47,22 @@ namespace Projeto2025_API.Middleware
                 _ => (int)HttpStatusCode.InternalServerError
             };
 
-            // In development, include more details
+            // Create response based on environment
+            object response;
             if (_environment.IsDevelopment())
             {
                 response = new
                 {
                     error = exception.Message,
                     stackTrace = exception.StackTrace,
+                    requestId = context.TraceIdentifier
+                };
+            }
+            else
+            {
+                response = new
+                {
+                    error = "An error occurred while processing your request",
                     requestId = context.TraceIdentifier
                 };
             }

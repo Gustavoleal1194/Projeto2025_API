@@ -10,6 +10,7 @@ import { EditoraValidator } from '../validators/EditoraValidator';
 import { LoadingOverlay } from '../components/Loading';
 import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
 
 const GerenciarEditoras: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -240,12 +241,9 @@ const GerenciarEditoras: React.FC = () => {
     // Toggle status
     const toggleStatus = async (id: number) => {
         try {
-            const token = localStorage.getItem('yeti_token');
-            const response = await fetch(`http://localhost:5072/api/Editora/${id}/toggle-status`, {
+            const response = await fetch(buildApiUrl(`/api/Editora/${id}/toggle-status`), {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: getAuthHeaders()
             });
 
             if (!response.ok) {

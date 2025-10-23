@@ -25,20 +25,26 @@ namespace Projeto2025_API.Middleware
             var now = DateTime.UtcNow;
             var requestInfo = _requests.GetOrAdd(key, _ => new RateLimitInfo());
 
+            bool shouldBlock;
             lock (requestInfo)
             {
                 // Remove old requests outside the window
                 requestInfo.Requests.RemoveAll(r => r < now - _window);
                 
-                if (requestInfo.Requests.Count >= _maxRequests)
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-                    context.Response.Headers.Add("Retry-After", _window.TotalSeconds.ToString());
-                    await context.Response.WriteAsync("Rate limit exceeded. Please try again later.");
-                    return;
-                }
+                shouldBlock = requestInfo.Requests.Count >= _maxRequests;
                 
-                requestInfo.Requests.Add(now);
+                if (!shouldBlock)
+                {
+                    requestInfo.Requests.Add(now);
+                }
+            }
+
+            if (shouldBlock)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                context.Response.Headers.Add("Retry-After", _window.TotalSeconds.ToString());
+                await context.Response.WriteAsync("Rate limit exceeded. Please try again later.");
+                return;
             }
 
             await _next(context);

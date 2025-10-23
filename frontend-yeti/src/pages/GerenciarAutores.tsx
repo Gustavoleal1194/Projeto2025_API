@@ -10,6 +10,7 @@ import { LoadingOverlay } from '../components/Loading';
 import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
 import RefreshButton from '../components/Buttons/RefreshButton';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
 
 const GerenciarAutores: React.FC = () => {
     const { handleRequestError, showCrudSuccess } = useNotifications();
@@ -256,12 +257,9 @@ const GerenciarAutores: React.FC = () => {
     // Toggle status
     const toggleStatus = async (id: number) => {
         try {
-            const token = localStorage.getItem('yeti_token');
-            const response = await fetch(`http://localhost:5072/api/Autor/${id}/toggle-status`, {
+            const response = await fetch(buildApiUrl(`/api/Autor/${id}/toggle-status`), {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: getAuthHeaders()
             });
 
             if (!response.ok) {

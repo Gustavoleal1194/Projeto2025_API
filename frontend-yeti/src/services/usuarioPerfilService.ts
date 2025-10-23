@@ -4,16 +4,12 @@
  * Serviço para gerenciar dados do perfil do usuário logado
  */
 
-import { API_CONFIG } from '../config/api';
+import { API_CONFIG, buildApiUrl, getAuthHeaders } from '../config/api';
 import type { UsuarioDTO } from '../types/entities';
 
 class UsuarioPerfilService {
     private getAuthHeaders(): HeadersInit {
-        const token = localStorage.getItem('yeti_token');
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
+        return getAuthHeaders();
     }
 
     /**
@@ -22,7 +18,7 @@ class UsuarioPerfilService {
     async obterMeuPerfil(): Promise<UsuarioDTO> {
         try {
             // Usar o endpoint que usa o token JWT para identificar o usuário
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/Usuario/meus-dados`, {
+            const response = await fetch(buildApiUrl('/api/Usuario/meus-dados'), {
                 method: 'GET',
                 headers: this.getAuthHeaders()
             });
@@ -52,7 +48,7 @@ class UsuarioPerfilService {
                 id: perfilAtual.id
             };
 
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/Usuario/${perfilAtual.id}`, {
+            const response = await fetch(buildApiUrl(`/api/Usuario/${perfilAtual.id}`), {
                 method: 'PUT',
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify(dadosCompletos)

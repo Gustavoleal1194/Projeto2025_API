@@ -10,6 +10,7 @@ import { LoadingOverlay } from '../components/Loading';
 import ModalOverlay from '../components/Modal/ModalOverlay';
 import { createSmartTable } from '../utils/tableRecipes';
 import RefreshButton from '../components/Buttons/RefreshButton';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
 
 interface GerenciarUsuariosProps { }
 
@@ -116,12 +117,8 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
             // Loading mínimo de 1.5s para melhor UX
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            const token = localStorage.getItem('yeti_token');
-            const response = await fetch('http://localhost:5072/api/Usuario', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+            const response = await fetch(buildApiUrl('/api/Usuario'), {
+                headers: getAuthHeaders()
             });
 
             if (!response.ok) {
@@ -245,10 +242,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         try {
             setIsSubmitting(true);
 
-            const token = localStorage.getItem('yeti_token');
             const url = editingUsuario
-                ? `http://localhost:5072/api/Usuario/${editingUsuario.id}`
-                : 'http://localhost:5072/api/Usuario';
+                ? buildApiUrl(`/api/Usuario/${editingUsuario.id}`)
+                : buildApiUrl('/api/Usuario');
 
             const method = editingUsuario ? 'PUT' : 'POST';
 
@@ -260,10 +256,7 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
 
             const response = await fetch(url, {
                 method,
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(payload)
             });
 
@@ -295,12 +288,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
         }
 
         try {
-            const token = localStorage.getItem('yeti_token');
-            const response = await fetch(`http://localhost:5072/api/Usuario/${id}`, {
+            const response = await fetch(buildApiUrl(`/api/Usuario/${id}`), {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: getAuthHeaders()
             });
 
             if (!response.ok) {
@@ -324,12 +314,9 @@ const GerenciarUsuarios: React.FC<GerenciarUsuariosProps> = () => {
     // Toggle status
     const toggleStatus = async (id: number) => {
         try {
-            const token = localStorage.getItem('yeti_token');
-            const response = await fetch(`http://localhost:5072/api/Usuario/${id}/toggle-status`, {
+            const response = await fetch(buildApiUrl(`/api/Usuario/${id}/toggle-status`), {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: getAuthHeaders()
             });
 
             if (!response.ok) {
