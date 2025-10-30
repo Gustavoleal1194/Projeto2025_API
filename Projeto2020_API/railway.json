@@ -1,0 +1,11 @@
+{
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "dotnet Projeto2020_API.dll",
+    "healthcheckPath": "/swagger"
+  }
+}
+
+
