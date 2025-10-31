@@ -7,7 +7,7 @@ services:
     container_name: yeti-sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong@Passw0rd
+      - SA_PASSWORD=MinhaSenha123!
       - MSSQL_PID=Express
     ports:
       - "1433:1433"
@@ -15,6 +15,13 @@ services:
       - sqlserver_data:/var/opt/mssql
     networks:
       - yeti-network
+    healthcheck:
+      test: >
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P MinhaSenha123! -Q "SELECT 1" || exit 1
+      interval: 5s
+      retries: 20
+      timeout: 5s
+      start_period: 10s
 
   # Backend API
   backend:
@@ -22,7 +29,7 @@ services:
     container_name: yeti-backend
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=dbBiblioteca;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=dbBiblioteca;User Id=sa;Password=MinhaSenha123!;TrustServerCertificate=true;MultipleActiveResultSets=true
       - JwtSettings__SecretKey=MinhaChaveSecretaSuperSeguraParaJWT2025
       - JwtSettings__Issuer=Projeto2025API
       - JwtSettings__Audience=Projeto2025API
@@ -30,7 +37,8 @@ services:
     ports:
       - "5072:80"
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     networks:
       - yeti-network
 
@@ -41,16 +49,15 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     networks:
       - yeti-network
 
 volumes:
   sqlserver_data:
 
-
 networks:
   yeti-network:
     driver: bridge
-
 

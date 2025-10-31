@@ -8,8 +8,9 @@ public class ContextoEmpresaFactory : IDesignTimeDbContextFactory<EmpresaContext
     {
         var optionsBuilder = new DbContextOptionsBuilder<EmpresaContexto>();
 
-        // Defina a string de conexão de forma que o EF possa usar durante o processo de migração.
-        optionsBuilder.UseSqlServer(@"Server=GUSTAVO\SQLEXPRESS01;DataBase=dbBiblioteca;integrated security=true;TrustServerCertificate=True;");
+        // String de conexão adaptada para ambiente Docker
+        optionsBuilder.UseSqlServer(@"Server=sqlserver;Database=dbBiblioteca;User Id=sa;Password=MinhaSenha123!;TrustServerCertificate=True;");
+        
         return new EmpresaContexto(optionsBuilder.Options);
     }
 }

@@ -1,33 +1,34 @@
-# Dockerfile para Frontend - Yeti Library System
+# Etapa de build
 FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Copiar package.json e package-lock.json
+# Copiar arquivos de dependência
 COPY package*.json ./
 
-# Instalar dependências
-RUN npm ci --only=production
+# Instalar todas as dependências (incluindo dev)
+RUN npm install
 
-# Copiar código fonte
+# Copiar o restante do código-fonte
 COPY . .
 
 # Build da aplicação
 RUN npm run build
 
-# Estágio de produção com Nginx
+# Etapa de produção com Nginx
 FROM nginx:alpine
 
-# Copiar arquivos buildados
+# Remover configuração padrão do Nginx (opcional)
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copiar arquivos buildados para a pasta pública do Nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copiar configuração do Nginx
+# Copiar configuração personalizada do Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expor porta 80
 EXPOSE 80
 
-# Comando para iniciar Nginx
+# Comando para iniciar o Nginx
 CMD ["nginx", "-g", "daemon off;"]
-
-
